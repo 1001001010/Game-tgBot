@@ -10,3 +10,6 @@ class Newsletter(StatesGroup): #State на рассылку
 class Newsletter_photo(StatesGroup): #State на рассылку с офто
     msg = State()
     photo = State()
+
+class AdminSettingsEdit(StatesGroup):
+    here_support = State()

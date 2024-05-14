@@ -8,7 +8,7 @@ from bot.data.loader import dp, bot
 from bot.data.config import db
 from bot.utils.utils_functions import get_language, ded, send_admins
 from bot.filters.filters import IsAdmin
-from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo
+from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit
 from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, opr_mail_text, opr_mail_photo
 
 #Открытие Профиля
@@ -40,7 +40,7 @@ async def adm_edit_faq(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     await state.update_data(msg=msg)
     data = await state.get_data()
-    await db.update_faq(FAQ=data['msg'])
+    await db.update_settings(FAQ=data['msg'])
     await message.answer(lang.faq_success, reply_markup=admin_menu(texts=lang))
     await state.finish()
     
@@ -123,3 +123,22 @@ async def func_newsletter_text(message: Message, state: FSMContext):
 
     await message.answer(new_msg)
     await state.finish()
+    
+@dp.callback_query_handler(IsAdmin(), text_startswith="settings_supp", state="*")
+async def settings_set_sup(call: CallbackQuery):
+    await AdminSettingsEdit.here_support.set()
+    lang = await get_language(call.from_user.id)
+    await call.message.edit_text("<b>⚙️ Введите ссылку на пользователя (https://t.me/юзернейм)</b>"
+                                 "❕ Отправьте <code>-</code> чтобы оставить пустым.", reply_markup=back_to_adm_m(texts=lang))
+    
+@dp.message_handler(IsAdmin(), state=AdminSettingsEdit.here_support)
+@dp.message_handler(IsAdmin(), text="-", state=AdminSettingsEdit.here_support)
+async def settings_sup_set(message: Message, state: FSMContext):
+    await state.finish()
+    if message.text.startswith("https://t.me/") or message.text == "-":
+        await db.update_settings(support=message.text)
+        await send_admins(
+            f"<b>❗ Администратор  @{message.from_user.username} изменил Тех. Поддержку на: \n{message.text}</b>")
+        await message.answer("<b>✅ Готово! Тех. Поддержка была изменена!</b>")
+    else:
+        await message.answer("<b>❌ Введите ссылку! (https://t.me/юзернейм)</b> ")

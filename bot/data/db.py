@@ -80,7 +80,7 @@ class DB(AsyncClass):
         row = await self.con.execute("SELECT * FROM languages")
         return await row.fetchall()
 
-    async def update_faq(self, **kwargs):
+    async def update_settings(self, **kwargs):
         queryy = "UPDATE settings SET"
         queryy, parameters = query(queryy, kwargs)
         await self.con.execute(queryy, parameters)

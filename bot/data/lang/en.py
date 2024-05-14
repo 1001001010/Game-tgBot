@@ -9,6 +9,8 @@ class Texts:
     reply_admin = "👩‍💻Admin Panel"
     back = "🔙 To main menu"
     back_to_adm_m = "🔙 Back"
+    back = "⬅ Back"
+    support_inl = "⚙️ Support"
 
 
 ##########################################################################
@@ -37,3 +39,5 @@ class Texts:
     admin_text_send = "🖊️ Enter your newsletter text"
     admin_newsletter = "✍ Send a message for newsletter"
     admin_photo_send = "🖼️ Send a photo for mailing"
+    no_support = "<b>⚙️ The owner of the bot did not leave a link to support!</b>"
+    yes_support = "<b>📩 To contact Support press the bottom button:</b>"

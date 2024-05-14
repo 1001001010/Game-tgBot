@@ -84,3 +84,20 @@ def opr_mail_photo():
     keyboard.add(kb[0], kb[1])
 
     return keyboard
+
+def back_to_user_menu(texts):
+    keyboard = InlineKeyboardMarkup()
+
+    keyboard.add(InlineKeyboardButton(texts.back, callback_data="back_to_m"))
+
+    return keyboard
+
+async def support_inll(texts):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    s = await db.get_settings(id=1)
+    kb.append(InlineKeyboardButton(texts.support_inl, url=s['support']))
+
+    keyboard.add(kb[0])
+
+    return keyboard
