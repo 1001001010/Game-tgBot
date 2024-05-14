@@ -30,3 +30,11 @@ async def func__profile(message: Message, state: FSMContext):
                         refer_lvl=None, 
                         balance_vivod=None, 
                         refer_link=ref_link)))
+    
+#Открытие FAQ
+@dp.message_handler(text=lang_ru.reply_kb3, state="*")
+@dp.message_handler(text=lang_en.reply_kb3, state="*")
+async def func__profile(message: Message, state: FSMContext):
+    await state.finish()
+    msg = await db.get_settings(id=1)
+    await message.answer(msg['FAQ'], parse_mode='html')

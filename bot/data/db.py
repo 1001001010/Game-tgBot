@@ -39,9 +39,22 @@ class DB(AsyncClass):
         self.con = await aiosqlite.connect(path_db)
         self.con.row_factory = dict_factory
 
+    # Получение всех пользователей из БД
+    async def all_users(self):
+        row = await self.con.execute("SELECT * FROM users")
+
+        return await row.fetchall()
+
     # Получение пользователя из БД
     async def get_user(self, **kwargs):
         queryy = "SELECT * FROM users"
+        queryy, params = query_args(queryy, kwargs)
+        row = await self.con.execute(queryy, params)
+        return await row.fetchone()
+    
+    # Получение пользователя из БД
+    async def get_settings(self, **kwargs):
+        queryy = "SELECT * FROM settings"
         queryy, params = query_args(queryy, kwargs)
         row = await self.con.execute(queryy, params)
         return await row.fetchone()
@@ -67,6 +80,12 @@ class DB(AsyncClass):
         row = await self.con.execute("SELECT * FROM languages")
         return await row.fetchall()
 
+    async def update_faq(self, **kwargs):
+        queryy = "UPDATE settings SET"
+        queryy, parameters = query(queryy, kwargs)
+        await self.con.execute(queryy, parameters)
+        await self.con.commit()
+
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
@@ -81,6 +100,21 @@ class DB(AsyncClass):
                                    "language TEXT DEFAULT 'ru',"
                                    "balance INTEGER)")
             print("database was not found (Users | 1/3), creating...")
+            await self.con.commit()
+            
+        settings = await self.con.execute("PRAGMA table_info(settings)")
+        if len(await settings.fetchall()) == 3:
+            print("database was found (Settings | 2/18)")
+        else:
+            await self.con.execute("CREATE TABLE settings("
+                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                    "FAQ TEXT,"
+                                    "support TEXT)")
+
+            print("database was not found (Settings | 2/3), creating...")
+            await self.con.execute("INSERT INTO settings("
+                                            "FAQ, support) "
+                                            "VALUES (?, ?)", ['FAQ', None])
             await self.con.commit()
             
         langs = await self.con.execute("PRAGMA table_info(languages)")
@@ -99,6 +133,6 @@ class DB(AsyncClass):
                                 "language, name) "
                                 "VALUES (?, ?)", ['en', '🇺🇸 English'])
 
-            print("database was not found (Languages | 2/3), creating...")
+            print("database was not found (Languages | 3/3), creating...")
 
             await self.con.commit()
