@@ -5,6 +5,9 @@ from datetime import datetime
 from bot.data.config import lang_en, lang_ru
 from bot.data.config import db
 from bot.data.loader import bot
+from datetime import datetime
+from typing import Union
+import pytz
 
 # Получение админов
 def get_admins():
@@ -82,3 +85,53 @@ async def update_profit_day():
 # Автоматическая очистка еженедельной статистики в понедельник 00:00
 async def update_profit_week():
     await db.update_settings(profit_week=get_unix())
+    
+# Конвертация unix в дату и даты в unix
+def convert_date(from_time, full=True, second=True) -> Union[str, int]:
+    from bot.data.config import BOT_TIMEZONE
+
+    if "-" in str(from_time):
+        from_time = from_time.replace("-", ".")
+
+    if str(from_time).isdigit():
+        if full:
+            to_time = datetime.fromtimestamp(from_time, pytz.timezone(BOT_TIMEZONE)).strftime("%d.%m.%Y %H:%M:%S")
+        elif second:
+            to_time = datetime.fromtimestamp(from_time, pytz.timezone(BOT_TIMEZONE)).strftime("%d.%m.%Y %H:%M")
+        else:
+            to_time = datetime.fromtimestamp(from_time, pytz.timezone(BOT_TIMEZONE)).strftime("%d.%m.%Y")
+    else:
+        if " " in str(from_time):
+            cache_time = from_time.split(" ")
+
+            if ":" in cache_time[0]:
+                cache_date = cache_time[1].split(".")
+                cache_time = cache_time[0].split(":")
+            else:
+                cache_date = cache_time[0].split(".")
+                cache_time = cache_time[1].split(":")
+
+            if len(cache_date[0]) == 4:
+                x_year, x_month, x_day = cache_date[0], cache_date[1], cache_date[2]
+            else:
+                x_year, x_month, x_day = cache_date[2], cache_date[1], cache_date[0]
+
+            x_hour, x_minute, x_second = cache_time[0], cache_time[1], cache_time[2]
+
+            from_time = f"{x_day}.{x_month}.{x_year} {x_hour}:{x_minute}:{x_second}"
+        else:
+            cache_date = from_time.split(".")
+
+            if len(cache_date[0]) == 4:
+                x_year, x_month, x_day = cache_date[0], cache_date[1], cache_date[2]
+            else:
+                x_year, x_month, x_day = cache_date[2], cache_date[1], cache_date[0]
+
+            from_time = f"{x_day}.{x_month}.{x_year}"
+
+        if " " in str(from_time):
+            to_time = int(datetime.strptime(from_time, "%d.%m.%Y %H:%M:%S").timestamp())
+        else:
+            to_time = int(datetime.strptime(from_time, "%d.%m.%Y").timestamp())
+
+    return to_time

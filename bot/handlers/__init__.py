@@ -5,5 +5,6 @@ from .errors import dp
 from .main_start import dp
 from .admin import dp
 from .user import dp
+from .game import dp
 
 __all__ = ['dp']

@@ -7,7 +7,7 @@ from bot.data.config import lang_ru, lang_en
 from bot.data.loader import dp, bot
 from bot.data.config import db
 from bot.state.users import UsersCoupons
-from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile
+from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, choose_languages_kb, game_menu
 from bot.utils.utils_functions import get_language, ded
 
 #Открытие Профиля
@@ -128,3 +128,19 @@ async def functions_profile_get(message: Message, state: FSMContext):
             await message.answer(lang.yes_coupon.format(summa=summa))
         elif activ_cop["coupon_name"] == cop:
             await message.answer(lang.yes_uses_coupon)
+            
+#Смена языка
+@dp.callback_query_handler(text="change_language", state="*")
+async def user_lang(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    await call.message.answer(text="<b>Выберите язык / Select language</b>", reply_markup=await choose_languages_kb())
+    
+#Открытие Меню игр
+@dp.message_handler(text=lang_ru.reply_kb1, state="*")
+@dp.message_handler(text=lang_en.reply_kb1, state="*")
+async def func__game(message: Message, state: FSMContext):
+    await state.finish()
+    lang = await get_language(message.from_user.id)
+    photo_path = InputFile('./bot/data/photo/game.png')
+    await bot.send_photo(message.from_user.id, photo=photo_path, caption=lang.game_menu, reply_markup=game_menu(texts=lang))

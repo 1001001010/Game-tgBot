@@ -18,7 +18,7 @@ def admin_menu(texts):
 
     kb.append(InlineKeyboardButton("🖤 Общие настройки", callback_data="settings"))
     kb.append(InlineKeyboardButton("🎲 Доп. настройки", callback_data="extra_settings"))
-    kb.append(InlineKeyboardButton("🔍 Искать", callback_data="find:"))
+    kb.append(InlineKeyboardButton("🔍 Искать", callback_data="find_user"))
     kb.append(InlineKeyboardButton("Промокод", callback_data="adm_promo"))
     kb.append(InlineKeyboardButton("📌 Рассылка", callback_data="mail_start"))
     kb.append(InlineKeyboardButton("📊 Статистика", callback_data="stats"))
@@ -132,4 +132,57 @@ def back_to_profile(texts):
     kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_profile"))
 
     keyboard.add(kb[0])
+    return keyboard
+
+def game_menu(texts):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+
+    kb.append(InlineKeyboardButton(texts.game_slots, callback_data="game:slots"))
+    kb.append(InlineKeyboardButton(texts.game_coin, callback_data="game:coin"))
+    kb.append(InlineKeyboardButton(texts.game_basketball, callback_data="game:basketball"))
+    kb.append(InlineKeyboardButton(texts.game_football, callback_data="game:football"))
+    kb.append(InlineKeyboardButton(texts.game_bowling, callback_data="game:bowling"))
+    kb.append(InlineKeyboardButton(texts.game_dice, callback_data="game:dice"))
+    kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_m"))
+
+    keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[2], kb[3])
+    keyboard.add(kb[4], kb[5])
+    keyboard.add(kb[6])
+    return keyboard
+
+async def admin_user_menu(texts, user_id):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    user = await db.get_user(user_id=user_id)
+    if user['is_ban'] == True:
+        keyboard.add(InlineKeyboardButton(texts.adm_user_unban, callback_data=f"block:unban:{user_id}"))
+    elif user['is_ban'] == False:
+        keyboard.add(InlineKeyboardButton(texts.adm_user_ban, callback_data=f"block:ban:{user_id}"))
+    kb.append(InlineKeyboardButton(texts.adm_user_revork_bal, callback_data=f"revork:balance:{user_id}"))
+    kb.append(InlineKeyboardButton(texts.adm_user_give_bal, callback_data=f"give:balance:{user_id}"))
+    kb.append(InlineKeyboardButton(texts.adm_user_revork_demo, callback_data=f"revork:demo:{user_id}"))
+    kb.append(InlineKeyboardButton(texts.adm_user_give_demo, callback_data=f"give:demo:{user_id}"))
+        
+    keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[2], kb[3])
+    return keyboard
+
+def edit_game_menu(texts):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+
+    kb.append(InlineKeyboardButton(texts.game_slots, callback_data="edit_game:slots"))
+    kb.append(InlineKeyboardButton(texts.game_coin, callback_data="edit_game:coin"))
+    kb.append(InlineKeyboardButton(texts.game_basketball, callback_data="edit_game:basketball"))
+    kb.append(InlineKeyboardButton(texts.game_football, callback_data="edit_game:football"))
+    kb.append(InlineKeyboardButton(texts.game_bowling, callback_data="edit_game:bowling"))
+    kb.append(InlineKeyboardButton(texts.game_dice, callback_data="edit_game:dice"))
+    kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_adm_m"))
+
+    keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[2], kb[3])
+    keyboard.add(kb[4], kb[5])
+    keyboard.add(kb[6])
     return keyboard

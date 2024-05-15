@@ -19,3 +19,10 @@ class AdminCoupons(StatesGroup):
     here_uses_promo = State()
     here_discount_promo = State()
     here_name_for_delete_promo = State()
+    
+class AdminFind(StatesGroup):
+    here_user = State()
+    
+class AdminBanCause(StatesGroup):
+    cause = State()
+    user_id = State()

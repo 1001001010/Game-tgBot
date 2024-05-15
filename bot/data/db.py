@@ -163,7 +163,7 @@ class DB(AsyncClass):
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await users_info.fetchall()) == 10:
+        if len(await users_info.fetchall()) == 11:
             print("database was found (Users | 1/3)")
         else:
             await self.con.execute("CREATE TABLE users ("
@@ -176,6 +176,7 @@ class DB(AsyncClass):
                                    "test_balance INTEGER,"
                                    "request_test INTEGER,"
                                    "is_ban INTEGER,"
+                                   "ban_cause INTEGER,"
                                    "balance INTEGER)")
             print("database was not found (Users | 1/3), creating...")
             await self.con.commit()

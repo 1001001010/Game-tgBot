@@ -21,6 +21,8 @@ loop = asyncio.get_event_loop()
 task = loop.create_task(main_db())
 db = loop.run_until_complete(task)
 
+BOT_TIMEZONE = "Europe/Moscow"  # Временная зона бота
+
 # Чтение конфига
 read_config = configparser.ConfigParser()
 read_config.read("settings.ini")
@@ -32,3 +34,12 @@ path_database = "tgbot/data/database.db"  # Путь к Базе Данных
 cryptoBot = AsyncCryptoBot(read_config['settings']['crypto_bot_token'].strip().replace(" ", ""))
 
 xrocket = read_config['settings']['crypto_bot_token'].strip().replace(" ", "")
+
+game_slots = {
+    'slots': 'game_slots',
+    'coin': 'game_coin',
+    'basketball': 'game_basketball',
+    'football': 'game_football',
+    'bowling': 'game_bowling',
+    'dice': 'game_dice'
+}

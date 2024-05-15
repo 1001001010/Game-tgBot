@@ -6,10 +6,13 @@ import asyncio
 from bot.data.config import lang_ru, lang_en
 from bot.data.loader import dp, bot
 from bot.data.config import db
-from bot.utils.utils_functions import get_language, ded, send_admins, get_admins
+from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date
 from bot.filters.filters import IsAdmin
-from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, AdminCoupons
-from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, opr_mail_text, opr_mail_photo, kb_adm_promo
+from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
+                            AdminCoupons, AdminFind, AdminBanCause
+                            
+from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, \
+                                 kb_adm_promo, admin_user_menu, edit_game_menu
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -169,28 +172,28 @@ async def settings_sup_set(message: Message, state: FSMContext):
         await message.answer("<b>❌ Введите ссылку! (https://t.me/юзернейм)</b> ")
 
 #Прмокод
-@dp.callback_query_handler(text="adm_promo", state="*")
+@dp.callback_query_handler(IsAdmin(), text="adm_promo", state="*")
 async def promo_create(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
     lang = await get_language(call.from_user.id)
     await call.message.answer(lang.promo_menu, reply_markup=kb_adm_promo(texts=lang))
 
-@dp.callback_query_handler(text="promo_create", state="*")
+@dp.callback_query_handler(IsAdmin(), text="promo_create", state="*")
 async def promo_create(call: CallbackQuery, state: FSMContext):
     await state.finish()
     lang = await get_language(call.from_user.id)
     await call.message.edit_text(f"<b>❗ Введите название промокода</b>", reply_markup=back_to_adm_m(texts=lang))
     await AdminCoupons.here_name_promo.set()
 
-@dp.message_handler(state=AdminCoupons.here_name_promo)
+@dp.message_handler(IsAdmin(), state=AdminCoupons.here_name_promo)
 async def here_name_promo(msg: Message, state: FSMContext):
     name = msg.text
     await msg.answer(f"<b>❗ Введите кол-во использований</b>")
     await state.update_data(cache_name_for_add_promo=name)
     await AdminCoupons.here_uses_promo.set()
 
-@dp.message_handler(state=AdminCoupons.here_uses_promo)
+@dp.message_handler(IsAdmin(), state=AdminCoupons.here_uses_promo)
 async def here_uses_promo(msg: Message, state: FSMContext):
     if msg.text.isdigit():
         await msg.answer("<b>❗ Введите сумму промокода</b>")
@@ -199,7 +202,7 @@ async def here_uses_promo(msg: Message, state: FSMContext):
     else:
         await msg.answer("<b>❗ Кол-во использований должно быть числом!</b>")
 
-@dp.message_handler(state=AdminCoupons.here_discount_promo)
+@dp.message_handler(IsAdmin(), state=AdminCoupons.here_discount_promo)
 async def here_discount_promo(msg: Message, state: FSMContext):
     if msg.text.isdigit():
         async with state.proxy() as data:
@@ -215,7 +218,7 @@ async def here_discount_promo(msg: Message, state: FSMContext):
     else:
         await msg.answer("<b>❗ Скидка должна быть числом!</b>")
 
-@dp.callback_query_handler(text="promo_delete", state="*")
+@dp.callback_query_handler(IsAdmin(), text="promo_delete", state="*")
 async def promo_del(call: CallbackQuery, state: FSMContext):
     await state.finish()
     lang = await get_language(call.from_user.id)
@@ -223,7 +226,7 @@ async def promo_del(call: CallbackQuery, state: FSMContext):
     await AdminCoupons.here_name_for_delete_promo.set()
 
 
-@dp.message_handler(state=AdminCoupons.here_name_for_delete_promo)
+@dp.message_handler(IsAdmin(), state=AdminCoupons.here_name_for_delete_promo)
 async def promo_delete(msg: Message, state: FSMContext):
     promo = await db.get_promo(coupon=msg.text)
     if promo == None:
@@ -233,3 +236,173 @@ async def promo_delete(msg: Message, state: FSMContext):
         await state.finish()
         await msg.answer(f"<b>✅ Промокод <code>{msg.text}</code> был удален</b>")
         await send_admins(f"<b>❗ Администратор  @{msg.from_user.username} удалил Промокод <code>{msg.text}</code></b>")
+        
+#Открытие профился из админки
+@dp.callback_query_handler(IsAdmin(), text="find_user", state="*")
+async def find_profile_open(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    lang = await get_language(call.from_user.id)
+    await call.message.edit_text("<b>❗ Введите ID, имя или @username пользователя</b>", reply_markup=back_to_adm_m(texts=lang))
+    await AdminFind.here_user.set()
+    
+@dp.message_handler(IsAdmin(), state=AdminFind.here_user)
+async def find_profile_op(message: Message, state: FSMContext):
+    text = await get_language(message.from_user.id)
+    if message.text.isdigit():
+        user = await db.get_user(user_id=message.text)
+    elif message.text.startswith("@"):
+        user = await db.get_user(user_name=message.text.split("@")[1])
+    else:
+        user = await db.get_user(first_name=message.text)
+
+    if user is None:
+        await message.reply("<b>❗ Такого пользователя нет! Перепроверьте данные!</b>")
+    else:
+        await state.finish()
+        
+        name = user['user_name']
+        user_id = user['user_id']
+        if not name:
+            us = await bot.get_chat(user_id)
+            name = us.get_mention(as_html=True)
+        total_refill = convert_date(user['reg_date_unix'])
+        balance = user['balance']
+        demo_balance = user['test_balance'] 
+        lang = user['language']
+        if user['is_ban'] == True:
+            ban_status = '⛔ Заблокирован'
+            cause_ban = f"☝ Причина блокировки: <code>{user['ban_cause']}</code>\n"
+        elif user['is_ban'] == False:
+            ban_status = '🟢 Разблокирован'
+            cause_ban = '' 
+        else:
+            ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
+            cause_ban = ''
+        tr = None # Надо изменить
+        count_refers = None # Надо изменить
+        referalst_summa = None # Надо изменить
+        msg = f"""<b>👤 Профиль:
+                💎 Юзер: {name} 
+                🆔 ID: <code>{user_id}</code>
+                📅 Дата регистрации: <code>{total_refill}</code>
+                
+                💰 Баланс: <code>{balance}</code>
+                🏦 Демо баланс: <code>{demo_balance}</code>
+                
+                ⚙️ Язык бота: <code>{lang}</code>
+                💵 Всего пополнено: <code>{tr}</code>
+                
+                🔗 Статус блокировки: <code>{ban_status}</code>
+                {cause_ban}
+                👥 Рефералов: <code>{count_refers} чел</code>
+                💎 Заработано с рефералов: <code>{referalst_summa}</code>
+                📜 Список рефералов: </b>"""
+        await message.answer(ded(msg), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+        
+@dp.callback_query_handler(IsAdmin(), text_startswith="block", state="*")
+async def find_profile_open(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    text = await get_language(call.from_user.id)
+    ban_or_unban = call.data.split(":")[1]
+    print(ban_or_unban)
+    user_id = call.data.split(":")[2]
+    if ban_or_unban == 'ban':
+        await call.message.answer(text.why_ban)
+        await AdminBanCause.cause.set()
+        await state.update_data(user_id=user_id)
+    elif ban_or_unban == 'unban':
+        await db.update_user(id=user_id, is_ban=False, ban_cause=None)
+        user = await db.get_user(user_id=user_id)
+        name = user['user_name']
+        user_id = user['user_id']
+        if not name:
+            us = await bot.get_chat(user_id)
+            name = us.get_mention(as_html=True)
+        total_refill = convert_date(user['reg_date_unix'])
+        balance = user['balance']
+        demo_balance = user['test_balance'] 
+        lang = user['language']
+        if user['is_ban'] == True:
+            ban_status = '⛔ Заблокирован'
+            cause_ban = f"☝ Причина блокировки: <code>{user['ban_cause']}</code>\n"
+        elif user['is_ban'] == False:
+            ban_status = '🟢 Разблокирован'
+            cause_ban = '' 
+        else:
+            ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
+            cause_ban = ''
+        tr = None # Надо изменить
+        count_refers = None # Надо изменить
+        referalst_summa = None # Надо изменить
+        msg = f"""<b>👤 Профиль:
+                💎 Юзер: {name} 
+                🆔 ID: <code>{user_id}</code>
+                📅 Дата регистрации: <code>{total_refill}</code>
+                
+                💰 Баланс: <code>{balance}</code>
+                🏦 Демо баланс: <code>{demo_balance}</code>
+                
+                ⚙️ Язык бота: <code>{lang}</code>
+                💵 Всего пополнено: <code>{tr}</code>
+                
+                🔗 Статус блокировки: <code>{ban_status}</code>
+                {cause_ban}
+                👥 Рефералов: <code>{count_refers} чел</code>
+                💎 Заработано с рефералов: <code>{referalst_summa}</code>
+                📜 Список рефералов: </b>"""
+        await call.message.answer(ded(msg), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+    
+@dp.message_handler(IsAdmin(), state=AdminBanCause.cause)
+async def cause_ban_edit(msg: Message, state: FSMContext):
+    await state.update_data(cause=msg.text)
+    data = await state.get_data()
+    text = await get_language(msg.from_user.id)
+    await db.update_user(data['user_id'], is_ban=True, ban_cause=data['cause'])
+    user = await db.get_user(user_id=data['user_id'])
+    name = user['user_name']
+    user_id = user['user_id']
+    if not name:
+        us = await bot.get_chat(user_id)
+        name = us.get_mention(as_html=True)
+    total_refill = convert_date(user['reg_date_unix'])
+    balance = user['balance']
+    demo_balance = user['test_balance'] 
+    lang = user['language']
+    if user['is_ban'] == True:
+        ban_status = '⛔ Заблокирован'
+        cause_ban = f"☝ Причина блокировки: <code>{user['ban_cause']}</code>\n"
+    elif user['is_ban'] == False:
+        ban_status = '🟢 Разблокирован'
+        cause_ban = '' 
+    else:
+        ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
+        cause_ban = ''
+    tr = None # Надо изменить
+    count_refers = None # Надо изменить
+    referalst_summa = None # Надо изменить
+    msgg = f"""<b>👤 Профиль:
+            💎 Юзер: {name} 
+            🆔 ID: <code>{user_id}</code>
+            📅 Дата регистрации: <code>{total_refill}</code>
+            
+            💰 Баланс: <code>{balance}</code>
+            🏦 Демо баланс: <code>{demo_balance}</code>
+            
+            ⚙️ Язык бота: <code>{lang}</code>
+            💵 Всего пополнено: <code>{tr}</code>
+            
+            🔗 Статус блокировки: <code>{ban_status}</code>
+            {cause_ban}
+            👥 Рефералов: <code>{count_refers} чел</code>
+            💎 Заработано с рефералов: <code>{referalst_summa}</code>
+            📜 Список рефералов: </b>"""
+    await msg.answer(ded(msgg), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+    
+#Открытие меню доп. настроек
+@dp.callback_query_handler(IsAdmin(), text="extra_settings", state="*")
+async def find_profile_open(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    await call.message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
