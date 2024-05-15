@@ -120,6 +120,46 @@ class DB(AsyncClass):
         await self.con.execute("DELETE FROM activ_coupons WHERE coupon_name = ?", (coupon,))
         await self.con.commit()
 
+    # Получение промокода
+    async def get_coupon_search(self, **kwargs):
+        sql = "SELECT * FROM coupons"
+        sql, parameters = query_args(sql, kwargs)
+        row = await self.con.execute(sql, parameters)
+
+        return await row.fetchone()
+    
+    # Получение активироного промокода
+    async def get_activate_coupon(self, **kwargs):
+        sql = "SELECT * FROM activ_coupons"
+        sql, parameters = query_args(sql, kwargs)
+        row = await self.con.execute(sql, parameters)
+
+        return await row.fetchone()
+
+    # Активировать промокод
+    async def activate_coupon(self, user_id, coupon):
+        await self.con.execute('''UPDATE activ_coupons SET coupon_name = ? WHERE user_id = ?''', (coupon, user_id,))
+        await self.con.commit() 
+
+    # Добавить id юзера который ввел промокод
+    async def add_activ_coupon(self, user_id):
+        await self.con.execute(f"INSERT INTO activ_coupons(user_id) VALUES (?)", (user_id,))
+        await self.con.commit()
+
+    # Редактирование промокода
+    async def update_coupon(self, coupon, **kwargs):
+        sql = f"UPDATE coupons SET"
+        sql, parameters = query(sql, kwargs)
+        parameters.append(coupon)
+        await self.con.execute(sql + "WHERE coupon = ?", parameters)
+        await self.con.commit()
+
+    # Удаление промокода
+    async def delete_coupon(self, coupon):
+        await self.con.execute("DELETE FROM coupons WHERE coupon = ?", (coupon,))
+        await self.con.execute("DELETE FROM activ_coupons WHERE coupon_name = ?", (coupon,))
+        await self.con.commit()
+
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")

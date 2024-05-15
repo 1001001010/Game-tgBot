@@ -124,3 +124,12 @@ def kb_adm_promo(texts):
 
     keyboard.add(kb[0], kb[1])
     return keyboard
+
+def back_to_profile(texts):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+
+    kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_profile"))
+
+    keyboard.add(kb[0])
+    return keyboard

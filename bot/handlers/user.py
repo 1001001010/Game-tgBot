@@ -6,7 +6,8 @@ from aiogram.types import InputFile
 from bot.data.config import lang_ru, lang_en
 from bot.data.loader import dp, bot
 from bot.data.config import db
-from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile
+from bot.state.users import UsersCoupons
+from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile
 from bot.utils.utils_functions import get_language, ded
 
 #Открытие Профиля
@@ -90,3 +91,40 @@ async def sup_open(message: Message, state: FSMContext):
         kb = await support_inll(texts=lang)
     photo_path = InputFile('./bot/data/photo/helper.png')
     await bot.send_photo(message.from_user.id, photo=photo_path, caption=msg, reply_markup=kb)
+
+#Промокод 
+@dp.callback_query_handler(text="promo", state="*")
+async def user_history(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await UsersCoupons.here_coupon.set()
+    lang = await get_language(call.from_user.id)
+    await call.message.delete()
+    await call.message.answer(lang.promo_act, reply_markup=back_to_profile(texts=lang))
+
+@dp.message_handler(state=UsersCoupons.here_coupon)
+async def functions_profile_get(message: Message, state: FSMContext):
+    await state.finish()
+    coupon = message.text
+    lang = await get_language(message.from_user.id)
+    if await db.get_coupon_search(coupon=coupon) is None:
+        await message.answer(lang.no_coupon.format(coupon=coupon))
+    else:
+        cop = (await db.get_coupon_search(coupon=coupon))["coupon"]
+        uses = (await db.get_coupon_search(coupon=coupon))["uses"]
+        summa = (await db.get_coupon_search(coupon=coupon))["summa_promo"]
+        user_id = message.from_user.id
+        user = await db.get_user(user_id=user_id)
+        activ_cop = await db.get_activate_coupon(user_id=user_id, coupon_name=cop)
+        if uses == 0:
+            await message.answer(lang.no_uses_coupon)
+            await db.delete_coupon(coupon=coupon)
+        elif activ_cop is None:
+            new_balance = int(user['balance']) + int(summa)
+
+            await db.update_user(user_id, balance=new_balance)
+            await db.update_coupon(coupon, uses=int(uses) - 1)
+            await db.add_activ_coupon(user_id)
+            await db.activate_coupon(user_id=user_id, coupon=coupon)
+            await message.answer(lang.yes_coupon.format(summa=summa))
+        elif activ_cop["coupon_name"] == cop:
+            await message.answer(lang.yes_uses_coupon)

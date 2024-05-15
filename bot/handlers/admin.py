@@ -66,7 +66,7 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     Ползователей за неделю {show_users_week}
     Пользователей за день {show_users_day}
 
-    Всего администраторово: {admin_count}"""
+    Всего администраторов: {admin_count}"""
     await call.message.answer(ded(msg))
 
 #Рассылка
