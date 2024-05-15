@@ -7,21 +7,20 @@ from bot.handlers import dp
 from bot.data.config import db
 from bot.data.loader import scheduler
 from bot.middlewares import setup_middlewares
+from bot.utils.utils_functions import update_profit_week, update_profit_day
 
 logging.basicConfig(format=u'%(filename)s [LINE:%(lineno)d] #%(levelname)-8s [%(asctime)s]  %(message)s', level=logging.INFO)
 colorama.init()
 
 
 # Запуск заданий
-# async def scheduler_start():
-    # scheduler.add_job(update_profit_week, "cron", day_of_week="mon", hour=00)
-    # scheduler.add_job(update_profit_day, "cron", hour=00)
-    # scheduler.add_job(autobackup_db, "cron", hour=00)
-    # scheduler.add_job(check_rates, 'cron', hour=00)
+async def scheduler_start():
+    scheduler.add_job(update_profit_week, "cron", day_of_week="mon", hour=00)
+    scheduler.add_job(update_profit_day, "cron", hour=00)
 
 #Выполнение функция после запуска бота
 async def on_startup(dp: Dispatcher):
-    # await scheduler_start()
+    await scheduler_start()
     
     setup_middlewares(dp)
     print(colorama.Fore.RED + "=======================")

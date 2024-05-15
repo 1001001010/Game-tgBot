@@ -6,7 +6,7 @@ import asyncio
 from bot.data.config import lang_ru, lang_en
 from bot.data.loader import dp, bot
 from bot.data.config import db
-from bot.utils.utils_functions import get_language, ded, send_admins
+from bot.utils.utils_functions import get_language, ded, send_admins, get_admins
 from bot.filters.filters import IsAdmin
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit
 from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, opr_mail_text, opr_mail_photo
@@ -43,7 +43,32 @@ async def adm_edit_faq(message: Message, state: FSMContext):
     await db.update_settings(FAQ=data['msg'])
     await message.answer(lang.faq_success, reply_markup=admin_menu(texts=lang))
     await state.finish()
+#Статистика
+@dp.callback_query_handler(IsAdmin(), text='stats', state="*")
+async def open_stats(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    all_user, show_users_week, show_users_day = 0, 0, 0
+    all_users = await db.all_users()
+    settings = await db.get_only_settings()
+    admin_count = len(get_admins())
+    for user in all_users:
+        if int(user['reg_date_unix']) - int(settings['profit_day']) >= 0:
+            show_users_day += 1
+
+        if int(user['reg_date_unix']) - int(settings['profit_week']) >= 0:
+            show_users_week += 1
+        all_user += 1
+
+    msg = f"""Статистика
     
+    Всего пользователей: {all_user}
+    Ползователей за неделю {show_users_week}
+    Пользователей за день {show_users_day}
+
+    Всего администраторово: {admin_count}"""
+    await call.message.answer(ded(msg))
+
 #Рассылка
 @dp.callback_query_handler(IsAdmin(), text_startswith="mail_start", state="*")
 async def func_newsletter(call: CallbackQuery, state: FSMContext):
@@ -64,7 +89,7 @@ async def func_newsletter(call: CallbackQuery, state: FSMContext):
         await call.message.answer(lang.admin_text_send, reply_markup=back_to_adm_m(texts=lang))
         await Newsletter_photo.msg.set()
     
-@dp.message_handler(state=Newsletter_photo.msg)
+@dp.message_handler(IsAdmin(), state=Newsletter_photo.msg)
 async def func_newsletter_text(message: Message, state: FSMContext):
     msg = message.parse_entities()
     await state.update_data(msg=msg)
@@ -98,7 +123,7 @@ async def mail_photo_starts(message: Message, state: FSMContext):
     await message.answer(new_msg)
     await state.finish()
     
-@dp.message_handler(state=Newsletter.msg)
+@dp.message_handler(IsAdmin(), state=Newsletter.msg)
 async def func_newsletter_text(message: Message, state: FSMContext):
     msg = message.parse_entities()
     await state.update_data(msg=msg)

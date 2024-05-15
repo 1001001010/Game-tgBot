@@ -1,5 +1,7 @@
 # - *- coding: utf- 8 - *-
 import configparser
+import time
+from datetime import datetime
 from bot.data.config import lang_en, lang_ru
 from bot.data.config import db
 from bot.data.loader import bot
@@ -27,6 +29,13 @@ def get_admins():
     admins = list(map(int, admins))
 
     return admins
+
+# Получение текущего unix времени
+def get_unix(full=False):
+    if full:
+        return time.time_ns()
+    else:
+        return int(time.time())
 
 #Рассылка админам
 async def send_admins(msg, photo=None, file=None):
@@ -63,3 +72,13 @@ def ded(get_text: str) -> str:
         get_text = ""
 
     return get_text
+
+
+# Автоматическая очистка ежедневной статистики после 00:00
+async def update_profit_day():
+    await db.update_settings(profit_day=get_unix())
+
+
+# Автоматическая очистка еженедельной статистики в понедельник 00:00
+async def update_profit_week():
+    await db.update_settings(profit_week=get_unix())

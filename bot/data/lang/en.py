@@ -11,6 +11,7 @@ class Texts:
     back_to_adm_m = "🔙 Back"
     back = "⬅ Back"
     support_inl = "⚙️ Support"
+    test_balance = "Получить демо баланс"
 
 
 ##########################################################################
@@ -19,11 +20,12 @@ class Texts:
     reg_user = "💎 New user {name} has been registered" # {name} - username of the user
     welcome = "Welcome 👋"
     admin_menu = "welcome to the Administrator menu 👋"
-    def open_profile(self, user_id, user_name, balance, referals, referals_sum, refer_lvl, balance_vivod, refer_link):
+    def open_profile(self, user_id, user_name, balance, referals, referals_sum, refer_lvl, balance_vivod, refer_link, test_balance):
         msg = f"""🆔 Your ID: {user_id}
                 🤖 @Username: {user_name}
                 
                 💰 Your balance: {balance}   
+                Демо баланс: {test_balance}
                 💸 Displayed by: {balance_vivod}
                 
                 👥 Users invited: {referals}
@@ -41,3 +43,5 @@ class Texts:
     admin_photo_send = "🖼️ Send a photo for mailing"
     no_support = "<b>⚙️ The owner of the bot did not leave a link to support!</b>"
     yes_support = "<b>📩 To contact Support press the bottom button:</b>"
+    yes_demo = "Демо баланс успешно выдан"
+    no_demo = "Вы уже получали демо баланс"

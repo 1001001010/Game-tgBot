@@ -1,7 +1,15 @@
 import aiosqlite
 from async_class import AsyncClass
+import time
 
 path_db = 'bot/data/database.db'
+
+# Получение текущего unix времени
+def get_unix(full=False):
+    if full:
+        return time.time_ns()
+    else:
+        return int(time.time())
 
 #Преобразование результата в словарь
 def dict_factory(cursor, row):
@@ -59,6 +67,11 @@ class DB(AsyncClass):
         row = await self.con.execute(queryy, params)
         return await row.fetchone()
     
+        # Получение настроек
+    async def get_only_settings(self):
+        row = await self.con.execute("SELECT * FROM settings")
+        return await row.fetchone()
+    
     # Редактирование пользователя
     async def update_user(self, id, **kwargs):
         queryy = f"UPDATE users SET"
@@ -70,9 +83,9 @@ class DB(AsyncClass):
     # Регистрация пользователя в БД
     async def register_user(self, user_id, user_name, first_name):
         await self.con.execute("INSERT INTO users("
-                                "user_id, user_name, first_name, balance)"
-                                "VALUES (?,?,?,?)",
-                                [user_id, user_name, first_name, 0])
+                                "user_id, user_name, first_name, balance, reg_date_unix, test_balance, request_test)"
+                                "VALUES (?,?,?,?,?,?,?)",
+                                [user_id, user_name, first_name, 0, get_unix(), 0, 0])
         await self.con.commit()
     
     #Получение списка всех языков
@@ -89,7 +102,7 @@ class DB(AsyncClass):
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await users_info.fetchall()) == 6:
+        if len(await users_info.fetchall()) == 9:
             print("database was found (Users | 1/3)")
         else:
             await self.con.execute("CREATE TABLE users ("
@@ -97,24 +110,29 @@ class DB(AsyncClass):
                                    "user_id INTEGER,"
                                    "user_name TEXT,"
                                    "first_name TEXT,"
+                                   "reg_date_unix INTEGER,"
                                    "language TEXT DEFAULT 'ru',"
+                                   "test_balance INTEGER,"
+                                   "request_test INTEGER,"
                                    "balance INTEGER)")
             print("database was not found (Users | 1/3), creating...")
             await self.con.commit()
             
         settings = await self.con.execute("PRAGMA table_info(settings)")
-        if len(await settings.fetchall()) == 3:
+        if len(await settings.fetchall()) == 5:
             print("database was found (Settings | 2/18)")
         else:
             await self.con.execute("CREATE TABLE settings("
                                     "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                    "profit_day INTEGER,"
+                                    "profit_week INTEGER,"
                                     "FAQ TEXT,"
                                     "support TEXT)")
 
             print("database was not found (Settings | 2/3), creating...")
             await self.con.execute("INSERT INTO settings("
-                                            "FAQ, support) "
-                                            "VALUES (?, ?)", ['FAQ', None])
+                                            "FAQ, support, profit_day, profit_week) "
+                                            "VALUES (?, ?, ?, ?)", ['FAQ', '-', f'{get_unix()}', f'{get_unix()}'])
             await self.con.commit()
             
         langs = await self.con.execute("PRAGMA table_info(languages)")

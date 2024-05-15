@@ -101,3 +101,12 @@ async def support_inll(texts):
     keyboard.add(kb[0])
 
     return keyboard
+
+async def kb_profile(texts, user_id):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    user_info = await db.get_user(user_id = user_id)
+    if user_info['request_test'] == 0:
+        keyboard.add(InlineKeyboardButton(texts.test_balance, callback_data="test_balance"))
+
+    return keyboard
