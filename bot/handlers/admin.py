@@ -226,7 +226,6 @@ async def promo_del(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(state=AdminCoupons.here_name_for_delete_promo)
 async def promo_delete(msg: Message, state: FSMContext):
     promo = await db.get_promo(coupon=msg.text)
-    print(promo)
     if promo == None:
         await msg.answer(f"<b>❌ Промокода <code>{msg.text}</code> не существует!</b>")
     else:
