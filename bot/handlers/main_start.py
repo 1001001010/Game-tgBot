@@ -2,11 +2,25 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from bot.data.loader import dp, bot
-from bot.filters.filters import IsAdmin
+from bot.filters.filters import IsAdmin, IsBan
 from bot.keyboards.reply import user_menu
 from bot.keyboards.inline import admin_menu, choose_languages_kb
 from bot.utils.utils_functions import get_language
 from bot.data.config import db
+
+#Проверка на бан
+@dp.message_handler(IsBan(), state="*")
+async def is_ban(message: Message, state: FSMContext):
+    await state.finish()
+    lang = await get_language(message.from_user.id)
+    await message.answer(lang.is_ban_text)
+
+
+@dp.callback_query_handler(IsBan(), state="*")
+async def is_ban(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    lang = await get_language(call.from_user.id)
+    await call.answer(lang.is_ban_text)
 
 #Обработка команды /start
 @dp.message_handler(commands=['start'], state="*")
