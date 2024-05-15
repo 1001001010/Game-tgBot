@@ -67,7 +67,7 @@ class DB(AsyncClass):
         row = await self.con.execute(queryy, params)
         return await row.fetchone()
     
-        # Получение настроек
+    # Получение настроек
     async def get_only_settings(self):
         row = await self.con.execute("SELECT * FROM settings")
         return await row.fetchone()
@@ -97,6 +97,27 @@ class DB(AsyncClass):
         queryy = "UPDATE settings SET"
         queryy, parameters = query(queryy, kwargs)
         await self.con.execute(queryy, parameters)
+        await self.con.commit()
+
+    # Создание промокода
+    async def create_coupon(self, coupon, uses, summa_promo):
+        await self.con.execute("INSERT INTO coupons "
+                               "(coupon, uses, summa_promo) "
+                               "VALUES (?, ?, ?)",
+                               [coupon, uses, summa_promo])
+        await self.con.commit()
+
+    # Получение Промокода
+    async def get_promo(self, **kwargs):
+        queryy = "SELECT * FROM coupons"
+        queryy, params = query_args(queryy, kwargs)
+        row = await self.con.execute(queryy, params)
+        return await row.fetchone()
+
+    # Удаление промокода
+    async def delete_coupon(self, coupon):
+        await self.con.execute("DELETE FROM coupons WHERE coupon = ?", (coupon,))
+        await self.con.execute("DELETE FROM activ_coupons WHERE coupon_name = ?", (coupon,))
         await self.con.commit()
 
     #Проверка на существование бд и ее создание
@@ -153,4 +174,27 @@ class DB(AsyncClass):
 
             print("database was not found (Languages | 3/3), creating...")
 
+            await self.con.commit()
+
+        # Промокоды
+        promos = await self.con.execute("PRAGMA table_info(coupons)")
+        if len(await promos.fetchall()) == 3:
+            print("database was found (Promocodes| 9/18)")
+        else:
+            await self.con.execute('CREATE TABLE coupons('
+                                   'coupon TEXT,'
+                                   'uses INTEGER,'
+                                   'summa_promo INTEGER);')
+            print("database was not found (Promocodes | 9/18), creating...")
+            await self.con.commit()
+
+        # Активные промокоды
+        ac_prs = await self.con.execute("PRAGMA table_info(activ_coupons)")
+        if len(await ac_prs.fetchall()) == 2:
+            print("database was found (Active Promocodes | 10/18)")
+        else:
+            await self.con.execute('CREATE TABLE activ_coupons('
+                                   'coupon_name TEXT,'
+                                   'user_id INTEGER);')
+            print("database was not found (Active Promocodes | 10/18), creating...")
             await self.con.commit()

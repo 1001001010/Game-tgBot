@@ -13,3 +13,9 @@ class Newsletter_photo(StatesGroup): #State на рассылку с офто
 
 class AdminSettingsEdit(StatesGroup):
     here_support = State()
+
+class AdminCoupons(StatesGroup):    
+    here_name_promo = State()
+    here_uses_promo = State()
+    here_discount_promo = State()
+    here_name_for_delete_promo = State()

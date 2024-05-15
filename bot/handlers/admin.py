@@ -8,8 +8,8 @@ from bot.data.loader import dp, bot
 from bot.data.config import db
 from bot.utils.utils_functions import get_language, ded, send_admins, get_admins
 from bot.filters.filters import IsAdmin
-from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit
-from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, opr_mail_text, opr_mail_photo
+from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, AdminCoupons
+from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, opr_mail_text, opr_mail_photo, kb_adm_promo
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -167,3 +167,70 @@ async def settings_sup_set(message: Message, state: FSMContext):
         await message.answer("<b>✅ Готово! Тех. Поддержка была изменена!</b>")
     else:
         await message.answer("<b>❌ Введите ссылку! (https://t.me/юзернейм)</b> ")
+
+#Прмокод
+@dp.callback_query_handler(text="adm_promo", state="*")
+async def promo_create(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    await call.message.answer(lang.promo_menu, reply_markup=kb_adm_promo(texts=lang))
+
+@dp.callback_query_handler(text="promo_create", state="*")
+async def promo_create(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    lang = await get_language(call.from_user.id)
+    await call.message.edit_text(f"<b>❗ Введите название промокода</b>", reply_markup=back_to_adm_m(texts=lang))
+    await AdminCoupons.here_name_promo.set()
+
+@dp.message_handler(state=AdminCoupons.here_name_promo)
+async def here_name_promo(msg: Message, state: FSMContext):
+    name = msg.text
+    await msg.answer(f"<b>❗ Введите кол-во использований</b>")
+    await state.update_data(cache_name_for_add_promo=name)
+    await AdminCoupons.here_uses_promo.set()
+
+@dp.message_handler(state=AdminCoupons.here_uses_promo)
+async def here_uses_promo(msg: Message, state: FSMContext):
+    if msg.text.isdigit():
+        await msg.answer("<b>❗ Введите сумму промокода</b>")
+        await state.update_data(cache_uses_for_add_promo=int(msg.text))
+        await AdminCoupons.here_discount_promo.set()
+    else:
+        await msg.answer("<b>❗ Кол-во использований должно быть числом!</b>")
+
+@dp.message_handler(state=AdminCoupons.here_discount_promo)
+async def here_discount_promo(msg: Message, state: FSMContext):
+    if msg.text.isdigit():
+        async with state.proxy() as data:
+            name = data['cache_name_for_add_promo']
+            uses = data['cache_uses_for_add_promo']
+        await state.finish()
+        summa_promo = int(msg.text)
+        await db.create_coupon(name, uses, summa_promo)
+        await msg.answer(
+            f"<b>✅ Промокод <code>{name}</code> с кол-вом использований <code>{uses}</code> и суммой <code>{summa_promo}</code> был создан!</b>")
+        await send_admins(
+            f"<b>❗ Администратор  @{msg.from_user.username} создал Промокод <code>{name}</code> с кол-вом использований <code>{uses}</code> и скидкой <code>{summa_promo}</code></b>")
+    else:
+        await msg.answer("<b>❗ Скидка должна быть числом!</b>")
+
+@dp.callback_query_handler(text="promo_delete", state="*")
+async def promo_del(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    lang = await get_language(call.from_user.id)
+    await call.message.edit_text(f"<b>❗ Введите название промокода</b>", reply_markup=back_to_adm_m(texts=lang))
+    await AdminCoupons.here_name_for_delete_promo.set()
+
+
+@dp.message_handler(state=AdminCoupons.here_name_for_delete_promo)
+async def promo_delete(msg: Message, state: FSMContext):
+    promo = await db.get_promo(coupon=msg.text)
+    print(promo)
+    if promo == None:
+        await msg.answer(f"<b>❌ Промокода <code>{msg.text}</code> не существует!</b>")
+    else:
+        await db.delete_coupon(msg.text)
+        await state.finish()
+        await msg.answer(f"<b>✅ Промокод <code>{msg.text}</code> был удален</b>")
+        await send_admins(f"<b>❗ Администратор  @{msg.from_user.username} удалил Промокод <code>{msg.text}</code></b>")

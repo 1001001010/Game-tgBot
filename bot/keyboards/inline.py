@@ -19,14 +19,15 @@ def admin_menu(texts):
     kb.append(InlineKeyboardButton("🖤 Общие настройки", callback_data="settings"))
     kb.append(InlineKeyboardButton("🎲 Доп. настройки", callback_data="extra_settings"))
     kb.append(InlineKeyboardButton("🔍 Искать", callback_data="find:"))
+    kb.append(InlineKeyboardButton("Промокод", callback_data="adm_promo"))
     kb.append(InlineKeyboardButton("📌 Рассылка", callback_data="mail_start"))
     kb.append(InlineKeyboardButton("📊 Статистика", callback_data="stats"))
     kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_m"))
 
     keyboard.add(kb[0], kb[1])
-    keyboard.add(kb[2], kb[3])
-    keyboard.add(kb[4])
-    keyboard.add(kb[5])
+    keyboard.add(kb[4], kb[3])
+    keyboard.add(kb[2], kb[5])
+    keyboard.add(kb[6])
 
     return keyboard
 
@@ -109,4 +110,17 @@ async def kb_profile(texts, user_id):
     if user_info['request_test'] == 0:
         keyboard.add(InlineKeyboardButton(texts.test_balance, callback_data="test_balance"))
 
+    kb.append(InlineKeyboardButton(texts.promo, callback_data='promo'))
+    kb.append(InlineKeyboardButton(texts.change_language, callback_data='change_language'))
+    keyboard.add(kb[0], kb[1])
+    return keyboard
+
+def kb_adm_promo(texts):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+
+    kb.append(InlineKeyboardButton(texts.new_promo, callback_data="promo_create"))
+    kb.append(InlineKeyboardButton(texts.del_promo, callback_data="promo_delete"))
+
+    keyboard.add(kb[0], kb[1])
     return keyboard
