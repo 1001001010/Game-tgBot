@@ -162,11 +162,11 @@ class DB(AsyncClass):
         await self.con.commit()
 
     # Редактирование промокода
-    async def update_game_settings(self, coupon, **kwargs):
+    async def update_game_settings(self, name, **kwargs):
         sql = f"UPDATE game_settings SET"
         sql, parameters = query(sql, kwargs)
-        parameters.append(coupon)
-        await self.con.execute(sql + "WHERE game = ?", parameters)
+        parameters.append(name)
+        await self.con.execute(sql + "WHERE name = ?", parameters)
         await self.con.commit()
 
     # Удаление промокода

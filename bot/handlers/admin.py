@@ -430,16 +430,26 @@ async def func_edit_game(call: CallbackQuery, state: FSMContext):
     elif param == 'min_bet':
         print('Надо доделать')
     elif param == 'real_chance':
-        await call.message.answer(lang.admin_edit_real_chance, reply_markup=edit_game_chance(type_dep=param, game=game, texts=lang))
+        await call.message.answer(lang.admin_edit_real_chance, reply_markup=edit_game_chance(type_dep='chance_real', game=game, texts=lang))
     elif param == 'demo_chance':
-        await call.message.answer(lang.admin_edit_demo_chance, reply_markup=edit_game_chance(type_dep=param, game=game, texts=lang))
+        await call.message.answer(lang.admin_edit_demo_chance, reply_markup=edit_game_chance(type_dep='chance_demo', game=game, texts=lang))
 
 @dp.callback_query_handler(IsAdmin(), text_startswith="chance_edit", state="*")
 async def func_chance_game(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
     lang = await get_language(call.from_user.id)
-    param = call.data.split(":")[1]
-    game = call.data.split(":")[2]
+    game = call.data.split(":")[1]
+    param = call.data.split(":")[2]
     percent = call.data.split(":")[3]
-    await db.update_game_settings()
+    rus_game_name = func__arr_game(lang=lang, game_name=game)
+    if param == 'chance_real':
+        await db.update_game_settings(chance_real=int(percent)/100, name=game)
+        await send_admins(f"<b>❗ Администратор @{call.from_user.username} изменил <code>Реальный шанс</code> в игре <code>{rus_game_name}</code> на <code>{int(percent)/100}</code>%</b>")
+        await call.answer("Успешно изменено")
+        await call.message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
+    elif param == 'chance_demo':
+        await db.update_game_settings(chance_demo=int(percent)/100, name=game)
+        await send_admins(f"<b>❗ Администратор @{call.from_user.username} изменил <code>Демо шанс</code> в игре <code>{rus_game_name}</code> на <code>{int(percent)/100}</code>%</b>")
+        await call.answer("Успешно изменено")
+        await call.message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
