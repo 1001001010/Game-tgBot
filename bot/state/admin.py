@@ -26,3 +26,8 @@ class AdminFind(StatesGroup):
 class AdminBanCause(StatesGroup):
     cause = State()
     user_id = State()
+
+class AdminGame_edit(StatesGroup):
+    game = State()
+    param = State()
+    value = State()

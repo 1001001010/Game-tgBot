@@ -9,7 +9,7 @@ from bot.data.config import db
 from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game
 from bot.filters.filters import IsAdmin
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
-                            AdminCoupons, AdminFind, AdminBanCause
+                            AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit
                             
 from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, \
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
@@ -426,9 +426,15 @@ async def func_edit_game(call: CallbackQuery, state: FSMContext):
     param = call.data.split(":")[1]
     game = call.data.split(":")[2]
     if param == 'factor':
-        print('Надо доделать')
+        await AdminGame_edit.value.set()
+        await state.update_data(game=game)
+        await state.update_data(param=param)
+        await call.message.answer(lang.admin_edit_min_bet)
     elif param == 'min_bet':
-        print('Надо доделать')
+        await AdminGame_edit.value.set()
+        await state.update_data(game=game)
+        await state.update_data(param=param)
+        await call.message.answer(lang.admin_edit_min_bet)
     elif param == 'real_chance':
         await call.message.answer(lang.admin_edit_real_chance, reply_markup=edit_game_chance(type_dep='chance_real', game=game, texts=lang))
     elif param == 'demo_chance':
@@ -453,3 +459,9 @@ async def func_chance_game(call: CallbackQuery, state: FSMContext):
         await send_admins(f"<b>❗ Администратор @{call.from_user.username} изменил <code>Демо шанс</code> в игре <code>{rus_game_name}</code> на <code>{int(percent)/100}</code>%</b>")
         await call.answer("Успешно изменено")
         await call.message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
+
+@dp.message_handler(IsAdmin(), state=AdminGame_edit.value)
+async def func_edit_game_two(message: Message, state: FSMContext):
+    await state.update_data(value=message.text)
+    data = await state.get_data()
+    print(data)

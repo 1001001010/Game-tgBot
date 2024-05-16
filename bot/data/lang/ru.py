@@ -88,3 +88,4 @@ class Texts:
     adm_edit_game_menu = "Игра {game_name}\nВыберите настройку для изменения"
     admin_edit_real_chance = "Выберите новый шанс победы (На реальные деньги)"
     admin_edit_demo_chance = "Выберите новый шанс победы (На демо баланс)"
+    admin_edit_min_bet = "Введите минимальную ставку"
