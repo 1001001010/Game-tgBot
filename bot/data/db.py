@@ -90,9 +90,9 @@ class DB(AsyncClass):
     # Регистрация пользователя в БД
     async def register_user(self, user_id, user_name, first_name):
         await self.con.execute("INSERT INTO users("
-                                "user_id, user_name, first_name, balance, reg_date_unix, test_balance, request_test, is_ban)"
-                                "VALUES (?,?,?,?,?,?,?,?)",
-                                [user_id, user_name, first_name, 0, get_unix(), 0, 0, False])
+                                "user_id, user_name, first_name, balance, reg_date_unix, test_balance, request_test, is_ban, vivod)"
+                                "VALUES (?,?,?,?,?,?,?,?,?)",
+                                [user_id, user_name, first_name, 0, get_unix(), 0, 0, False, 0])
         await self.con.commit()
     
     #Получение списка всех языков
@@ -178,7 +178,7 @@ class DB(AsyncClass):
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await users_info.fetchall()) == 11:
+        if len(await users_info.fetchall()) == 12:
             print("database was found (Users | 1/3)")
         else:
             await self.con.execute("CREATE TABLE users ("
@@ -192,6 +192,7 @@ class DB(AsyncClass):
                                    "request_test INTEGER,"
                                    "is_ban INTEGER,"
                                    "ban_cause INTEGER,"
+                                   "vivod INTEGER,"
                                    "balance INTEGER)")
             print("database was not found (Users | 1/3), creating...")
             await self.con.commit()

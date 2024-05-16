@@ -31,3 +31,13 @@ class AdminGame_edit(StatesGroup):
     game = State()
     param = State()
     value = State()
+    
+class AdminRevorkPrice(StatesGroup):
+    type = State()
+    user_id = State()
+    summa = State()
+    
+class AdminPlusPrice(StatesGroup):
+    type = State()
+    user_id = State()
+    summa = State()

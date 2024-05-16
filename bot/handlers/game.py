@@ -2,6 +2,7 @@ import random
 from aiogram import types
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
+import re
 
 from bot.data.loader import dp, bot
 from bot.data.config import db, game_slots
@@ -10,13 +11,10 @@ from bot.utils.utils_functions import get_language, ded, func__arr_game, is_numb
 from bot.filters.filters import IsAdmin
 from bot.state.users import UsersBet, UsersGame
 
-# @dp.message_handler(lambda message: message.text == '🏀')
-# async def throw_ball(message: types.Message):
-#     success_rate = 1  # Шанс попадания 70%
-#     if random.random() < success_rate:
-#         await message.answer("Поздравляю, мяч попал в корзину! 🎉🏀")
-#     else:
-#         await message.answer("Мяч промахнулся... Попробуйте еще раз! 🏀")
+from aiogram import types
+from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.dispatcher.filters import BoundFilter
+import emoji
 
 @dp.callback_query_handler(IsAdmin(), text_startswith='game', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
@@ -58,8 +56,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                                                                                             type_balance='real',
                                                                                             game=game['name']))
         await UsersBet.bet.set()
-        await state.update_data(type_bet='real')
-        await state.update_data(game=game['name'], game=game['name'])
+        await state.update_data(type_bet='real', game=game['name'])
         
     elif type_balance == 'demo':
         await call.message.answer(ded(lang.bet_msg_demo(game_name_text=game_name, 
@@ -79,6 +76,7 @@ async def fun_get_game(message: Message, state: FSMContext):
     await state.update_data(bet=message.text)
     lang = await get_language(message.from_user.id)
     data = await state.get_data()
+    print(data)
     user = await db.get_user(user_id=message.from_user.id)
     if is_number(data['bet']) == True:
         emoji_text = func__arr_game(lang=lang, game_name=data['game'])
@@ -88,6 +86,8 @@ async def fun_get_game(message: Message, state: FSMContext):
         elif data['type_bet'] == 'real':
             await db.update_user(id=user['user_id'], balance=(int(user['balance'])-int(data['bet'])))
         await message.answer(lang.yes_bet.format(emoji_game=emoji))
+        await state.finish()
         await UsersGame.msg.set()
+        await state.update_data(type_bet=data['type_bet'], bet=data['bet'], game=emoji)
     else:
         await message.answer(lang.need_number)

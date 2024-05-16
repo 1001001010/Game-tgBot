@@ -30,7 +30,7 @@ async def func__profile(message: Message, state: FSMContext):
                         referals=None, 
                         referals_sum=None, 
                         refer_lvl=None, 
-                        balance_vivod=None, 
+                        balance_vivod=user_info['vivod'], 
                         refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=message.from_user.id))
 
 #Открытие FAQ

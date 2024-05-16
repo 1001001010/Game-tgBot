@@ -11,7 +11,8 @@ from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail
                                  edit_game_chance
                                  
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
-                            AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit
+                            AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit, AdminRevorkPrice, \
+                            AdminPlusPrice
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -334,6 +335,7 @@ async def find_profile_op(message: Message, state: FSMContext):
                                                                 ban_status=ban_status,
                                                                 cause_ban=cause_ban,
                                                                 count_refers=count_refers,
+                                                                vivod=user['vivod'],
                                                                 referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
         
 @dp.callback_query_handler(IsAdmin(), text_startswith="block", state="*")
@@ -381,6 +383,7 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
                                                                     ban_status=ban_status,
                                                                     cause_ban=cause_ban,
                                                                     count_refers=count_refers,
+                                                                    vivod=user['vivod'],
                                                                     referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
         
 @dp.message_handler(IsAdmin(), state=AdminBanCause.cause)
@@ -421,6 +424,7 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
                                                             ban_status=ban_status,
                                                             cause_ban=cause_ban,
                                                             count_refers=count_refers,
+                                                            vivod=user['vivod'],
                                                             referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
 
 #Открытие меню доп. настроек
@@ -500,5 +504,124 @@ async def func_edit_game_two(message: Message, state: FSMContext):
             await send_admins(f"<b>❗ Администратор @{message.from_user.username} изменил <code>Минимальную ставку</code> в игре <code>{russian_game}</code> на <code>{data['value']}</code>🪙</b>")
             await message.answer("Успешно изменено")
             await message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
+    else:
+        await message.answer(lang.need_number)
+
+#Реворк баланса/демо баланса      
+@dp.callback_query_handler(IsAdmin(), text_startswith="revork", state="*")
+async def func_editit(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    type = call.data.split(":")[1]
+    user_id = call.data.split(":")[2]
+    await call.message.answer(lang.wright_summ)
+    await AdminRevorkPrice.summa.set()
+    await state.update_data(type=type, user_id=user_id)
+    
+@dp.message_handler(IsAdmin(), state=AdminRevorkPrice.summa)
+async def func_edit_game_two(message: Message, state: FSMContext):
+    texts = await get_language(message.from_user.id)
+    if is_number(message.text) == True:
+        data = await state.get_data()
+        if data['type'] == 'balance':
+            await db.update_user(id=data['user_id'], balance=int(message.text))
+        elif data['type'] == 'demo':
+            await db.update_user(id=data['user_id'], test_balance=int(message.text))
+        await message.answer("Успешно")
+        user = await db.get_user(user_id=data['user_id'])
+        name = user['user_name']
+        user_id = user['user_id']
+        if not name:
+            us = await bot.get_chat(user_id)
+            name = us.get_mention(as_html=True)
+        total_refill = convert_date(user['reg_date_unix'])
+        balance = user['balance']
+        demo_balance = user['test_balance'] 
+        lang = user['language']
+        if user['is_ban'] == True:
+            ban_status = '⛔ Заблокирован'
+            cause_ban = f"☝ Причина блокировки: <code>{user['ban_cause']}</code>\n"
+        elif user['is_ban'] == False:
+            ban_status = '🟢 Разблокирован'
+            cause_ban = '' 
+        else:
+            ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
+            cause_ban = ''
+        tr = None # Надо изменить
+        count_refers = None # Надо изменить
+        referalst_summa = None # Надо изменить
+        await message.answer(ded(texts.admin_open_profile.format(name=name,
+                                                                    user_id=user_id,
+                                                                    total_refill=total_refill,
+                                                                    balance=balance,
+                                                                    demo_balance=demo_balance,
+                                                                    lang=lang,
+                                                                    tr=tr,
+                                                                    ban_status=ban_status,
+                                                                    cause_ban=cause_ban,
+                                                                    count_refers=count_refers,
+                                                                    vivod=user['vivod'],
+                                                                    referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
+    else:
+        await message.answer(lang.need_number)
+
+#Выдача баланса/демо баланса
+@dp.callback_query_handler(IsAdmin(), text_startswith="give", state="*")
+async def func_editit(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    type = call.data.split(":")[1]
+    user_id = call.data.split(":")[2]
+    await call.message.answer(lang.wright_summ)
+    await AdminPlusPrice.summa.set()
+    await state.update_data(type=type, user_id=user_id)
+    
+@dp.message_handler(IsAdmin(), state=AdminPlusPrice.summa)
+async def func_edit_game_two(message: Message, state: FSMContext):
+    texts = await get_language(message.from_user.id)
+    if is_number(message.text) == True:
+        data = await state.get_data()
+        user = await db.get_user(user_id=data['user_id'])
+        if data['type'] == 'balance':
+            await db.update_user(id=data['user_id'], balance=int(user['balance'])+int(message.text))
+        elif data['type'] == 'demo':
+            await db.update_user(id=data['user_id'], test_balance=int(user['test_balance'])+int(message.text))
+        await message.answer("Успешно")
+        user = await db.get_user(user_id=data['user_id'])
+        name = user['user_name']
+        user_id = user['user_id']
+        if not name:
+            us = await bot.get_chat(user_id)
+            name = us.get_mention(as_html=True)
+        total_refill = convert_date(user['reg_date_unix'])
+        balance = user['balance']
+        demo_balance = user['test_balance'] 
+        lang = user['language']
+        if user['is_ban'] == True:
+            ban_status = '⛔ Заблокирован'
+            cause_ban = f"☝ Причина блокировки: <code>{user['ban_cause']}</code>\n"
+        elif user['is_ban'] == False:
+            ban_status = '🟢 Разблокирован'
+            cause_ban = '' 
+        else:
+            ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
+            cause_ban = ''
+        tr = None # Надо изменить
+        count_refers = None # Надо изменить
+        referalst_summa = None # Надо изменить
+        await message.answer(ded(texts.admin_open_profile.format(name=name,
+                                                                    user_id=user_id,
+                                                                    total_refill=total_refill,
+                                                                    balance=balance,
+                                                                    demo_balance=demo_balance,
+                                                                    lang=lang,
+                                                                    tr=tr,
+                                                                    ban_status=ban_status,
+                                                                    cause_ban=cause_ban,
+                                                                    count_refers=count_refers,
+                                                                    vivod=user['vivod'],
+                                                                    referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
     else:
         await message.answer(lang.need_number)
