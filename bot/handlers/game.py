@@ -12,6 +12,7 @@ from bot.filters.filters import IsAdmin
 from bot.state.users import UsersBet, UsersGame
 
 from aiogram import types
+from aiogram.types import ContentType
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import BoundFilter
 import emoji
@@ -91,3 +92,15 @@ async def fun_get_game(message: Message, state: FSMContext):
         await state.update_data(type_bet=data['type_bet'], bet=data['bet'], game=emoji)
     else:
         await message.answer(lang.need_number)
+        
+@dp.message_handler(lambda message: message.sticker and message.sticker.emoji == '🏀', content_types=ContentType.STICKER)
+async def handle_basketball_sticker(message: types.Message):
+    print("Стикер с баскетбольным мячом обнаружен.")
+    HIT_CHANCE=50
+    # Определение попадания
+    if random.randint(1, 100) <= HIT_CHANCE:
+        response = "Ты попал в кольцо! 🏀🏀🏀"
+    else:
+        response = "Ты не попал в кольцо. 😔"
+    
+    await message.reply(response)
