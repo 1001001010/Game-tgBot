@@ -144,3 +144,16 @@ def func__arr_game(game_name, lang):
     game_name_text = getattr(lang, russian_game_name)
      
     return game_name_text
+
+# Проверка ввода на число
+def is_number(get_number: Union[str, int, float]) -> bool:
+    if str(get_number).isdigit():
+        return True
+    else:
+        if "," in str(get_number): get_number = str(get_number).replace(",", ".")
+
+        try:
+            float(get_number)
+            return True
+        except ValueError:
+            return False

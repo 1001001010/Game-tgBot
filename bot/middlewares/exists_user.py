@@ -1,11 +1,11 @@
 # - *- coding: utf- 8 - *-
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.types import Update
-from bot.data.config import db
-from bot.utils.utils_functions import send_admins
-from bot.data.loader import bot
 from loguru import logger
-from bot.data.config import lang_ru as texts
+
+from bot.data.loader import bot
+from bot.data.config import db, lang_ru as texts
+from bot.utils.utils_functions import send_admins
 from bot.keyboards.inline import choose_languages_kb
 
 

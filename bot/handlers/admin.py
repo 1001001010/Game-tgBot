@@ -1,19 +1,17 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.types import InputFile 
-import asyncio
 
-from bot.data.config import lang_ru, lang_en
 from bot.data.loader import dp, bot
-from bot.data.config import db
-from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game
+from bot.data.config import lang_ru, lang_en, db
+from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game, is_number
 from bot.filters.filters import IsAdmin
-from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
-                            AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit
-                            
 from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, \
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
                                  edit_game_chance
+                                 
+from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
+                            AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -56,6 +54,12 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     all_users = await db.all_users()
     settings = await db.get_only_settings()
     admin_count = len(get_admins())
+    slots_info = await db.get_game_settings(name='slots')
+    coin_info = await db.get_game_settings(name='coin')
+    basketball_info = await db.get_game_settings(name='basketball')
+    football_info = await db.get_game_settings(name='football')
+    bowling_info = await db.get_game_settings(name='bowling')
+    dice_info = await db.get_game_settings(name='dice')
     for user in all_users:
         if int(user['reg_date_unix']) - int(settings['profit_day']) >= 0:
             show_users_day += 1
@@ -64,13 +68,51 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
             show_users_week += 1
         all_user += 1
 
-    msg = f"""Статистика
+    msg = f"""📊 Статистика
     
-    Всего пользователей: {all_user}
-    Ползователей за неделю {show_users_week}
-    Пользователей за день {show_users_day}
+    <b>Пользователи:</b>
+    👥 Всего пользователей: <code>{all_user}</code>  чел.
+    👥 Ползователей за неделю <code>{show_users_week}</code>  чел.
+    👥 Пользователей за день <code>{show_users_day}</code>  чел.
+    
+    <b>Игры:</b>
+    🎰 Слоты: 
+    ╠🧮 Коэффициент: <code>X{slots_info['factor']}</code> 
+    ╠💰 Мин. ставка: <code>{slots_info['min_bet']}</code>🪙 
+    ╠📈 Шанс победы: <code>{int(slots_info['chance_real'])*100}</code>% 
+    ╚📉 Демо шанс: <code>{int(slots_info['chance_demo'])*100}</code>%
+    
+    🎲 Кости: 
+    ╠🧮 Коэффициент: <code>X{dice_info['factor']}</code> 
+    ╠💰 Мин. ставка: <code>{dice_info['min_bet']}</code>🪙 
+    ╠📈 Шанс победы: <code>{int(dice_info['chance_real'])*100}</code>% 
+    ╚📉 Демо шанс: <code>{int(dice_info['chance_demo'])*100}</code>%
+    
+    🏀 Баскетбол:
+    ╠🧮 Коэффициент: <code>X{basketball_info['factor']}</code> 
+    ╠💰 Мин. ставка: <code>{basketball_info['min_bet']}</code>🪙 
+    ╠📈 Шанс победы: <code>{int(basketball_info['chance_real'])*100}</code>% 
+    ╚📉 Демо шанс: <code>{int(basketball_info['chance_demo'])*100}</code>%
+    
+    🎳 Боулинг:
+    ╠🧮 Коэффициент: <code>X{bowling_info['factor']}</code> 
+    ╠💰 Мин. ставка: <code>{bowling_info['min_bet']}</code>🪙 
+    ╠📈 Шанс победы: <code>{int(bowling_info['chance_real'])*100}</code>% 
+    ╚📉 Демо шанс: <code>{int(bowling_info['chance_demo'])*100}</code>%
+    
+    ⚽ Футбол:
+    ╠🧮 Коэффициент: <code>X{football_info['factor']}</code> 
+    ╠💰 Мин. ставка: <code>{football_info['min_bet']}</code>🪙 
+    ╠📈 Шанс победы: <code>{int(football_info['chance_real'])*100}</code>%
+    ╚📉 Демо шанс: <code>{int(football_info['chance_demo'])*100}</code>%
+    
+    🪙 Монетка:
+    ╠🧮 Коэффициент: <code>X{coin_info['factor']}</code> 
+    ╠💰 Мин. ставка: <code>{coin_info['min_bet']}</code>🪙 
+    ╠📈 Шанс победы: <code>{int(coin_info['chance_real'])*100}</code>% 
+    ╚📉 Демо шанс: <code>{int(coin_info['chance_demo'])*100}</code>%
 
-    Всего администраторов: {admin_count}"""
+    👨‍💻 Всего администраторов: {admin_count}"""
     await call.message.answer(ded(msg))
 
 #Рассылка
@@ -282,23 +324,17 @@ async def find_profile_op(message: Message, state: FSMContext):
         tr = None # Надо изменить
         count_refers = None # Надо изменить
         referalst_summa = None # Надо изменить
-        msg = f"""<b>👤 Профиль:
-                💎 Юзер: {name} 
-                🆔 ID: <code>{user_id}</code>
-                📅 Дата регистрации: <code>{total_refill}</code>
-                
-                💰 Баланс: <code>{balance}</code>
-                🏦 Демо баланс: <code>{demo_balance}</code>
-                
-                ⚙️ Язык бота: <code>{lang}</code>
-                💵 Всего пополнено: <code>{tr}</code>
-                
-                🔗 Статус блокировки: <code>{ban_status}</code>
-                {cause_ban}
-                👥 Рефералов: <code>{count_refers} чел</code>
-                💎 Заработано с рефералов: <code>{referalst_summa}</code>
-                📜 Список рефералов: </b>"""
-        await message.answer(ded(msg), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+        await message.answer(ded(text.admin_open_profile.format(name=name,
+                                                                user_id=user_id,
+                                                                total_refill=total_refill,
+                                                                balance=balance,
+                                                                demo_balance=demo_balance,
+                                                                lang=lang,
+                                                                tr=tr,
+                                                                ban_status=ban_status,
+                                                                cause_ban=cause_ban,
+                                                                count_refers=count_refers,
+                                                                referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
         
 @dp.callback_query_handler(IsAdmin(), text_startswith="block", state="*")
 async def find_profile_open(call: CallbackQuery, state: FSMContext):
@@ -306,7 +342,6 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     text = await get_language(call.from_user.id)
     ban_or_unban = call.data.split(":")[1]
-    print(ban_or_unban)
     user_id = call.data.split(":")[2]
     if ban_or_unban == 'ban':
         await call.message.answer(text.why_ban)
@@ -336,24 +371,18 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
         tr = None # Надо изменить
         count_refers = None # Надо изменить
         referalst_summa = None # Надо изменить
-        msg = f"""<b>👤 Профиль:
-                💎 Юзер: {name} 
-                🆔 ID: <code>{user_id}</code>
-                📅 Дата регистрации: <code>{total_refill}</code>
-                
-                💰 Баланс: <code>{balance}</code>
-                🏦 Демо баланс: <code>{demo_balance}</code>
-                
-                ⚙️ Язык бота: <code>{lang}</code>
-                💵 Всего пополнено: <code>{tr}</code>
-                
-                🔗 Статус блокировки: <code>{ban_status}</code>
-                {cause_ban}
-                👥 Рефералов: <code>{count_refers} чел</code>
-                💎 Заработано с рефералов: <code>{referalst_summa}</code>
-                📜 Список рефералов: </b>"""
-        await call.message.answer(ded(msg), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
-    
+        await call.message.answer(ded(text.admin_open_profile.format(name=name,
+                                                                    user_id=user_id,
+                                                                    total_refill=total_refill,
+                                                                    balance=balance,
+                                                                    demo_balance=demo_balance,
+                                                                    lang=lang,
+                                                                    tr=tr,
+                                                                    ban_status=ban_status,
+                                                                    cause_ban=cause_ban,
+                                                                    count_refers=count_refers,
+                                                                    referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+        
 @dp.message_handler(IsAdmin(), state=AdminBanCause.cause)
 async def cause_ban_edit(msg: Message, state: FSMContext):
     await state.update_data(cause=msg.text)
@@ -382,24 +411,18 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
     tr = None # Надо изменить
     count_refers = None # Надо изменить
     referalst_summa = None # Надо изменить
-    msgg = f"""<b>👤 Профиль:
-            💎 Юзер: {name} 
-            🆔 ID: <code>{user_id}</code>
-            📅 Дата регистрации: <code>{total_refill}</code>
-            
-            💰 Баланс: <code>{balance}</code>
-            🏦 Демо баланс: <code>{demo_balance}</code>
-            
-            ⚙️ Язык бота: <code>{lang}</code>
-            💵 Всего пополнено: <code>{tr}</code>
-            
-            🔗 Статус блокировки: <code>{ban_status}</code>
-            {cause_ban}
-            👥 Рефералов: <code>{count_refers} чел</code>
-            💎 Заработано с рефералов: <code>{referalst_summa}</code>
-            📜 Список рефералов: </b>"""
-    await msg.answer(ded(msgg), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
-    
+    await msg.answer(ded(text.admin_open_profile.format(name=name,
+                                                            user_id=user_id,
+                                                            total_refill=total_refill,
+                                                            balance=balance,
+                                                            demo_balance=demo_balance,
+                                                            lang=lang,
+                                                            tr=tr,
+                                                            ban_status=ban_status,
+                                                            cause_ban=cause_ban,
+                                                            count_refers=count_refers,
+                                                            referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+
 #Открытие меню доп. настроек
 @dp.callback_query_handler(IsAdmin(), text="extra_settings", state="*")
 async def find_profile_open(call: CallbackQuery, state: FSMContext):
@@ -429,7 +452,7 @@ async def func_edit_game(call: CallbackQuery, state: FSMContext):
         await AdminGame_edit.value.set()
         await state.update_data(game=game)
         await state.update_data(param=param)
-        await call.message.answer(lang.admin_edit_min_bet)
+        await call.message.answer(lang.admin_edit_factor)
     elif param == 'min_bet':
         await AdminGame_edit.value.set()
         await state.update_data(game=game)
@@ -462,6 +485,20 @@ async def func_chance_game(call: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(IsAdmin(), state=AdminGame_edit.value)
 async def func_edit_game_two(message: Message, state: FSMContext):
-    await state.update_data(value=message.text)
-    data = await state.get_data()
-    print(data)
+    lang = await get_language(message.from_user.id)
+    if is_number(message.text) == True:
+        await state.update_data(value=message.text)
+        data = await state.get_data()
+        russian_game = func__arr_game(lang=lang, game_name=data['game'])
+        if data['param'] == 'factor':
+            await db.update_game_settings(factor=data['value'], name=data['game'])
+            await send_admins(f"<b>❗ Администратор @{message.from_user.username} изменил <code>Коэффициент</code> в игре <code>{russian_game}</code> на <code>X{data['value']}</code></b>")
+            await message.answer("Успешно изменено")
+            await message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
+        elif data['param'] == 'min_bet':
+            await db.update_game_settings(min_bet=data['value'], name=data['game'])
+            await send_admins(f"<b>❗ Администратор @{message.from_user.username} изменил <code>Минимальную ставку</code> в игре <code>{russian_game}</code> на <code>{data['value']}</code>🪙</b>")
+            await message.answer("Успешно изменено")
+            await message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
+    else:
+        await message.answer(lang.need_number)

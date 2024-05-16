@@ -125,6 +125,21 @@ def kb_adm_promo(texts):
     keyboard.add(kb[0], kb[1])
     return keyboard
 
+async def kb_back_to_game_menu(texts, user_id, min_bet, type_balance, game):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    user = await db.get_user(user_id = user_id)
+    if type_balance == 'real':
+        if user['test_balance'] > 0 and user['test_balance'] >= min_bet:
+            keyboard.add(InlineKeyboardButton(texts.use_demo, callback_data=f"user_use_balance:demo:{game}"))
+    elif type_balance == 'demo':
+        keyboard.add(InlineKeyboardButton(texts.use_real, callback_data=f"user_use_balance:real:{game}"))
+        
+    kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_game_menu"))
+
+    keyboard.add(kb[0])
+    return keyboard
+
 def back_to_profile(texts):
     keyboard = InlineKeyboardMarkup()
     kb = []
@@ -200,7 +215,8 @@ async def edit_game_stats(texts, game_name):
 
     keyboard.add(kb[0])
     keyboard.add(kb[1])
-    keyboard.add(kb[2], kb[3])
+    keyboard.add(kb[2])
+    keyboard.add(kb[3])
     keyboard.add(kb[4])
     return keyboard
 

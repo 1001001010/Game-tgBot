@@ -3,12 +3,11 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.types import InputFile 
 
-from bot.data.config import lang_ru, lang_en
 from bot.data.loader import dp, bot
-from bot.data.config import db
-from bot.state.users import UsersCoupons
+from bot.data.config import lang_ru, lang_en, db
 from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, choose_languages_kb, game_menu
 from bot.utils.utils_functions import get_language, ded
+from bot.state.users import UsersCoupons
 
 #Открытие Профиля
 @dp.message_handler(text=lang_ru.reply_kb2, state="*")
@@ -144,3 +143,11 @@ async def func__game(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     photo_path = InputFile('./bot/data/photo/game.png')
     await bot.send_photo(message.from_user.id, photo=photo_path, caption=lang.game_menu, reply_markup=game_menu(texts=lang))
+    
+@dp.callback_query_handler(text="back_to_game_menu", state="*")
+async def user_lang(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    photo_path = InputFile('./bot/data/photo/game.png')
+    await bot.send_photo(call.from_user.id, photo=photo_path, caption=lang.game_menu, reply_markup=game_menu(texts=lang))

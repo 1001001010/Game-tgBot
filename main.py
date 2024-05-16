@@ -12,7 +12,6 @@ from bot.utils.utils_functions import update_profit_week, update_profit_day
 logging.basicConfig(format=u'%(filename)s [LINE:%(lineno)d] #%(levelname)-8s [%(asctime)s]  %(message)s', level=logging.INFO)
 colorama.init()
 
-
 # Запуск заданий
 async def scheduler_start():
     scheduler.add_job(update_profit_week, "cron", day_of_week="mon", hour=00)
