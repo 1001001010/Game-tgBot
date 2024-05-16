@@ -8,6 +8,7 @@ from bot.data.loader import bot
 from datetime import datetime
 from typing import Union
 import pytz
+from bot.data.config import game_slots
 
 # Получение админов
 def get_admins():
@@ -135,3 +136,11 @@ def convert_date(from_time, full=True, second=True) -> Union[str, int]:
             to_time = int(datetime.strptime(from_time, "%d.%m.%Y").timestamp())
 
     return to_time
+
+#Работа с массивом игры
+def func__arr_game(game_name, lang):
+    english_game_name = game_name
+    russian_game_name = game_slots.get(english_game_name)
+    game_name_text = getattr(lang, russian_game_name)
+     
+    return game_name_text

@@ -186,3 +186,46 @@ def edit_game_menu(texts):
     keyboard.add(kb[4], kb[5])
     keyboard.add(kb[6])
     return keyboard
+
+async def edit_game_stats(texts, game_name):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    game_stats = await db.get_game_settings(name=game_name)
+
+    kb.append(InlineKeyboardButton(texts.adm_edit_factor.format(factor=game_stats['factor']), callback_data=f"edit:factor:{game_name}")) #Коэффициент 'X'
+    kb.append(InlineKeyboardButton(texts.min_bet.format(min_bet=game_stats['min_bet']), callback_data=f"edit:min_bet:{game_name}")) #Мин. ставка 
+    kb.append(InlineKeyboardButton(texts.real_chance.format(real_chance=game_stats['chance_real']*100), callback_data=f"edit:real_chance:{game_name}")) #Шанс победы для реал денег
+    kb.append(InlineKeyboardButton(texts.demo_chance.format(demo_chance=game_stats['chance_demo']*100), callback_data=f"edit:demo_chance:{game_name}")) #Шанс победы для демо режима
+    kb.append(InlineKeyboardButton(texts.back, callback_data=f"extra_settings")) #Назад
+
+    keyboard.add(kb[0])
+    keyboard.add(kb[1])
+    keyboard.add(kb[2], kb[3])
+    keyboard.add(kb[4])
+    return keyboard
+
+def edit_game_chance(type_dep, game, texts):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+
+    kb.append(InlineKeyboardButton('0%', callback_data=f"chance_edit:{game}:{type_dep}:0"))
+    kb.append(InlineKeyboardButton('10%', callback_data=f"chance_edit:{game}:{type_dep}:10"))
+    kb.append(InlineKeyboardButton('20%', callback_data=f"chance_edit:{game}:{type_dep}:20"))
+    kb.append(InlineKeyboardButton('30%', callback_data=f"chance_edit:{game}:{type_dep}:30"))
+    kb.append(InlineKeyboardButton('40%', callback_data=f"chance_edit:{game}:{type_dep}:40"))
+    kb.append(InlineKeyboardButton('50%', callback_data=f"chance_edit:{game}:{type_dep}:50"))
+    kb.append(InlineKeyboardButton('60%', callback_data=f"chance_edit:{game}:{type_dep}:60"))
+    kb.append(InlineKeyboardButton('70%', callback_data=f"chance_edit:{game}:{type_dep}:70"))
+    kb.append(InlineKeyboardButton('80%', callback_data=f"chance_edit:{game}:{type_dep}:80"))
+    kb.append(InlineKeyboardButton('90%', callback_data=f"chance_edit:{game}:{type_dep}:90"))
+    kb.append(InlineKeyboardButton('100%', callback_data=f"chance_edit:{game}:{type_dep}:100"))
+    kb.append(InlineKeyboardButton(texts.back, callback_data=f"edit_game:{game}"))
+
+    keyboard.add(kb[0])
+    keyboard.add(kb[1], kb[2], kb[3])
+    keyboard.add(kb[4], kb[5], kb[6])
+    keyboard.add(kb[7], kb[8], kb[9])
+    keyboard.add(kb[10])
+    keyboard.add(kb[11])
+
+    return keyboard

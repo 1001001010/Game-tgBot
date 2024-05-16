@@ -54,6 +54,13 @@ class DB(AsyncClass):
         return await row.fetchall()
 
     # Получение пользователя из БД
+    async def get_game_settings(self, **kwargs):
+        queryy = "SELECT * FROM game_settings"
+        queryy, params = query_args(queryy, kwargs)
+        row = await self.con.execute(queryy, params)
+        return await row.fetchone()
+
+    # Получение пользователя из БД
     async def get_user(self, **kwargs):
         queryy = "SELECT * FROM users"
         queryy, params = query_args(queryy, kwargs)
@@ -154,6 +161,14 @@ class DB(AsyncClass):
         await self.con.execute(sql + "WHERE coupon = ?", parameters)
         await self.con.commit()
 
+    # Редактирование промокода
+    async def update_game_settings(self, coupon, **kwargs):
+        sql = f"UPDATE game_settings SET"
+        sql, parameters = query(sql, kwargs)
+        parameters.append(coupon)
+        await self.con.execute(sql + "WHERE game = ?", parameters)
+        await self.con.commit()
+
     # Удаление промокода
     async def delete_coupon(self, coupon):
         await self.con.execute("DELETE FROM coupons WHERE coupon = ?", (coupon,))
@@ -239,4 +254,42 @@ class DB(AsyncClass):
                                    'coupon_name TEXT,'
                                    'user_id INTEGER);')
             print("database was not found (Active Promocodes | 10/18), creating...")
+            await self.con.commit()
+
+        game_stats = await self.con.execute("PRAGMA table_info(game_settings)")
+        if len(await game_stats.fetchall()) == 6:
+            print("database was found (Languages | 12/18)")
+        else:
+            await self.con.execute("""
+                CREATE TABLE game_settings (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    factor INTEGER,
+                    min_bet INTEGER,
+                    chance_real INTEGER,
+                    chance_demo INTEGER
+                )
+            """)
+
+            await self.con.execute("""INSERT INTO game_settings (
+                                    name, factor, min_bet, chance_real, chance_demo) VALUES (?, ?, ?, ?, ?)""", 
+                                    ['slots', 1, 1, 0, 1])
+            await self.con.execute("""INSERT INTO game_settings (
+                                    name, factor, min_bet, chance_real, chance_demo) VALUES (?, ?, ?, ?, ?)""", 
+                                    ['coin', 1, 1, 0, 1])
+            await self.con.execute("""INSERT INTO game_settings (
+                                    name, factor, min_bet, chance_real, chance_demo) VALUES (?, ?, ?, ?, ?)""", 
+                                    ['basketball', 1, 1, 0, 1])
+            await self.con.execute("""INSERT INTO game_settings (
+                                    name, factor, min_bet, chance_real, chance_demo) VALUES (?, ?, ?, ?, ?)""", 
+                                    ['football', 1, 1, 0, 1])
+            await self.con.execute("""INSERT INTO game_settings (
+                                    name, factor, min_bet, chance_real, chance_demo) VALUES (?, ?, ?, ?, ?)""", 
+                                    ['bowling', 1, 1, 0, 1])
+            await self.con.execute("""INSERT INTO game_settings (
+                                    name, factor, min_bet, chance_real, chance_demo) VALUES (?, ?, ?, ?, ?)""", 
+                                    ['dice', 1, 1, 0, 1])
+
+
+            print("database was not found (Languages | 3/3), creating...")
             await self.con.commit()

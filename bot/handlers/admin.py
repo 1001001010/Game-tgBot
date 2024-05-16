@@ -6,13 +6,14 @@ import asyncio
 from bot.data.config import lang_ru, lang_en
 from bot.data.loader import dp, bot
 from bot.data.config import db
-from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date
+from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game
 from bot.filters.filters import IsAdmin
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
                             AdminCoupons, AdminFind, AdminBanCause
                             
 from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, \
-                                 kb_adm_promo, admin_user_menu, edit_game_menu
+                                 kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
+                                 edit_game_chance
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -406,3 +407,39 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     lang = await get_language(call.from_user.id)
     await call.message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
+
+@dp.callback_query_handler(IsAdmin(), text_startswith="edit_game", state="*")
+async def find_game_open(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    en_name_game = call.data.split(":")[1]
+    lang = await get_language(call.from_user.id)
+    game_name = en_name_game
+    game_name = func__arr_game(lang=lang, game_name=game_name)
+    await call.message.answer(lang.adm_edit_game_menu.format(game_name=game_name), reply_markup=await edit_game_stats(texts=lang, game_name=en_name_game))
+
+@dp.callback_query_handler(IsAdmin(), text_startswith="edit", state="*")
+async def func_edit_game(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    param = call.data.split(":")[1]
+    game = call.data.split(":")[2]
+    if param == 'factor':
+        print('Надо доделать')
+    elif param == 'min_bet':
+        print('Надо доделать')
+    elif param == 'real_chance':
+        await call.message.answer(lang.admin_edit_real_chance, reply_markup=edit_game_chance(type_dep=param, game=game, texts=lang))
+    elif param == 'demo_chance':
+        await call.message.answer(lang.admin_edit_demo_chance, reply_markup=edit_game_chance(type_dep=param, game=game, texts=lang))
+
+@dp.callback_query_handler(IsAdmin(), text_startswith="chance_edit", state="*")
+async def func_chance_game(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    param = call.data.split(":")[1]
+    game = call.data.split(":")[2]
+    percent = call.data.split(":")[3]
+    await db.update_game_settings()

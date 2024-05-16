@@ -3,7 +3,7 @@ import random
 from aiogram import types
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
-from bot.utils.utils_functions import get_language, ded
+from bot.utils.utils_functions import get_language, ded, func__arr_game
 from bot.data.config import game_slots
 from bot.data.config import db
 from bot.filters.filters import IsAdmin
@@ -20,14 +20,12 @@ from bot.filters.filters import IsAdmin
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.finish()
     #Получение игры, в которую пользователь играет 
-    english_game_name = call.data.split(":")[1]
-    russian_game_name = game_slots.get(english_game_name)
     lang = await get_language(call.from_user.id)
     await call.message.delete()
-    game_name_text = getattr(lang, russian_game_name)
+    game_name = func__arr_game(lang=lang, game_name=call.data.split(":")[1])
     user = await db.get_user(user_id = call.from_user.id)
     #####################################################
     
-    await call.message.answer(ded(lang.bet_msg(game_name_text=game_name_text, 
+    await call.message.answer(ded(lang.bet_msg(game_name_text=game_name, 
                                                min_bet=None, 
                                                user_balance=user['balance'])))
