@@ -13,6 +13,8 @@ class Newsletter_photo(StatesGroup): #State на рассылку с офто
 
 class AdminSettingsEdit(StatesGroup):
     here_support = State()
+    here_count_lvl_ref = State()
+    here_ref_percent = State()
 
 class AdminCoupons(StatesGroup):    
     here_name_promo = State()

@@ -43,7 +43,7 @@ class Texts:
     reg_user = "💎 Зарегистрирован новый пользователь {name}" # {name} - username пользователя 
     welcome = "Добро пожаловать 👋"
     admin_menu = "добро пожаловать в меню Администратора 👋"
-    def open_profile(self, user_id, balance, user_name, referals, referals_sum, refer_lvl, balance_vivod, refer_link, test_balance):
+    def open_profile(self, user_id, balance, user_name, referals, referals_sum, refer_lvl, balance_vivod, refer_link, test_balance, reffer):
         msg = f"""🆔 Ваш ID: <code>{user_id}</code>
                 🤖 Username: <code>{user_name}</code>
                 
@@ -53,6 +53,7 @@ class Texts:
                 
                 👥 Приглашено пользователей: <code>{referals}</code> 
                 🍬 Доход с рефералов: <code>{referals_sum}</code> | Уровень: <code>{refer_lvl}</code> 
+                ⚙️ Вас пригласил: {reffer}
                 🔗 Реферальная ссылка: 
                 <code>{refer_link}</code>"""
         return msg
@@ -119,3 +120,13 @@ class Texts:
     need_number = "<b>Нужно ввести число!</b>"
     yes_bet = "Ваша ставка принята, чтобы испытать удачу отправьте <code>{emoji_game}</code>\n<b>Смайлик можно скопировать!</b>"
     wright_summ = "<b>Введите сумму:</b>"
+    invite_yourself = "<b>❗ Вы не можете пригласить себя</b>"
+    yes_reffer = f"<b>❗ У вас уже есть рефер!</b>"
+    new_refferal = "<b>💎 У вас новый реферал! @{user_name} \n" \
+                "⚙️ Теперь у вас <code>{user_ref_count}</code> {convert_ref}!</b>"
+    ref_s = ['реферал', 'реферала', 'рефералов']  # не трогать скобки
+    new_ref_lvl = "<b>💚 У вас новый реферальный уровень, {new_lvl}! До {next_lvl} уровня осталось {remain_refs} {convert_ref}</b>"
+    max_ref_lvl = f"<b>💚 У вас новый реферальный уровень, 3! Максимальный уровень!</b>"
+    cur_max_lvl = f"💚 У вас максимальный уровень!</b>"
+    next_lvl_remain = "💚 До следующего уровня осталось пригласить <code>{remain_refs} чел</code></b>"
+    nobody = "<code>Никто</code>"

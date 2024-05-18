@@ -67,11 +67,20 @@ class DB(AsyncClass):
         row = await self.con.execute(queryy, params)
         return await row.fetchone()
     
-    # Получение пользователя из БД
+    # Получение настроек из БД
     async def get_settings(self, **kwargs):
         queryy = "SELECT * FROM settings"
         queryy, params = query_args(queryy, kwargs)
         row = await self.con.execute(queryy, params)
+        return await row.fetchone()
+    
+    async def get_language(self, name=None, lang_id=None):
+        row = None
+        if name:
+            row = await self.con.execute("SELECT * FROM languages WHERE language = ?", (name,))
+        if lang_id:
+            row = await self.con.execute("SELECT * FROM languages WHERE id = ?", (lang_id,))
+
         return await row.fetchone()
     
     # Получение настроек
@@ -178,7 +187,7 @@ class DB(AsyncClass):
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await users_info.fetchall()) == 12:
+        if len(await users_info.fetchall()) == 18:
             print("database was found (Users | 1/3)")
         else:
             await self.con.execute("CREATE TABLE users ("
@@ -190,6 +199,12 @@ class DB(AsyncClass):
                                    "language TEXT DEFAULT 'ru',"
                                    "test_balance INTEGER,"
                                    "request_test INTEGER,"
+                                   "total_refill INTEGER DEFAULT 0,"
+                                   "ref_count INTEGER DEFAULT 0,"
+                                   "ref_lvl INTEGER DEFAULT 1,"
+                                   "ref_id INTEGER,"
+                                   "ref_user_name TEXT,"
+                                   "ref_first_name TEXT,"
                                    "is_ban INTEGER,"
                                    "ban_cause INTEGER,"
                                    "vivod INTEGER,"
@@ -198,13 +213,19 @@ class DB(AsyncClass):
             await self.con.commit()
             
         settings = await self.con.execute("PRAGMA table_info(settings)")
-        if len(await settings.fetchall()) == 5:
+        if len(await settings.fetchall()) == 11:
             print("database was found (Settings | 2/18)")
         else:
             await self.con.execute("CREATE TABLE settings("
                                     "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                                     "profit_day INTEGER,"
                                     "profit_week INTEGER,"
+                                    "ref_percent_1 INTEGER DEFAULT 0,"
+                                    "ref_percent_2 INTEGER DEFAULT 0,"
+                                    "ref_percent_3 INTEGER DEFAULT 0,"
+                                    "ref_lvl_1 INTEGER DEFAULT 0,"
+                                    "ref_lvl_2 INTEGER DEFAULT 0,"
+                                    "ref_lvl_3 INTEGER DEFAULT 0,"
                                     "FAQ TEXT,"
                                     "support TEXT)")
 

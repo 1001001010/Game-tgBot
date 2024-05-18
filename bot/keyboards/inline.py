@@ -31,15 +31,30 @@ def admin_menu(texts):
 
     return keyboard
 
-def admin_settings(texts):
+async def kb_admin_settings(texts):
     keyboard = InlineKeyboardMarkup()
     kb = []
 
+    s = await db.get_only_settings()
+    ref_percent_1 = s['ref_percent_1']
+    ref_percent_2 = s['ref_percent_2']  
+    ref_percent_3 = s['ref_percent_3']
+    
     kb.append(InlineKeyboardButton(texts.reply_kb3, callback_data="settings_faq"))
     kb.append(InlineKeyboardButton(texts.reply_kb4, callback_data="settings_supp"))
+    kb.append(InlineKeyboardButton(f"2️⃣ Изменить кол-во рефералов для 2 лвла", callback_data="ref_lvl_edit:2"))
+    kb.append(InlineKeyboardButton(f"3️⃣ Изменить кол-во рефералов для 3 лвла", callback_data="ref_lvl_edit:3"))
+    kb.append(InlineKeyboardButton(f"Реф. Процент 1 лвл. | {ref_percent_1}%", callback_data="ref_percent:edit:1"))
+    kb.append(InlineKeyboardButton(f"Реф. Процент 2 лвл. | {ref_percent_2}%", callback_data="ref_percent:edit:2"))
+    kb.append(InlineKeyboardButton(f"Реф. Процент 3 лвл. | {ref_percent_3}%", callback_data="ref_percent:edit:3"))
     kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
     keyboard.add(kb[0], kb[1])
     keyboard.add(kb[2])
+    keyboard.add(kb[3])
+    keyboard.add(kb[4])
+    keyboard.add(kb[5])
+    keyboard.add(kb[6])
+    keyboard.add(kb[7])
 
     return keyboard
 

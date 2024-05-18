@@ -157,3 +157,16 @@ def is_number(get_number: Union[str, int, float]) -> bool:
             return True
         except ValueError:
             return False
+        
+def convert_ref(lang, ref):
+    ref = int(ref)
+    refs = lang.ref_s
+
+    if ref % 10 == 1 and ref % 100 != 11:
+        count = 0
+    elif 2 <= ref % 10 <= 4 and (ref % 100 < 10 or ref % 100 >= 20):
+        count = 1
+    else:
+        count = 2
+
+    return f"{refs[count]}"

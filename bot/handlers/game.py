@@ -3,6 +3,8 @@ from aiogram import types
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
 import re
+from aiogram import types
+from aiogram.types.dice import DiceEmoji
 
 from bot.data.loader import dp, bot
 from bot.data.config import db, game_slots
@@ -77,7 +79,6 @@ async def fun_get_game(message: Message, state: FSMContext):
     await state.update_data(bet=message.text)
     lang = await get_language(message.from_user.id)
     data = await state.get_data()
-    print(data)
     user = await db.get_user(user_id=message.from_user.id)
     if is_number(data['bet']) == True:
         emoji_text = func__arr_game(lang=lang, game_name=data['game'])
@@ -88,19 +89,32 @@ async def fun_get_game(message: Message, state: FSMContext):
             await db.update_user(id=user['user_id'], balance=(int(user['balance'])-int(data['bet'])))
         await message.answer(lang.yes_bet.format(emoji_game=emoji))
         await state.finish()
-        await UsersGame.msg.set()
-        await state.update_data(type_bet=data['type_bet'], bet=data['bet'], game=emoji)
+        result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)   
+        if result.dice['value'] in [4, 5, 6]:
+            await message.answer("Вы победили")
+        else:
+            await message.delete()
+        # await UsersGame.msg.set()
+        # await state.update_data(type_bet=data['type_bet'], bet=data['bet'], game=emoji)
     else:
         await message.answer(lang.need_number)
         
-@dp.message_handler(lambda message: message.sticker and message.sticker.emoji == '🏀', content_types=ContentType.STICKER)
-async def handle_basketball_sticker(message: types.Message):
-    print("Стикер с баскетбольным мячом обнаружен.")
-    HIT_CHANCE=50
-    # Определение попадания
-    if random.randint(1, 100) <= HIT_CHANCE:
-        response = "Ты попал в кольцо! 🏀🏀🏀"
-    else:
-        response = "Ты не попал в кольцо. 😔"
-    
-    await message.reply(response)
+# @dp.message_handler(content_types=ContentType.DICE, state=UsersGame.msg)
+# async def handle_message(message: types.Message, state: FSMContext):
+#     data = await state.get_data()
+#     if(message.dice['emoji'] == data['game']):
+#         success_rate = 1
+#         if random.random() < success_rate:
+#             await message.answer("Вы выйграли")
+#         else:
+#             await message.answer("Вы проиграли")
+#     else: 
+#         await message.answer(f"Нужно отправить <code>{data['game']}</code>")
+
+# @dp.message_handler(content_types=ContentType.DICE, state=UsersGame.msg)
+# async def handle_message(message: types.Message, state: FSMContext):
+#     data = await state.get_data()
+#     if(message.dice['emoji'] == data['game']):
+#         result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)
+#     else:
+#         await message.answer(f"Нужно отправить <code>{data['game']}</code>")

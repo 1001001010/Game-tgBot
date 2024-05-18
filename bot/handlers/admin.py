@@ -6,7 +6,7 @@ from bot.data.loader import dp, bot
 from bot.data.config import lang_ru, lang_en, db
 from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game, is_number
 from bot.filters.filters import IsAdmin
-from bot.keyboards.inline import admin_menu, admin_settings, back_to_adm_m, mail_types, \
+from bot.keyboards.inline import admin_menu, kb_admin_settings, back_to_adm_m, mail_types, \
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
                                  edit_game_chance
                                  
@@ -27,7 +27,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.finish()
     lang = await get_language(call.from_user.id)
     await call.message.delete()
-    await call.message.answer(lang.admin_settings, reply_markup=admin_settings(texts=lang))
+    await call.message.answer(lang.admin_settings, reply_markup=await kb_admin_settings(texts=lang))
     
 @dp.callback_query_handler(IsAdmin(), text='settings_faq', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
@@ -625,3 +625,62 @@ async def func_edit_game_two(message: Message, state: FSMContext):
                                                                     referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
     else:
         await message.answer(lang.need_number)
+
+#Рефералка
+@dp.callback_query_handler(text_startswith="ref_lvl_edit:", state="*")
+async def ref_lvl_edit(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+
+    lvl = call.data.split(":")[1]
+
+    await call.message.edit_text(f"<b>❗ Введите кол-во рефералов для {lvl} уровня</b>")
+    await state.update_data(cache_lvl_for_edit_lvls=lvl)
+    await AdminSettingsEdit.here_count_lvl_ref.set()
+    
+@dp.message_handler(state=AdminSettingsEdit.here_count_lvl_ref)
+async def here_count_lvl_ref(message: Message, state: FSMContext):
+    lang = await get_language(message.from_user.id)
+    if message.text.isdigit():
+        async with state.proxy() as data:
+            lvl = data['cache_lvl_for_edit_lvls']
+        count = int(message.text)
+
+        if lvl == "1":
+            await db.update_settings(ref_lvl_1=count)
+        elif lvl == "2":
+            await db.update_settings(ref_lvl_2=count)
+        else:
+            await db.update_settings(ref_lvl_3=count)
+
+        await send_admins(
+            f"<b>❗ Администратор  @{message.from_user.username} изменил кол-во рефералов для <code>{lvl}</code> уровня на <code>{count} чел</code></b>")
+        await message.answer(
+            f"<b>✅ Вы изменили кол-во рефералов для <code>{lvl}</code> уровня на <code>{count} чел</code></b>", reply_markup=back_to_adm_m(texts=lang))
+        
+@dp.callback_query_handler(IsAdmin(), text_startswith="ref_percent:edit:", state="*")
+async def settings_set_faq(call: CallbackQuery, state: FSMContext):
+    await state.update_data(cache_ref_lvl_to_edit_percent=call.data.split(":")[2])
+    await AdminSettingsEdit.here_ref_percent.set()
+    await call.message.edit_text(f"<b>⚙️ Введите новый процент для {call.data.split(':')[2]} реферального уровня:</b>")
+    
+@dp.message_handler(IsAdmin(), state=AdminSettingsEdit.here_ref_percent)
+async def settings_ref_per_set(message: Message, state: FSMContext):
+    lang = await get_language(message.from_user.id)
+    async with state.proxy() as data:
+        lvl = data['cache_ref_lvl_to_edit_percent']
+
+    await state.finish()
+
+    if not message.text.isdigit():
+        return await message.answer("<b>❌ Введите число!</b>")
+
+    if lvl == "1":
+        await db.update_settings(ref_percent_1=int(message.text))
+    elif lvl == "2":
+        await db.update_settings(ref_percent_2=int(message.text))
+    elif lvl == "3":
+        await db.update_settings(ref_percent_3=int(message.text))
+
+    await send_admins(
+        f"<b>❗ Администратор  @{message.from_user.username} изменил процент для {lvl} реферального уровня на: \n{message.text}</b>")
+    await message.answer(f"<b>✅ Готово! Процент для {lvl} реферального уровня изменен!</b>", reply_markup=back_to_adm_m(texts=lang))

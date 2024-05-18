@@ -20,6 +20,14 @@ async def func__profile(message: Message, state: FSMContext):
     bot_name = bott.username
     ref_link = f"<code>https://t.me/{bot_name}?start={user_info['user_id']}</code>"
     photo_path = InputFile('./bot/data/photo/profile.png')
+    ref_lvl = user_info['ref_lvl']
+    #Получение имени реффера 
+    reffer_name = user_info['ref_first_name']
+    if reffer_name is None:
+        reffer = lang.nobody
+    else:
+        reffer = f"<a href='tg://user?id={user_info['ref_id']}'>{reffer_name}</a>"
+        
     await bot.send_photo(user_info['user_id'], 
                         photo=photo_path, 
                         caption=ded(lang.open_profile(
@@ -29,8 +37,9 @@ async def func__profile(message: Message, state: FSMContext):
                         test_balance=user_info['test_balance'], 
                         referals=None, 
                         referals_sum=None, 
-                        refer_lvl=None, 
+                        refer_lvl=ref_lvl, 
                         balance_vivod=user_info['vivod'], 
+                        reffer = reffer,
                         refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=message.from_user.id))
 
 #Открытие FAQ
