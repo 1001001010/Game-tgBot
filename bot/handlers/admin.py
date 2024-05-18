@@ -79,33 +79,23 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     <b>Игры:</b>
     🎰 Слоты: 
     ╠🧮 Коэффициент: <code>X{slots_info['factor']}</code> 
-    ╠💰 Мин. ставка: <code>{slots_info['min_bet']}</code>🪙 
-    ╠📈 Шанс победы: <code>{int(slots_info['chance_real'])*100}</code>% 
-    ╚📉 Демо шанс: <code>{int(slots_info['chance_demo'])*100}</code>%
+    ╚💰 Мин. ставка: <code>{slots_info['min_bet']}</code>🪙 
     
     🎲 Кости: 
     ╠🧮 Коэффициент: <code>X{dice_info['factor']}</code> 
-    ╠💰 Мин. ставка: <code>{dice_info['min_bet']}</code>🪙 
-    ╠📈 Шанс победы: <code>{int(dice_info['chance_real'])*100}</code>% 
-    ╚📉 Демо шанс: <code>{int(dice_info['chance_demo'])*100}</code>%
+    ╚💰 Мин. ставка: <code>{dice_info['min_bet']}</code>🪙 
     
     🏀 Баскетбол:
     ╠🧮 Коэффициент: <code>X{basketball_info['factor']}</code> 
-    ╠💰 Мин. ставка: <code>{basketball_info['min_bet']}</code>🪙 
-    ╠📈 Шанс победы: <code>{int(basketball_info['chance_real'])*100}</code>% 
-    ╚📉 Демо шанс: <code>{int(basketball_info['chance_demo'])*100}</code>%
+    ╚💰 Мин. ставка: <code>{basketball_info['min_bet']}</code>🪙 
     
     🎳 Боулинг:
     ╠🧮 Коэффициент: <code>X{bowling_info['factor']}</code> 
-    ╠💰 Мин. ставка: <code>{bowling_info['min_bet']}</code>🪙 
-    ╠📈 Шанс победы: <code>{int(bowling_info['chance_real'])*100}</code>% 
-    ╚📉 Демо шанс: <code>{int(bowling_info['chance_demo'])*100}</code>%
+    ╚💰 Мин. ставка: <code>{bowling_info['min_bet']}</code>🪙 
     
     ⚽ Футбол:
     ╠🧮 Коэффициент: <code>X{football_info['factor']}</code> 
-    ╠💰 Мин. ставка: <code>{football_info['min_bet']}</code>🪙 
-    ╠📈 Шанс победы: <code>{int(football_info['chance_real'])*100}</code>%
-    ╚📉 Демо шанс: <code>{int(football_info['chance_demo'])*100}</code>%
+    ╚💰 Мин. ставка: <code>{football_info['min_bet']}</code>🪙 
     
     🪙 Монетка:
     ╠🧮 Коэффициент: <code>X{coin_info['factor']}</code> 
@@ -113,7 +103,10 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     ╠📈 Шанс победы: <code>{int(coin_info['chance_real'])*100}</code>% 
     ╚📉 Демо шанс: <code>{int(coin_info['chance_demo'])*100}</code>%
 
-    👨‍💻 Всего администраторов: {admin_count}"""
+    👨‍💻 Всего администраторов: {admin_count}\n"""
+    for admin in get_admins():
+        user = await db.get_user(user_id=admin)
+        msg += f"@{user['user_name']}\n "
     await call.message.answer(ded(msg))
 
 #Рассылка
@@ -323,20 +316,29 @@ async def find_profile_op(message: Message, state: FSMContext):
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
         tr = None # Надо изменить
-        count_refers = None # Надо изменить
+        count_refers = user['ref_count'] # Надо изменить
         referalst_summa = None # Надо изменить
-        await message.answer(ded(text.admin_open_profile.format(name=name,
-                                                                user_id=user_id,
-                                                                total_refill=total_refill,
-                                                                balance=balance,
-                                                                demo_balance=demo_balance,
-                                                                lang=lang,
-                                                                tr=tr,
-                                                                ban_status=ban_status,
-                                                                cause_ban=cause_ban,
-                                                                count_refers=count_refers,
-                                                                vivod=user['vivod'],
-                                                                referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+        msgg = ded(text.admin_open_profile.format(name=name,
+                                                user_id=user_id,
+                                                total_refill=total_refill,
+                                                balance=balance,
+                                                demo_balance=demo_balance,
+                                                lang=lang,
+                                                tr=tr,
+                                                ban_status=ban_status,
+                                                cause_ban=cause_ban,
+                                                count_refers=count_refers,
+                                                vivod=user['vivod'],
+                                                referalst_summa=referalst_summa))
+        referal_list = await db.get_userAll(ref_id=user_id)
+        for refik in referal_list:
+            user = await db.get_user(user_id=int(refik['user_id']))
+            name = f"@{user['user_name']}"
+            if user['user_name'] == "":
+                us = await bot.get_chat(user['user_id'])
+                name = us.get_mention(as_html=True)
+            msgg += f"{name}\n "
+        await message.answer(msgg, reply_markup=await admin_user_menu(texts=text, user_id=user_id))
         
 @dp.callback_query_handler(IsAdmin(), text_startswith="block", state="*")
 async def find_profile_open(call: CallbackQuery, state: FSMContext):
@@ -371,20 +373,29 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
         tr = None # Надо изменить
-        count_refers = None # Надо изменить
+        count_refers = user['ref_count'] # Надо изменить
         referalst_summa = None # Надо изменить
-        await call.message.answer(ded(text.admin_open_profile.format(name=name,
-                                                                    user_id=user_id,
-                                                                    total_refill=total_refill,
-                                                                    balance=balance,
-                                                                    demo_balance=demo_balance,
-                                                                    lang=lang,
-                                                                    tr=tr,
-                                                                    ban_status=ban_status,
-                                                                    cause_ban=cause_ban,
-                                                                    count_refers=count_refers,
-                                                                    vivod=user['vivod'],
-                                                                    referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+        msgg = ded(text.admin_open_profile.format(name=name,
+                                                user_id=user_id,
+                                                total_refill=total_refill,
+                                                balance=balance,
+                                                demo_balance=demo_balance,
+                                                lang=lang,
+                                                tr=tr,
+                                                ban_status=ban_status,
+                                                cause_ban=cause_ban,
+                                                count_refers=count_refers,
+                                                vivod=user['vivod'],
+                                                referalst_summa=referalst_summa))
+        referal_list = await db.get_userAll(ref_id=user_id)
+        for refik in referal_list:
+            user = await db.get_user(user_id=int(refik['user_id']))
+            name = f"@{user['user_name']}"
+            if user['user_name'] == "":
+                us = await bot.get_chat(user['user_id'])
+                name = us.get_mention(as_html=True)
+            msgg += f"{name}\n "
+        await call.answer(msgg, reply_markup=await admin_user_menu(texts=text, user_id=user_id))
         
 @dp.message_handler(IsAdmin(), state=AdminBanCause.cause)
 async def cause_ban_edit(msg: Message, state: FSMContext):
@@ -412,20 +423,29 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
         ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
         cause_ban = ''
     tr = None # Надо изменить
-    count_refers = None # Надо изменить
+    count_refers = user['ref_count']
     referalst_summa = None # Надо изменить
-    await msg.answer(ded(text.admin_open_profile.format(name=name,
-                                                            user_id=user_id,
-                                                            total_refill=total_refill,
-                                                            balance=balance,
-                                                            demo_balance=demo_balance,
-                                                            lang=lang,
-                                                            tr=tr,
-                                                            ban_status=ban_status,
-                                                            cause_ban=cause_ban,
-                                                            count_refers=count_refers,
-                                                            vivod=user['vivod'],
-                                                            referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=text, user_id=user_id))
+    msgg = ded(text.admin_open_profile.format(name=name,
+                                            user_id=user_id,
+                                            total_refill=total_refill,
+                                            balance=balance,
+                                            demo_balance=demo_balance,
+                                            lang=lang,
+                                            tr=tr,
+                                            ban_status=ban_status,
+                                            cause_ban=cause_ban,
+                                            count_refers=count_refers,
+                                            vivod=user['vivod'],
+                                            referalst_summa=referalst_summa))
+    referal_list = await db.get_userAll(ref_id=user_id)
+    for refik in referal_list:
+        user = await db.get_user(user_id=int(refik['user_id']))
+        name = f"@{user['user_name']}"
+        if user['user_name'] == "":
+            us = await bot.get_chat(user['user_id'])
+            name = us.get_mention(as_html=True)
+        msgg += f"{name}\n "
+    await msg.answer(msgg, reply_markup=await admin_user_menu(texts=text, user_id=user_id))
 
 #Открытие меню доп. настроек
 @dp.callback_query_handler(IsAdmin(), text="extra_settings", state="*")
@@ -564,7 +584,7 @@ async def func_edit_game_two(message: Message, state: FSMContext):
                                                                     vivod=user['vivod'],
                                                                     referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
     else:
-        await message.answer(lang.need_number)
+        await message.answer(texts.need_number)
 
 #Выдача баланса/демо баланса
 @dp.callback_query_handler(IsAdmin(), text_startswith="give", state="*")

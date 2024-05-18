@@ -67,6 +67,12 @@ class DB(AsyncClass):
         row = await self.con.execute(queryy, params)
         return await row.fetchone()
     
+    async def get_userAll(self, **kwargs):
+        queryy = "SELECT * FROM users"
+        queryy, params = query_args(queryy, kwargs)
+        row = await self.con.execute(queryy, params)
+        return await row.fetchall()
+    
     # Получение настроек из БД
     async def get_settings(self, **kwargs):
         queryy = "SELECT * FROM settings"
