@@ -4,6 +4,17 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.data import config
 from bot.data.config import db
 
+def game_next(game, type_balance, lang, bet):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    kb.append(InlineKeyboardButton(lang.go_next, callback_data=f"play_next:{game}:{type_balance}:{bet}"))
+    kb.append(InlineKeyboardButton(lang.back, callback_data="back_to_game_menu"))
+
+    keyboard.add(kb[0])
+    keyboard.add(kb[1])
+
+    return keyboard
+
 def sub():
     s = InlineKeyboardMarkup()
     s.row(InlineKeyboardButton(text='Подписаться', url=config.channel_url))

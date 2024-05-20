@@ -530,6 +530,7 @@ async def func_chance_game(call: CallbackQuery, state: FSMContext):
         await send_admins(f"<b>❗ Администратор @{call.from_user.username} изменил <code>Демо шанс</code> в игре <code>{rus_game_name}</code> на <code>{int(percent)/100}</code>%</b>")
         await call.answer("Успешно изменено")
         await call.message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
+    await state.finish()
 
 @dp.message_handler(IsAdmin(), state=AdminGame_edit.value)
 async def func_edit_game_two(message: Message, state: FSMContext):
@@ -550,6 +551,7 @@ async def func_edit_game_two(message: Message, state: FSMContext):
             await message.answer(lang.vibor_game_to_edit, reply_markup=edit_game_menu(texts=lang))
     else:
         await message.answer(lang.need_number)
+    await state.finish()
 
 #Реворк баланса/демо баланса      
 @dp.callback_query_handler(IsAdmin(), text_startswith="revork", state="*")
