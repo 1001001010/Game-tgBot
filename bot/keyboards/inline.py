@@ -1,7 +1,15 @@
 # - *- coding: utf- 8 - *-
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from bot.data import config
 from bot.data.config import db
+
+def sub():
+    s = InlineKeyboardMarkup()
+    s.row(InlineKeyboardButton(text='Подписаться', url=config.channel_url))
+    s.row(InlineKeyboardButton(text="Проверить ✅", callback_data='subprov'))
+
+    return s
 
 async def choose_languages_kb():
     keyboard = InlineKeyboardMarkup(row_width=2)
@@ -42,19 +50,20 @@ async def kb_admin_settings(texts):
     
     kb.append(InlineKeyboardButton(texts.reply_kb3, callback_data="settings_faq"))
     kb.append(InlineKeyboardButton(texts.reply_kb4, callback_data="settings_supp"))
+    kb.append(InlineKeyboardButton(texts.groups_list, callback_data="settings_groups"))
     kb.append(InlineKeyboardButton(f"2️⃣ Изменить кол-во рефералов для 2 лвла", callback_data="ref_lvl_edit:2"))
     kb.append(InlineKeyboardButton(f"3️⃣ Изменить кол-во рефералов для 3 лвла", callback_data="ref_lvl_edit:3"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 1 лвл. | {ref_percent_1}%", callback_data="ref_percent:edit:1"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 2 лвл. | {ref_percent_2}%", callback_data="ref_percent:edit:2"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 3 лвл. | {ref_percent_3}%", callback_data="ref_percent:edit:3"))
     kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
-    keyboard.add(kb[0], kb[1])
-    keyboard.add(kb[2])
+    keyboard.add(kb[0], kb[1], kb[2])
     keyboard.add(kb[3])
     keyboard.add(kb[4])
     keyboard.add(kb[5])
     keyboard.add(kb[6])
     keyboard.add(kb[7])
+    keyboard.add(kb[8])
 
     return keyboard
 
@@ -224,15 +233,14 @@ async def edit_game_stats(texts, game_name):
 
     kb.append(InlineKeyboardButton(texts.adm_edit_factor.format(factor=game_stats['factor']), callback_data=f"edit:factor:{game_name}")) #Коэффициент 'X'
     kb.append(InlineKeyboardButton(texts.min_bet.format(min_bet=game_stats['min_bet']), callback_data=f"edit:min_bet:{game_name}")) #Мин. ставка 
-    kb.append(InlineKeyboardButton(texts.real_chance.format(real_chance=game_stats['chance_real']*100), callback_data=f"edit:real_chance:{game_name}")) #Шанс победы для реал денег
-    kb.append(InlineKeyboardButton(texts.demo_chance.format(demo_chance=game_stats['chance_demo']*100), callback_data=f"edit:demo_chance:{game_name}")) #Шанс победы для демо режима
     kb.append(InlineKeyboardButton(texts.back, callback_data=f"extra_settings")) #Назад
 
     keyboard.add(kb[0])
     keyboard.add(kb[1])
+    if game_name == 'coin': 
+        keyboard.add(InlineKeyboardButton(texts.real_chance.format(real_chance=game_stats['chance_real']*100), callback_data=f"edit:real_chance:{game_name}")) #Шанс победы для реал денег
+        keyboard.add(InlineKeyboardButton(texts.demo_chance.format(demo_chance=game_stats['chance_demo']*100), callback_data=f"edit:demo_chance:{game_name}")) #Шанс победы для демо режима
     keyboard.add(kb[2])
-    keyboard.add(kb[3])
-    keyboard.add(kb[4])
     return keyboard
 
 def edit_game_chance(type_dep, game, texts):

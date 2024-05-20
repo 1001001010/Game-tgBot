@@ -193,7 +193,7 @@ class DB(AsyncClass):
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await users_info.fetchall()) == 18:
+        if len(await users_info.fetchall()) == 25:
             print("database was found (Users | 1/3)")
         else:
             await self.con.execute("CREATE TABLE users ("
@@ -212,7 +212,14 @@ class DB(AsyncClass):
                                    "ref_user_name TEXT,"
                                    "ref_first_name TEXT,"
                                    "is_ban INTEGER,"
-                                   "ban_cause INTEGER,"
+                                   "ban_cause TEXT,"
+                                   "amount_all_games INTEGER DEFAULT 0,"
+                                   "amount_slots INTEGER DEFAULT 0,"
+                                   "amount_dice INTEGER DEFAULT 0,"
+                                   "amount_basketball INTEGER DEFAULT 0,"
+                                   "amount_bowling INTEGER DEFAULT 0,"
+                                   "amount_football INTEGER DEFAULT 0,"
+                                   "amount_coin INTEGER DEFAULT 0,"
                                    "vivod INTEGER,"
                                    "balance INTEGER)")
             print("database was not found (Users | 1/3), creating...")

@@ -10,6 +10,7 @@ class Texts:
     back = "🔙 To main menu"
     back_to_adm_m = "🔙 Back"
     back = "⬅Back"
+    groups_list = "Groups 📰"
     support_inl = "⚙️ Tech. Support"
     test_balance = "🏦 Get demo balance"
     change_language = "🎌 Change Language"
@@ -35,7 +36,8 @@ class Texts:
     adm_user_give_demo = "🏦 Give Demo"
     adm_user_ban = "⛔ Block"
     adm_user_unban = "🟢 Unban"
-
+    
+    
 ################################################## #########################
 ################################## Messages ############### ################
 ################################################## #########################
@@ -94,7 +96,7 @@ class Texts:
                 <b>❗ Enter the bet amount:</b> """
         return msg
     vibor_game_to_edit = "<b>Select a game to edit 🕹</b>"
-    adm_edit_game_menu = "🃏 Game: <code>{game_name}</code>\n<b>Select settings to change</b>"
+    adm_edit_game_menu = "🃏Game: <code>{game_name}</code>\n<b>Select settings to change</b>"
     admin_edit_real_chance = "📈 Choose a new chance to win\n<b>(For real money)</b>"
     admin_edit_demo_chance = "📉 Choose a new chance to win\n<b>(On demo balance)</b>"
     admin_edit_min_bet = "🌟 Enter a new <b>minimum bet</b>"
@@ -111,11 +113,19 @@ class Texts:
                 💵 Total replenished: <code>{tr}</code>
                 💵 Output: <code>{vivod}</code>
             
+                🎱Total games: <code>{amount_all_games}</code>
+                🎰 Slots: <code>{amount_slots}</code>
+                🎲 Dice: <code>{amount_dice}</code>
+                🏀 Basketball: <code>{amount_basketball}</code>
+                🎳 Bowling: <code>{amount_bowling}</code>
+                ⚽ Football: <code>{amount_football}</code>
+                🪙 Coin: <code>{amount_coin}</code>
+            
                 🔗 Ban status: <code>{ban_status}</code>
                 {cause_ban}
                 👥 Referrals: <code>{count_refers} people</code>
                 💎 Earned from referrals: <code>{referalst_summa}</code>
-                📜 List of referrals: </b>"""
+                📜 List of referrals:\n</b>"""
     need_number = "<b>You need to enter a number!</b>"
     yes_bet = "Your bet has been accepted, to try your luck send <code>{emoji_game}</code>\n<b>The emoticon can be copied!</b>"
     wright_summ = "<b>Enter sum:</b>"
@@ -129,3 +139,5 @@ class Texts:
     cur_max_lvl = f"💚You have the maximum level!</b>"
     next_lvl_remain = "💚 Only <code>{remain_refs} people left to invite to the next level</code></b>"
     nobody = "<code>Nobody</code>"
+    no_money = "Insufficient balance!"
+    no_sub = "<b>❗ Error!\nYou have not subscribed to the channel.</b>"

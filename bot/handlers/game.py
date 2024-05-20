@@ -79,42 +79,33 @@ async def fun_get_game(message: Message, state: FSMContext):
     await state.update_data(bet=message.text)
     lang = await get_language(message.from_user.id)
     data = await state.get_data()
-    user = await db.get_user(user_id=message.from_user.id)
+    min_bet = await db.get_game_settings(name=data['game'])
+    user = await db.get_user(user_id=message.from_user.id)  
     if is_number(data['bet']) == True:
-        emoji_text = func__arr_game(lang=lang, game_name=data['game'])
-        emoji = emoji_text.split(" ")[0]
-        if data['type_bet'] == 'demo':
-            await db.update_user(id=user['user_id'], test_balance=(int(user['test_balance'])-int(data['bet'])))
-        elif data['type_bet'] == 'real':
-            await db.update_user(id=user['user_id'], balance=(int(user['balance'])-int(data['bet'])))
-        await message.answer(lang.yes_bet.format(emoji_game=emoji))
-        await state.finish()
-        result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)   
-        if result.dice['value'] in [4, 5, 6]:
-            await message.answer("Вы победили")
+        if int(data['bet']) < int(min_bet['min_bet']):
+            await message.answer(f"Минимальная ставка: {min_bet['min_bet']} 🪙")
         else:
-            await message.delete()
-        # await UsersGame.msg.set()
-        # await state.update_data(type_bet=data['type_bet'], bet=data['bet'], game=emoji)
+            emoji_text = func__arr_game(lang=lang, game_name=data['game'])
+            emoji = emoji_text.split(" ")[0]
+            if data['type_bet'] == 'demo':
+                if int(user['test_balance']) < int(data['bet']):
+                    await message.answer(lang.no_money)
+                else:
+                    await db.update_user(id=user['user_id'], test_balance=(int(user['test_balance'])-int(data['bet'])))
+                    await message.answer(lang.yes_bet.format(emoji_game=emoji))
+                    result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)   
+            elif data['type_bet'] == 'real':
+                if int(user['balance']) < int(data['bet']):
+                    await message.answer(lang.no_money)
+                else:
+                    await db.update_user(id=user['user_id'], balance=(int(user['balance'])-int(data['bet'])))
+                    await message.answer(lang.yes_bet.format(emoji_game=emoji))
+                    result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)   
+            if result.dice['value'] in [4, 5, 6]:
+                await message.answer("Вы победили")
+            elif result.dice['value'] in [1, 2, 3]:
+                await message.answer("Вы проиграли")
     else:
         await message.answer(lang.need_number)
         
-# @dp.message_handler(content_types=ContentType.DICE, state=UsersGame.msg)
-# async def handle_message(message: types.Message, state: FSMContext):
-#     data = await state.get_data()
-#     if(message.dice['emoji'] == data['game']):
-#         success_rate = 1
-#         if random.random() < success_rate:
-#             await message.answer("Вы выйграли")
-#         else:
-#             await message.answer("Вы проиграли")
-#     else: 
-#         await message.answer(f"Нужно отправить <code>{data['game']}</code>")
-
-# @dp.message_handler(content_types=ContentType.DICE, state=UsersGame.msg)
-# async def handle_message(message: types.Message, state: FSMContext):
-#     data = await state.get_data()
-#     if(message.dice['emoji'] == data['game']):
-#         result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)
-#     else:
-#         await message.answer(f"Нужно отправить <code>{data['game']}</code>")
+    await state.finish()

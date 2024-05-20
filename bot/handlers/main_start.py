@@ -4,9 +4,9 @@ from aiogram.types import Message, CallbackQuery
 from bot.data.loader import dp, bot
 from bot.data.config import db
 from bot.keyboards.reply import user_menu
-from bot.keyboards.inline import admin_menu, choose_languages_kb
+from bot.keyboards.inline import admin_menu, choose_languages_kb, sub
 from bot.utils.utils_functions import get_language, convert_ref
-from bot.filters.filters import IsAdmin, IsBan
+from bot.filters.filters import IsAdmin, IsBan, IsSub
 
 #Проверка на бан
 @dp.message_handler(IsBan(), state="*")
@@ -23,13 +23,28 @@ async def is_ban(call: CallbackQuery, state: FSMContext):
     user = await db.get_user(user_id=call.from_user.id)
     lang = await get_language(call.from_user.id)
     await call.answer(lang.is_ban_text.format(ban_msg=user['ban_cause']))
+    
+@dp.callback_query_handler(IsSub(), state="*")
+async def is_subs(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    texts = await get_language(call.from_user.id)
+    await call.message.answer(texts.no_sub, reply_markup=sub())
 
-#Обработка команды /start
-# @dp.message_handler(commands=['start'], state="*")
-# async def func_main_start(message: Message, state: FSMContext):
-#     await state.finish()
-#     lang = await get_language(message.from_user.id)
-#     await bot.send_message(message.from_user.id, lang.welcome, reply_markup=await user_menu(texts=lang, user_id=message.from_user.id))
+
+@dp.message_handler(IsSub(), state="*")
+async def is_subs(msg: Message, state: FSMContext):
+    await state.finish()
+    texts = await get_language(msg.from_user.id)
+    await msg.answer(texts.no_sub, reply_markup=sub())
+    
+@dp.callback_query_handler(text=['subprov'])
+async def sub_prov(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    if call.message.chat.type == 'private':
+        user = await db.get_user(user_id=call.from_user.id)
+        lang = await get_language(call.from_user.id)
+        kb = await user_menu(texts=lang, user_id=call.from_user.id)
+        await call.message.answer(lang.welcome, reply_markup=kb)
     
 @dp.message_handler(commands=['start'], state="*")
 async def main_start(message: Message, state: FSMContext):
@@ -85,15 +100,6 @@ async def main_start(message: Message, state: FSMContext):
                         us = await bot.get_chat(user['id'])
                         name = us.get_mention(as_html=True)
                     await message.answer(lang.welcome, reply_markup=kb)
-
-
-# Переключение языка
-# @dp.callback_query_handler(text='change_language', state="*")
-# async def change_language(call: CallbackQuery, state: FSMContext):
-#     await state.finish()
-#     lang = await get_language(call.from_user.id)
-#     await call.message.delete()
-#     await call.message.answer(lang.choose_language, reply_markup=await choose_languages_kb(texts=lang))
 
 @dp.callback_query_handler(text_startswith="change_language:", state="*")
 async def change_language_(call: CallbackQuery, state: FSMContext):

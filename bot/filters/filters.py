@@ -2,6 +2,8 @@ from aiogram.dispatcher.filters import BoundFilter
 from aiogram.types import Message
 from bot.utils.utils_functions import get_admins
 from bot.data.config import db
+from bot.data import config
+from bot.data.loader import bot
 
 class IsAdmin(BoundFilter):
     async def check(self, message: Message) -> bool:
@@ -15,3 +17,15 @@ class IsBan(BoundFilter):
             return True
         else:
             return False
+        
+class IsSub(BoundFilter):
+    async def check(self, message: Message):
+        channel_id = config.channel_id
+        if channel_id == "":
+            return False
+        else:
+            user_status = await bot.get_chat_member(chat_id=channel_id, user_id=message.from_user.id)
+            if user_status["status"] == 'left':
+                return True
+            else:
+                return False

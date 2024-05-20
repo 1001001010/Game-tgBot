@@ -105,8 +105,11 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
 
     👨‍💻 Всего администраторов: {admin_count}\n"""
     for admin in get_admins():
-        user = await db.get_user(user_id=admin)
-        msg += f"@{user['user_name']}\n "
+        try:
+            user = await db.get_user(user_id=admin)
+            msg += f"@{user['user_name']}\n "
+        except:
+            msg += f"{admin}\n"
     await call.message.answer(ded(msg))
 
 #Рассылка
@@ -329,6 +332,13 @@ async def find_profile_op(message: Message, state: FSMContext):
                                                 cause_ban=cause_ban,
                                                 count_refers=count_refers,
                                                 vivod=user['vivod'],
+                                                amount_all_games=user['amount_all_games'],
+                                                amount_slots=user['amount_slots'],
+                                                amount_dice=user['amount_dice'],
+                                                amount_basketball=user['amount_basketball'],
+                                                amount_bowling=user['amount_bowling'],
+                                                amount_football=user['amount_football'],
+                                                amount_coin=user['amount_coin'],
                                                 referalst_summa=referalst_summa))
         referal_list = await db.get_userAll(ref_id=user_id)
         for refik in referal_list:
@@ -386,6 +396,13 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
                                                 cause_ban=cause_ban,
                                                 count_refers=count_refers,
                                                 vivod=user['vivod'],
+                                                amount_all_games=user['amount_all_games'],
+                                                amount_slots=user['amount_slots'],
+                                                amount_dice=user['amount_dice'],
+                                                amount_basketball=user['amount_basketball'],
+                                                amount_bowling=user['amount_bowling'],
+                                                amount_football=user['amount_football'],
+                                                amount_coin=user['amount_coin'],
                                                 referalst_summa=referalst_summa))
         referal_list = await db.get_userAll(ref_id=user_id)
         for refik in referal_list:
@@ -436,6 +453,13 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
                                             cause_ban=cause_ban,
                                             count_refers=count_refers,
                                             vivod=user['vivod'],
+                                            amount_all_games=user['amount_all_games'],
+                                            amount_slots=user['amount_slots'],
+                                            amount_dice=user['amount_dice'],
+                                            amount_basketball=user['amount_basketball'],
+                                            amount_bowling=user['amount_bowling'],
+                                            amount_football=user['amount_football'],
+                                            amount_coin=user['amount_coin'],
                                             referalst_summa=referalst_summa))
     referal_list = await db.get_userAll(ref_id=user_id)
     for refik in referal_list:
@@ -582,6 +606,13 @@ async def func_edit_game_two(message: Message, state: FSMContext):
                                                                     cause_ban=cause_ban,
                                                                     count_refers=count_refers,
                                                                     vivod=user['vivod'],
+                                                                    amount_all_games=user['amount_all_games'],
+                                                                    amount_slots=user['amount_slots'],
+                                                                    amount_dice=user['amount_dice'],
+                                                                    amount_basketball=user['amount_basketball'],
+                                                                    amount_bowling=user['amount_bowling'],
+                                                                    amount_football=user['amount_football'],
+                                                                    amount_coin=user['amount_coin'],
                                                                     referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
     else:
         await message.answer(texts.need_number)
@@ -642,9 +673,17 @@ async def func_edit_game_two(message: Message, state: FSMContext):
                                                                     cause_ban=cause_ban,
                                                                     count_refers=count_refers,
                                                                     vivod=user['vivod'],
+                                                                    amount_all_games=user['amount_all_games'],
+                                                                    amount_slots=user['amount_slots'],
+                                                                    amount_dice=user['amount_dice'],
+                                                                    amount_basketball=user['amount_basketball'],
+                                                                    amount_bowling=user['amount_bowling'],
+                                                                    amount_football=user['amount_football'],
+                                                                    amount_coin=user['amount_coin'],
                                                                     referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
+        await state.finish()
     else:
-        await message.answer(lang.need_number)
+        await message.answer(texts.need_number)
 
 #Рефералка
 @dp.callback_query_handler(text_startswith="ref_lvl_edit:", state="*")
