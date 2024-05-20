@@ -10,6 +10,7 @@ class Texts:
     back = "🔙 To main menu"
     back_to_adm_m = "🔙 Back"
     back = "⬅Back"
+    refill = "💰 Refill balance"
     groups_list = "Groups 📰"
     support_inl = "⚙️ Tech. Support"
     test_balance = "🏦 Get demo balance"
@@ -127,7 +128,6 @@ class Texts:
                 💎 Earned from referrals: <code>{referalst_summa}</code>
                 📜 List of referrals:\n</b>"""
     need_number = "<b>You need to enter a number!</b>"
-    yes_bet = "Your bet has been accepted, to try your luck send <code>{emoji_game}</code>\n<b>The emoticon can be copied!</b>"
     wright_summ = "<b>Enter sum:</b>"
     invite_yourself = "<b>❗You cannot invite yourself</b>"
     yes_reffer = f"<b>❗ You already have a referr!</b>"

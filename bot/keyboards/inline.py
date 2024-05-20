@@ -136,7 +136,9 @@ async def kb_profile(texts, user_id):
 
     kb.append(InlineKeyboardButton(texts.promo, callback_data='promo'))
     kb.append(InlineKeyboardButton(texts.change_language, callback_data='change_language'))
+    kb.append(InlineKeyboardButton(texts.refill, callback_data='refil_balance'))
     keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[2])
     return keyboard
 
 def kb_adm_promo(texts):

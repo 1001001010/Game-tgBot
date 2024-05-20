@@ -92,19 +92,42 @@ async def fun_get_game(message: Message, state: FSMContext):
                     await message.answer(lang.no_money)
                 else:
                     await db.update_user(id=user['user_id'], test_balance=(int(user['test_balance'])-int(data['bet'])))
-                    await message.answer(lang.yes_bet.format(emoji_game=emoji))
-                    result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)   
+                    if emoji == '🏀':
+                        result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)
+                    elif emoji == '🎰':
+                        result = await message.answer_dice(emoji=DiceEmoji.SLOT_MACHINE)
+                    elif emoji == '🎲':
+                        result = await message.answer_dice(emoji=DiceEmoji.DICE)
+                    elif emoji == '🎳':
+                        result = await message.answer_dice(emoji=DiceEmoji.BOWLING)
+                    elif emoji == '⚽':
+                        result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
+                    elif emoji == '🪙':
+                        await message.answer("Тут надо другую функцию прописывать")
+                        # result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
             elif data['type_bet'] == 'real':
                 if int(user['balance']) < int(data['bet']):
                     await message.answer(lang.no_money)
                 else:
                     await db.update_user(id=user['user_id'], balance=(int(user['balance'])-int(data['bet'])))
-                    await message.answer(lang.yes_bet.format(emoji_game=emoji))
-                    result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)   
-            if result.dice['value'] in [4, 5, 6]:
-                await message.answer("Вы победили")
-            elif result.dice['value'] in [1, 2, 3]:
-                await message.answer("Вы проиграли")
+                    if emoji == '🏀':
+                        result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)
+                    elif emoji == '🎰':
+                        result = await message.answer_dice(emoji=DiceEmoji.SLOT_MACHINE)
+                    elif emoji == '🎲':
+                        result = await message.answer_dice(emoji=DiceEmoji.DICE)
+                    elif emoji == '🎳':
+                        result = await message.answer_dice(emoji=DiceEmoji.BOWLING)
+                    elif emoji == '⚽':
+                        result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
+                    elif emoji == '🪙':
+                        await message.answer("Тут надо другую функцию прописывать")
+                        
+            await message.answer(f'Результат игры: {result}')
+            # if result.dice['value'] in [4, 5, 6]:
+            #     await message.answer("Вы победили")
+            # elif result.dice['value'] in [1, 2, 3]:
+            #     await message.answer("Вы проиграли")
     else:
         await message.answer(lang.need_number)
         
