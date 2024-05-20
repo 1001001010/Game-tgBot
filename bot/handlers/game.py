@@ -103,7 +103,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                     elif emoji == '⚽':
                         result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
                     elif emoji == '🪙':
-                        await message.answer("Тут надо другую функцию прописывать")
+                        result = await message.answer("Тут надо другую функцию прописывать")
                         # result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
             elif data['type_bet'] == 'real':
                 if int(user['balance']) < int(data['bet']):
@@ -121,7 +121,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                     elif emoji == '⚽':
                         result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
                     elif emoji == '🪙':
-                        await message.answer("Тут надо другую функцию прописывать")
+                       result = await message.answer("Тут надо другую функцию прописывать")
                         
             await message.answer(f'Результат игры: {result}')
             # if result.dice['value'] in [4, 5, 6]:
