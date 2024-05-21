@@ -15,6 +15,24 @@ def game_next(game, type_balance, lang, bet):
 
     return keyboard
 
+def payment_method():
+    keyboard = InlineKeyboardMarkup()
+    kb=[]
+    kb.append(InlineKeyboardButton('💠 CryptoBot', callback_data="payment:cryptobot"))
+    kb.append(InlineKeyboardButton('🚀 xRocket', callback_data="payment:xrocket"))
+    
+    keyboard.add(kb[0], kb[1])
+    return keyboard
+
+def payment_method_back():
+    keyboard = InlineKeyboardMarkup()
+    kb=[]
+    kb.append(InlineKeyboardButton('Отмена', callback_data="back_to_m"))
+    # kb.append(InlineKeyboardButton('xRocket', callback_data="payment:xrocket"))
+    
+    keyboard.add(kb[0])
+    return keyboard
+
 def sub():
     s = InlineKeyboardMarkup()
     s.row(InlineKeyboardButton(text='Подписаться', url=config.channel_url))

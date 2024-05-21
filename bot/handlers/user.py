@@ -5,7 +5,8 @@ from aiogram.types import InputFile
 
 from bot.data.loader import dp, bot
 from bot.data.config import lang_ru, lang_en, db
-from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, choose_languages_kb, game_menu
+from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, \
+                                choose_languages_kb, game_menu, payment_method
 from bot.utils.utils_functions import get_language, ded
 from bot.state.users import UsersCoupons
 
@@ -15,7 +16,7 @@ from bot.state.users import UsersCoupons
 async def func__refill(message: Message, state: FSMContext):
     await state.finish()
     lang = await get_language(message.from_user.id)
-    await message.answer(lang.refil_sposob)
+    await message.answer(lang.refil_sposob, reply_markup=payment_method())
 
 #Открытие Профиля
 @dp.message_handler(text=lang_ru.reply_kb2, state="*")

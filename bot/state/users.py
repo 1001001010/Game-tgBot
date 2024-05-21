@@ -18,3 +18,7 @@ class UserCube(StatesGroup):
     cube = State()
     type_bet = State()
     bet = State()
+    
+class UserPayment(StatesGroup):
+    amount = State()
+    method = State()
