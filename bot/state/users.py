@@ -13,4 +13,8 @@ class UsersGame(StatesGroup):
     type_bet = State()
     game = State()
     msg = State()
+    
+class UserCube(StatesGroup):
     cube = State()
+    type_bet = State()
+    bet = State()
