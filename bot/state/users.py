@@ -13,3 +13,4 @@ class UsersGame(StatesGroup):
     type_bet = State()
     game = State()
     msg = State()
+    cube = State()
