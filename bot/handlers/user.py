@@ -9,6 +9,14 @@ from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, ba
 from bot.utils.utils_functions import get_language, ded
 from bot.state.users import UsersCoupons
 
+#Открытие пополнения
+@dp.message_handler(text=lang_ru.refill, state="*")
+@dp.message_handler(text=lang_en.refill, state="*")
+async def func__refill(message: Message, state: FSMContext):
+    await state.finish()
+    lang = await get_language(message.from_user.id)
+    await message.answer(lang.refil_sposob)
+
 #Открытие Профиля
 @dp.message_handler(text=lang_ru.reply_kb2, state="*")
 @dp.message_handler(text=lang_en.reply_kb2, state="*")
@@ -35,12 +43,44 @@ async def func__profile(message: Message, state: FSMContext):
                         user_name=user_info['user_name'], 
                         balance=user_info['balance'],
                         test_balance=user_info['test_balance'], 
-                        referals=None, 
+                        referals=user_info['ref_count'], 
                         referals_sum=None, 
                         refer_lvl=ref_lvl, 
                         balance_vivod=user_info['vivod'], 
                         reffer = reffer,
                         refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=message.from_user.id))
+
+@dp.callback_query_handler(text="back_to_profile", state="*")
+async def user_lang(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    user_info = await db.get_user(user_id = call.from_user.id)
+    bott = await bot.get_me()
+    bot_name = bott.username
+    ref_link = f"<code>https://t.me/{bot_name}?start={user_info['user_id']}</code>"
+    photo_path = InputFile('./bot/data/photo/profile.png')
+    ref_lvl = user_info['ref_lvl']
+    #Получение имени реффера 
+    reffer_name = user_info['ref_first_name']
+    if reffer_name is None:
+        reffer = lang.nobody
+    else:
+        reffer = f"<a href='tg://user?id={user_info['ref_id']}'>{reffer_name}</a>"
+        
+    await bot.send_photo(user_info['user_id'], 
+                        photo=photo_path, 
+                        caption=ded(lang.open_profile(
+                        user_id=user_info['user_id'], 
+                        user_name=user_info['user_name'], 
+                        balance=user_info['balance'],
+                        test_balance=user_info['test_balance'], 
+                        referals=user_info['ref_count'], 
+                        referals_sum=None, 
+                        refer_lvl=ref_lvl, 
+                        balance_vivod=user_info['vivod'], 
+                        reffer = reffer,
+                        refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=call.from_user.id))
 
 #Открытие FAQ
 @dp.message_handler(text=lang_ru.reply_kb3, state="*")
@@ -72,7 +112,7 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
                         user_name=user_info['user_name'], 
                         balance=user_info['balance'],
                         test_balance=user_info['test_balance'], 
-                        referals=None, 
+                        referals=user_info['ref_count'], 
                         referals_sum=None, 
                         refer_lvl=None, 
                         balance_vivod=None, 

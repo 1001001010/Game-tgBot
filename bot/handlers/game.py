@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 import re
 from aiogram import types
 from aiogram.types.dice import DiceEmoji
+import asyncio
 
 from bot.data.loader import dp, bot
 from bot.data.config import db, game_slots, win_coin_sticker_id, lose_coin_sticker_id
@@ -12,6 +13,9 @@ from bot.keyboards.inline import kb_back_to_game_menu, game_next
 from bot.utils.utils_functions import get_language, ded, func__arr_game, is_number
 from bot.filters.filters import IsAdmin
 from bot.state.users import UsersBet, UsersGame, UserCube
+
+async def my_sleep():
+    await asyncio.sleep(3.1)
 
 @dp.callback_query_handler(IsAdmin(), text_startswith='game', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
@@ -90,6 +94,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                     if emoji == '🏀':
                         result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)
                         await db.update_user(id=user['user_id'], amount_basketball=float(user['amount_basketball']+1))
+                        await my_sleep()
                         if result.dice['value'] in [4, 5, 6]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
@@ -153,6 +158,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                     if emoji == '🏀':
                         result = await message.answer_dice(emoji=DiceEmoji.BASKETBALL)
                         await db.update_user(id=user['user_id'], amount_basketball=float(user['amount_basketball']+1))
+                        await my_sleep()
                         if result.dice['value'] in [4, 5, 6]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
@@ -240,6 +246,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 if emoji == '🏀':
                     result = await call.message.answer_dice(emoji=DiceEmoji.BASKETBALL)
                     await db.update_user(id=user['user_id'], amount_basketball=float(user['amount_basketball']+1))
+                    await my_sleep()
                     if result.dice['value'] in [4, 5, 6]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
@@ -303,6 +310,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 if emoji == '🏀':
                     result = await call.message.answer_dice(emoji=DiceEmoji.BASKETBALL)
                     await db.update_user(id=user['user_id'], amount_basketball=float(user['amount_basketball']+1))
+                    await my_sleep()
                     if result.dice['value'] in [4, 5, 6]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])

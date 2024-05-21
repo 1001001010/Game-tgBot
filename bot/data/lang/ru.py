@@ -10,12 +10,13 @@ class Texts:
     back = "🔙 В главное меню"
     back_to_adm_m = "🔙 Назад"
     back = "⬅ Вернуться"
+    conclusion = "💸 Вывести баланс"
     refill = "💰 Пополнить баланс"
     groups_list = "Группы 📰"
     support_inl = "⚙️ Тех. Поддержка"
     test_balance = "🏦 Получить демо баланс"
-    change_language = "🎌 Смменить Язык"
-    promo = "🎫 Ввести промокод"
+    change_language = "🇷🇺 Изменить Язык"
+    promo = "🎫 Промокод"
     new_promo = "💎 Создать промокод"
     del_promo = "🎲 Удалить промокод"
     ####GAMES####
@@ -94,6 +95,7 @@ class Texts:
         msg = f"""Игра: {game_name_text}
         
                 💰 Минимальная ставка: <code>{min_bet}</code> 
+                
                 🏦 Ваш Демо баланс: <code>{demo_balance}</code> 🪙
                 <b>❗ Укажите сумму ставки:</b> """
         return msg
@@ -143,9 +145,10 @@ class Texts:
     no_money = "Недостаточно баланса!"
     no_sub = "<b>❗ Ошибка!\nВы не подписались на канал.</b>"
     def lose_game(self, summ, balance):
-        msg = f"""<b>Увы, вы проиграли</b>
+        msg = f"""<b>Увы, вы проиграли 🥴</b>
                     
                     Ваш проигрыш: -{summ} 🪙
+                    
                     Ваш баланс: {balance} 🪙"""
         return msg
     def win_game(self, summ, balance, kef):
@@ -153,5 +156,7 @@ class Texts:
                     
                     Коэффициент: X{kef}
                     Ваш выйгрыш: {summ} 🪙
+                    
                     Ваш баланс: {balance} 🪙"""
         return msg
+    refil_sposob = "Выберите способ пополнения"

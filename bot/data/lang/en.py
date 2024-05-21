@@ -14,7 +14,7 @@ class Texts:
     groups_list = "Groups 📰"
     support_inl = "⚙️ Tech. Support"
     test_balance = "🏦 Get demo balance"
-    change_language = "🎌 Change Language"
+    change_language = "🇬🇧 Change Language"
     promo = "🎫 Enter promo code"
     new_promo = "💎 Create a promotional code"
     del_promo = "🎲 Remove promo code"
