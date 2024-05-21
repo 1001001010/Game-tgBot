@@ -7,7 +7,7 @@ from aiogram import types
 from aiogram.types.dice import DiceEmoji
 
 from bot.data.loader import dp, bot
-from bot.data.config import db, game_slots
+from bot.data.config import db, game_slots, win_coin_sticker_id, lose_coin_sticker_id
 from bot.keyboards.inline import kb_back_to_game_menu, game_next
 from bot.utils.utils_functions import get_language, ded, func__arr_game, is_number
 from bot.filters.filters import IsAdmin
@@ -94,11 +94,23 @@ async def fun_get_game(message: Message, state: FSMContext):
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
                             await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
-                            await db.update_user(id=user['user_id'], balance=balance)
+                            await db.update_user(id=user['user_id'], test_balance=balance)
                         else:
-                            await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['test_balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await message.answer(ded(lang.lose_game(summ=data['bet'], test_balance=float(user['test_balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                     elif emoji == '🎰':
                         result = await message.answer_dice(emoji=DiceEmoji.SLOT_MACHINE)
+                        if result.dice['value'] in [1, 22, 43]:
+                            new_balance = await db.get_user(user_id=message.from_user.id)
+                            balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
+                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await db.update_user(id=user['user_id'], test_balance=balance)
+                        elif result.dice['value'] in [64]:
+                            new_balance = await db.get_user(user_id=message.from_user.id)
+                            balance = float(new_balance['test_balance'])+float(data['bet'])*5
+                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(data['bet'])*5)), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await db.update_user(id=user['user_id'], test_balance=balance)
+                        else:
+                            await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['test_balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                     elif emoji == '🎲':
                         result = await message.answer_dice(emoji=DiceEmoji.DICE)
                     elif emoji == '🎳':
@@ -109,11 +121,26 @@ async def fun_get_game(message: Message, state: FSMContext):
                             await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']))))
                             await db.update_user(id=user['user_id'], test_balance=balance)
                         else: 
-                            await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['test_balance'])-float(data['bet']))))
+                            await message.answer(ded(lang.lose_game(summ=data['bet'], test_balance=float(user['test_balance'])-float(data['bet']))))
                     elif emoji == '⚽':
                         result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
+                        if result.dice['value'] in [3, 4, 5]:
+                            new_balance = await db.get_user(user_id=message.from_user.id)
+                            balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
+                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await db.update_user(id=user['user_id'], test_balance=balance)
+                        else:
+                            await message.answer(ded(lang.lose_game(summ=data['bet'], test_balance=float(user['test_balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                     elif emoji == '🪙':
-                        result = await message.answer("Тут надо другую функцию прописывать")
+                        if random.uniform(0, 1) < game_settings['chance_demo'] :
+                            await bot.send_sticker(message.from_user.id, win_coin_sticker_id)
+                            new_balance = await db.get_user(user_id=message.from_user.id)
+                            balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
+                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await db.update_user(id=user['user_id'], test_balance=balance)
+                        else:
+                            await bot.send_sticker(message.from_user.id, lose_coin_sticker_id)
+                            await message.answer(ded(lang.lose_game(summ=data['bet'], test_balance=float(user['test_balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                         
             ####РЕАЛ####
             elif data['type_bet'] == 'real':
@@ -137,6 +164,18 @@ async def fun_get_game(message: Message, state: FSMContext):
                     elif emoji == '🎰':
                         result = await message.answer_dice(emoji=DiceEmoji.SLOT_MACHINE)
                         await db.update_user(id=user['user_id'], amount_slots=float(user['amount_slots']+1))
+                        if result.dice['value'] in [1, 22, 43]:
+                            new_balance = await db.get_user(user_id=message.from_user.id)
+                            balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
+                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await db.update_user(id=user['user_id'], balance=balance)
+                        elif result.dice['value'] in [64]:
+                            new_balance = await db.get_user(user_id=message.from_user.id)
+                            balance = float(new_balance['balance'])+float(data['bet'])*5
+                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(data['bet'])*5)), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await db.update_user(id=user['user_id'], balance=balance)
+                        else:
+                            await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                     elif emoji == '🎲':
                         await message.answer('Бросьте ваш кубик, для этого отправьте <code>🎲</code>')
                         # result = await message.answer_dice(emoji=DiceEmoji.DICE)
@@ -156,17 +195,25 @@ async def fun_get_game(message: Message, state: FSMContext):
                     elif emoji == '⚽':
                         result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
                         await db.update_user(id=user['user_id'], amount_football=float(user['amount_football']+1))
-                        await message.answer(result.dice['value'])
-                        # if result.dice['value'] in [4, 5, 6]:
-                        #     new_balance = await db.get_user(user_id=message.from_user.id)
-                        #     balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
-                        #     await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
-                        #     await db.update_user(id=user['user_id'], balance=balance)
-                        # else:
-                        #     await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                        if result.dice['value'] in [3, 4, 5]:
+                            new_balance = await db.get_user(user_id=message.from_user.id)
+                            balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
+                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await db.update_user(id=user['user_id'], balance=balance)
+                        else:
+                            await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                     elif emoji == '🪙':
                         await db.update_user(id=user['user_id'], amount_coin=float(user['amount_coin']+1))
-                        result = await message.answer("Тут надо другую функцию прописывать")
+                        if random.uniform(0, 1) < game_settings['chance_real'] :
+                            await bot.send_sticker(message.from_user.id, win_coin_sticker_id)
+                            new_balance = await db.get_user(user_id=message.from_user.id)
+                            balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
+                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                            await db.update_user(id=user['user_id'], balance=balance)
+                        else:
+                            await bot.send_sticker(message.from_user.id, lose_coin_sticker_id)
+                            await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
+                        
     else:
         await message.answer(lang.need_number)
     await state.finish()
@@ -176,3 +223,8 @@ async def fun_get_game(message: Message, state: FSMContext):
 # @dp.callback_query_handler(text_startswith='user_use_balance', state="*")
 # async def back_to_menu(call: CallbackQuery, state: FSMContext):
 #     await state.finish()
+
+@dp.message_handler(commands=['foot'])
+async def roll_dice(message: types.Message):
+    data = await bot.send_dice(message.chat.id, emoji='⚽')
+    await bot.send_message(message.chat.id, f'значение футбол {data.dice.value}')

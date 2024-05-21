@@ -45,3 +45,7 @@ game_slots = {
     'bowling': 'game_bowling',
     'dice': 'game_dice'
 }
+
+#Не трогать, стикеры монетки
+win_coin_sticker_id = 'CAACAgIAAxkBAAEMJ5NmTAHfILlZIWv31_PP5SRf5sPtwgAClhcAAsiE0Ui67wnmqzpt6TUE'
+lose_coin_sticker_id = 'CAACAgIAAxkBAAEMJ5VmTAHkumw8jh7ZWMxTwxpiRCSVZAACpRcAAgaN0Egkmq4OpEO-oDUE'
