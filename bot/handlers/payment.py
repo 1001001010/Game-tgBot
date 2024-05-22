@@ -57,4 +57,4 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 ego_procent = float(invoices.amount) * float(percent / 100)
                 await db.update_user(id=referral['user_id'], balance=float(referral['balance']) + float(ego_procent), total_refill = float(referral['total_refill']) + float(ego_procent))
                 await bot.send_message(referral['user_id'], lang.ref_plus_balance.format(percent=ego_procent))
-            await db.update_user(id=call.from_user.id, balance=float(user['balance']) + float(invoices.amount))
+            await db.update_user(id=call.from_user.id, balance=float(user['balance']) + float(invoices.amount), total_pay=float(user['total_pay']) + float(invoices.amount))

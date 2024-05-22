@@ -193,7 +193,7 @@ class DB(AsyncClass):
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await users_info.fetchall()) == 25:
+        if len(await users_info.fetchall()) == 26:
             print("database was found (Users | 1/3)")
         else:
             await self.con.execute("CREATE TABLE users ("
@@ -206,6 +206,7 @@ class DB(AsyncClass):
                                    "test_balance INTEGER,"
                                    "request_test INTEGER,"
                                    "total_refill INTEGER DEFAULT 0,"
+                                   "total_pay INTEGER DEFAULT 0,"
                                    "ref_count INTEGER DEFAULT 0,"
                                    "ref_lvl INTEGER DEFAULT 1,"
                                    "ref_id INTEGER,"

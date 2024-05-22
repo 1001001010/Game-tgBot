@@ -318,18 +318,16 @@ async def find_profile_op(message: Message, state: FSMContext):
         else:
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
-        tr = None # Надо изменить
-        count_refers = user['ref_count'] 
         msgg = ded(text.admin_open_profile.format(name=name,
                                                 user_id=user_id,
                                                 total_refill=total_refill,
                                                 balance=balance,
                                                 demo_balance=demo_balance,
                                                 lang=lang,
-                                                tr=tr,
+                                                tr=user['total_pay'],
                                                 ban_status=ban_status,
                                                 cause_ban=cause_ban,
-                                                count_refers=count_refers,
+                                                count_refers=user['ref_count'],
                                                 vivod=user['vivod'],
                                                 amount_all_games=user['amount_all_games'],
                                                 amount_slots=user['amount_slots'],
@@ -381,18 +379,16 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
         else:
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
-        tr = None # Надо изменить
-        count_refers = user['ref_count'] # Надо изменить
         msgg = ded(text.admin_open_profile.format(name=name,
                                                 user_id=user_id,
                                                 total_refill=total_refill,
                                                 balance=balance,
                                                 demo_balance=demo_balance,
                                                 lang=lang,
-                                                tr=tr,
+                                                tr=user['total_pay'],
                                                 ban_status=ban_status,
                                                 cause_ban=cause_ban,
-                                                count_refers=count_refers,
+                                                count_refers=user['ref_count'],
                                                 vivod=user['vivod'],
                                                 amount_all_games=user['amount_all_games'],
                                                 amount_slots=user['amount_slots'],
@@ -437,18 +433,16 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
     else:
         ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
         cause_ban = ''
-    tr = None # Надо изменить
-    count_refers = user['ref_count']
     msgg = ded(text.admin_open_profile.format(name=name,
                                             user_id=user_id,
                                             total_refill=total_refill,
                                             balance=balance,
                                             demo_balance=demo_balance,
                                             lang=lang,
-                                            tr=tr,
+                                            tr=user['total_pay'],
                                             ban_status=ban_status,
                                             cause_ban=cause_ban,
-                                            count_refers=count_refers,
+                                            count_refers=user['ref_count'],
                                             vivod=user['vivod'],
                                             amount_all_games=user['amount_all_games'],
                                             amount_slots=user['amount_slots'],
@@ -591,18 +585,16 @@ async def func_edit_game_two(message: Message, state: FSMContext):
         else:
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
-        tr = None # Надо изменить
-        count_refers = None # Надо изменить
         await message.answer(ded(texts.admin_open_profile.format(name=name,
                                                                     user_id=user_id,
                                                                     total_refill=total_refill,
                                                                     balance=balance,
                                                                     demo_balance=demo_balance,
                                                                     lang=lang,
-                                                                    tr=tr,
+                                                                    tr=user['total_pay'],
                                                                     ban_status=ban_status,
                                                                     cause_ban=cause_ban,
-                                                                    count_refers=count_refers,
+                                                                    count_refers=user['ref_count'],
                                                                     vivod=user['vivod'],
                                                                     amount_all_games=user['amount_all_games'],
                                                                     amount_slots=user['amount_slots'],
@@ -658,18 +650,16 @@ async def func_edit_game_two(message: Message, state: FSMContext):
         else:
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
-        tr = None # Надо изменить
-        count_refers = None # Надо изменить
         await message.answer(ded(texts.admin_open_profile.format(name=name,
                                                                     user_id=user_id,
                                                                     total_refill=total_refill,
                                                                     balance=balance,
                                                                     demo_balance=demo_balance,
                                                                     lang=lang,
-                                                                    tr=tr,
+                                                                    tr=user['total_pay'],
                                                                     ban_status=ban_status,
                                                                     cause_ban=cause_ban,
-                                                                    count_refers=count_refers,
+                                                                    count_refers=user['ref_count'],
                                                                     vivod=user['vivod'],
                                                                     amount_all_games=user['amount_all_games'],
                                                                     amount_slots=user['amount_slots'],

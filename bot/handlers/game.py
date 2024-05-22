@@ -104,6 +104,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                             await message.answer(ded(lang.lose_game(summ=data['bet'], test_balance=float(user['test_balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                     elif emoji == '🎰':
                         result = await message.answer_dice(emoji=DiceEmoji.SLOT_MACHINE)
+                        await my_sleep()
                         if result.dice['value'] in [1, 22, 43]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
@@ -120,6 +121,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         result = await message.answer_dice(emoji=DiceEmoji.DICE)
                     elif emoji == '🎳':
                         result = await message.answer_dice(emoji=DiceEmoji.BOWLING)
+                        await my_sleep()
                         if result.dice['value'] == 6:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
@@ -129,6 +131,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                             await message.answer(ded(lang.lose_game(summ=data['bet'], test_balance=float(user['test_balance'])-float(data['bet']))))
                     elif emoji == '⚽':
                         result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
+                        await my_sleep()
                         if result.dice['value'] in [3, 4, 5]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
@@ -160,6 +163,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                     elif emoji == '🎰':
                         result = await message.answer_dice(emoji=DiceEmoji.SLOT_MACHINE)
                         await db.update_user(id=user['user_id'], amount_slots=float(user['amount_slots']+1))
+                        await my_sleep()
                         if result.dice['value'] in [1, 22, 43]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
@@ -181,6 +185,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                     elif emoji == '🎳':
                         result = await message.answer_dice(emoji=DiceEmoji.BOWLING)
                         await db.update_user(id=user['user_id'], amount_bowling=float(user['amount_bowling']+1))
+                        await my_sleep()
                         if result.dice['value'] == 6:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
@@ -191,6 +196,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                     elif emoji == '⚽':
                         result = await message.answer_dice(emoji=DiceEmoji.FOOTBALL)
                         await db.update_user(id=user['user_id'], amount_football=float(user['amount_football']+1))
+                        await my_sleep()
                         if result.dice['value'] in [3, 4, 5]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
@@ -237,6 +243,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                         await call.message.answer(ded(lang.lose_game(summ=bet, test_balance=float(user['test_balance'])-float(bet))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
                 elif emoji == '🎰':
                     result = await call.message.answer_dice(emoji=DiceEmoji.SLOT_MACHINE)
+                    await my_sleep()
                     if result.dice['value'] in [1, 22, 43]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
@@ -253,6 +260,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     result = await call.message.answer_dice(emoji=DiceEmoji.DICE)
                 elif emoji == '🎳':
                     result = await call.message.answer_dice(emoji=DiceEmoji.BOWLING)
+                    await my_sleep()
                     if result.dice['value'] == 6:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
@@ -262,6 +270,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                         await call.message.answer(ded(lang.lose_game(summ=bet, test_balance=float(user['test_balance'])-float(bet))))
                 elif emoji == '⚽':
                     result = await call.message.answer_dice(emoji=DiceEmoji.FOOTBALL)
+                    await my_sleep()
                     if result.dice['value'] in [3, 4, 5]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
@@ -293,6 +302,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 elif emoji == '🎰':
                     result = await call.message.answer_dice(emoji=DiceEmoji.SLOT_MACHINE)
                     await db.update_user(id=user['user_id'], amount_slots=float(user['amount_slots']+1))
+                    await my_sleep()
                     if result.dice['value'] in [1, 22, 43]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
@@ -314,6 +324,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 elif emoji == '🎳':
                     result = await call.message.answer_dice(emoji=DiceEmoji.BOWLING)
                     await db.update_user(id=user['user_id'], amount_bowling=float(user['amount_bowling']+1))
+                    await my_sleep()
                     if result.dice['value'] == 6:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
@@ -324,6 +335,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 elif emoji == '⚽':
                     result = await call.message.answer_dice(emoji=DiceEmoji.FOOTBALL)
                     await db.update_user(id=user['user_id'], amount_football=float(user['amount_football']+1))
+                    await my_sleep()
                     if result.dice['value'] in [3, 4, 5]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
