@@ -319,8 +319,7 @@ async def find_profile_op(message: Message, state: FSMContext):
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
         tr = None # Надо изменить
-        count_refers = user['ref_count'] # Надо изменить
-        referalst_summa = None # Надо изменить
+        count_refers = user['ref_count'] 
         msgg = ded(text.admin_open_profile.format(name=name,
                                                 user_id=user_id,
                                                 total_refill=total_refill,
@@ -339,7 +338,7 @@ async def find_profile_op(message: Message, state: FSMContext):
                                                 amount_bowling=user['amount_bowling'],
                                                 amount_football=user['amount_football'],
                                                 amount_coin=user['amount_coin'],
-                                                referalst_summa=referalst_summa))
+                                                referalst_summa=user['total_refill']))
         referal_list = await db.get_userAll(ref_id=user_id)
         for refik in referal_list:
             user = await db.get_user(user_id=int(refik['user_id']))
@@ -384,7 +383,6 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
             cause_ban = ''
         tr = None # Надо изменить
         count_refers = user['ref_count'] # Надо изменить
-        referalst_summa = None # Надо изменить
         msgg = ded(text.admin_open_profile.format(name=name,
                                                 user_id=user_id,
                                                 total_refill=total_refill,
@@ -403,7 +401,7 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
                                                 amount_bowling=user['amount_bowling'],
                                                 amount_football=user['amount_football'],
                                                 amount_coin=user['amount_coin'],
-                                                referalst_summa=referalst_summa))
+                                                referalst_summa=user['total_refill']))
         referal_list = await db.get_userAll(ref_id=user_id)
         for refik in referal_list:
             user = await db.get_user(user_id=int(refik['user_id']))
@@ -441,7 +439,6 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
         cause_ban = ''
     tr = None # Надо изменить
     count_refers = user['ref_count']
-    referalst_summa = None # Надо изменить
     msgg = ded(text.admin_open_profile.format(name=name,
                                             user_id=user_id,
                                             total_refill=total_refill,
@@ -460,7 +457,7 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
                                             amount_bowling=user['amount_bowling'],
                                             amount_football=user['amount_football'],
                                             amount_coin=user['amount_coin'],
-                                            referalst_summa=referalst_summa))
+                                            referalst_summa=user['total_refill']))
     referal_list = await db.get_userAll(ref_id=user_id)
     for refik in referal_list:
         user = await db.get_user(user_id=int(refik['user_id']))
@@ -596,7 +593,6 @@ async def func_edit_game_two(message: Message, state: FSMContext):
             cause_ban = ''
         tr = None # Надо изменить
         count_refers = None # Надо изменить
-        referalst_summa = None # Надо изменить
         await message.answer(ded(texts.admin_open_profile.format(name=name,
                                                                     user_id=user_id,
                                                                     total_refill=total_refill,
@@ -615,7 +611,8 @@ async def func_edit_game_two(message: Message, state: FSMContext):
                                                                     amount_bowling=user['amount_bowling'],
                                                                     amount_football=user['amount_football'],
                                                                     amount_coin=user['amount_coin'],
-                                                                    referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
+                                                                    referalst_summa=user['total_refill'])), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
+        await state.finish()
     else:
         await message.answer(texts.need_number)
 
@@ -663,7 +660,6 @@ async def func_edit_game_two(message: Message, state: FSMContext):
             cause_ban = ''
         tr = None # Надо изменить
         count_refers = None # Надо изменить
-        referalst_summa = None # Надо изменить
         await message.answer(ded(texts.admin_open_profile.format(name=name,
                                                                     user_id=user_id,
                                                                     total_refill=total_refill,
@@ -682,7 +678,7 @@ async def func_edit_game_two(message: Message, state: FSMContext):
                                                                     amount_bowling=user['amount_bowling'],
                                                                     amount_football=user['amount_football'],
                                                                     amount_coin=user['amount_coin'],
-                                                                    referalst_summa=referalst_summa)), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
+                                                                    referalst_summa=user['total_refill'])), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
         await state.finish()
     else:
         await message.answer(texts.need_number)

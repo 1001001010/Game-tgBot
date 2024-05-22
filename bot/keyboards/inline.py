@@ -4,6 +4,17 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.data import config
 from bot.data.config import db
 
+def kb_payment_link(lang, method, link, pay_id):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    kb.append(InlineKeyboardButton(lang.pay_link, url=link))
+    kb.append(InlineKeyboardButton(lang.pay_id, callback_data=f"cheak_pay:{method}:{pay_id}"))
+
+    keyboard.add(kb[0])
+    keyboard.add(kb[1])
+
+    return keyboard
+
 def game_next(game, type_balance, lang, bet):
     keyboard = InlineKeyboardMarkup()
     kb = []

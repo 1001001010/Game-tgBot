@@ -45,7 +45,7 @@ async def func__profile(message: Message, state: FSMContext):
                         balance=user_info['balance'],
                         test_balance=user_info['test_balance'], 
                         referals=user_info['ref_count'], 
-                        referals_sum=None, 
+                        referals_sum=user_info['total_refill'], 
                         refer_lvl=ref_lvl, 
                         balance_vivod=user_info['vivod'], 
                         reffer = reffer,
@@ -77,7 +77,7 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
                         balance=user_info['balance'],
                         test_balance=user_info['test_balance'], 
                         referals=user_info['ref_count'], 
-                        referals_sum=None, 
+                        referals_sum=user_info['total_refill'], 
                         refer_lvl=ref_lvl, 
                         balance_vivod=user_info['vivod'], 
                         reffer = reffer,
@@ -106,6 +106,12 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
         ref_link = f"<code>https://t.me/{bot_name}?start={user_info['user_id']}</code>"
         photo_path = InputFile('./bot/data/photo/profile.png')
         user_info = await db.get_user(user_id = call.from_user.id)
+        reffer_name = user_info['ref_first_name']
+        ref_lvl = user_info['ref_lvl']
+        if reffer_name is None:
+            reffer = lang.nobody
+        else:
+            reffer = f"<a href='tg://user?id={user_info['ref_id']}'>{reffer_name}</a>"
         await bot.send_photo(user_info['user_id'], 
                         photo=photo_path, 
                         caption=ded(lang.open_profile(
@@ -114,9 +120,9 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
                         balance=user_info['balance'],
                         test_balance=user_info['test_balance'], 
                         referals=user_info['ref_count'], 
-                        referals_sum=None, 
-                        refer_lvl=None, 
-                        balance_vivod=None, 
+                        refer_lvl=ref_lvl, 
+                        balance_vivod=user_info['vivod'], 
+                        reffer = reffer,
                         refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=call.from_user.id))
     elif user_info['request_test'] == 1:
         await call.answer(lang.no_demo)
