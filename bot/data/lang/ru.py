@@ -160,3 +160,6 @@ class Texts:
                     Ваш баланс: {balance} 🪙"""
         return msg
     refil_sposob = "💳 Выберите способ пополнения"
+    choose_coin = "Выберите сторону монетки 🪙"
+    Eagle = "🦅 Орел"
+    Tails = "1️⃣ Решка"

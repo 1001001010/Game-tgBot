@@ -24,6 +24,15 @@ def payment_method():
     keyboard.add(kb[0], kb[1])
     return keyboard
 
+def choose_vertical(lang, type_balance, bet):
+    keyboard = InlineKeyboardMarkup()
+    kb=[]
+    kb.append(InlineKeyboardButton(lang.Eagle, callback_data=f"monetka:eagle:{type_balance}:{bet}"))
+    kb.append(InlineKeyboardButton(lang.Tails, callback_data=f"monetka:tails:{type_balance}:{bet}"))
+    
+    keyboard.add(kb[0], kb[1])
+    return keyboard
+
 def payment_method_back():
     keyboard = InlineKeyboardMarkup()
     kb=[]

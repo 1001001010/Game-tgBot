@@ -9,7 +9,7 @@ import asyncio
 
 from bot.data.loader import dp, bot
 from bot.data.config import db, game_slots, win_coin_sticker_id, lose_coin_sticker_id
-from bot.keyboards.inline import kb_back_to_game_menu, game_next
+from bot.keyboards.inline import kb_back_to_game_menu, game_next, choose_vertical
 from bot.utils.utils_functions import get_language, ded, func__arr_game, is_number
 from bot.filters.filters import IsAdmin
 from bot.state.users import UsersBet, UsersGame, UserCube
@@ -137,16 +137,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         else:
                             await message.answer(ded(lang.lose_game(summ=data['bet'], test_balance=float(user['test_balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                     elif emoji == '🪙':
-                        if random.uniform(0, 1) < game_settings['chance_demo'] :
-                            await bot.send_sticker(message.from_user.id, win_coin_sticker_id)
-                            new_balance = await db.get_user(user_id=message.from_user.id)
-                            balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
-                            await db.update_user(id=user['user_id'], test_balance=balance)
-                        else:
-                            await bot.send_sticker(message.from_user.id, lose_coin_sticker_id)
-                            await message.answer(ded(lang.lose_game(summ=data['bet'], test_balance=float(user['test_balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
-                        
+                        await message.answer(lang.choose_coin, reply_markup=choose_vertical(lang=lang, type_balance=data['type_bet'], bet=data['bet']))
             ####РЕАЛ####
             elif data['type_bet'] == 'real':
                 if float(user['balance']) < float(data['bet']):
@@ -208,17 +199,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         else:
                             await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
                     elif emoji == '🪙':
-                        await db.update_user(id=user['user_id'], amount_coin=float(user['amount_coin']+1))
-                        if random.uniform(0, 1) < game_settings['chance_real'] :
-                            await bot.send_sticker(message.from_user.id, win_coin_sticker_id)
-                            new_balance = await db.get_user(user_id=message.from_user.id)
-                            balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
-                            await db.update_user(id=user['user_id'], balance=balance)
-                        else:
-                            await bot.send_sticker(message.from_user.id, lose_coin_sticker_id)
-                            await message.answer(ded(lang.lose_game(summ=data['bet'], balance=float(user['balance'])-float(data['bet']))), reply_markup=game_next(lang=lang, bet=data['bet'], type_balance=data['type_bet'], game=data['game']))
-                        
+                        await message.answer(lang.choose_coin, reply_markup=choose_vertical(lang=lang, type_balance=data['type_bet'], bet=data['bet']))
     else:
         await message.answer(lang.need_number)
     await state.finish()
@@ -289,16 +270,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     else:
                         await call.message.answer(ded(lang.lose_game(summ=bet, test_balance=float(user['test_balance'])-float(bet))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
                 elif emoji == '🪙':
-                    if random.uniform(0, 1) < game_settings['chance_demo'] :
-                        await bot.send_sticker(call.message.from_user.id, win_coin_sticker_id)
-                        new_balance = await db.get_user(user_id=call.from_user.id)
-                        balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
-                        await db.update_user(id=user['user_id'], test_balance=balance)
-                    else:
-                        await bot.send_sticker(call.from_user.id, lose_coin_sticker_id)
-                        await call.message.answer(ded(lang.lose_game(summ=bet, test_balance=float(user['test_balance'])-float(bet))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
-                    
+                    await call.message.answer(lang.choose_coin, reply_markup=choose_vertical(lang=lang, type_balance=type_balance, bet=bet))
         ####РЕАЛ####
         elif type_balance == 'real':
             if float(user['balance']) < float(bet):
@@ -360,13 +332,58 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     else:
                         await call.message.answer(ded(lang.lose_game(summ=bet, balance=float(user['balance'])-float(bet))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
                 elif emoji == '🪙':
-                    await db.update_user(id=user['user_id'], amount_coin=float(user['amount_coin']+1))
-                    if random.uniform(0, 1) < game_settings['chance_real'] :
-                        await bot.send_sticker(call.from_user.id, win_coin_sticker_id)
-                        new_balance = await db.get_user(user_id=call.from_user.id)
-                        balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(bet)*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
-                        await db.update_user(id=user['user_id'], balance=balance)
-                    else:
-                        await bot.send_sticker(call.from_user.id, lose_coin_sticker_id)
-                        await call.message.answer(ded(lang.lose_game(summ=bet, balance=float(user['balance'])-float(bet))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
+                    await call.message.answer(lang.choose_coin, reply_markup=choose_vertical(lang=lang, type_balance=type_balance, bet=bet))
+
+@dp.callback_query_handler(text_startswith='monetka', state="*")
+async def back_to_menu(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
+    coin = call.data.split(":")[1]
+    type_balance = call.data.split(":")[2]
+    bet = call.data.split(":")[3]
+    lang = await get_language(call.from_user.id)
+    game = 'coin'
+    user = await db.get_user(user_id=call.from_user.id)  
+    game_settings = await db.get_game_settings(name='coin')
+    if type_balance == 'real':
+        await db.update_user(id=user['user_id'], amount_coin=float(user['amount_coin']+1))
+        if random.uniform(0, 1) < game_settings['chance_real']:
+            if coin == 'eagle':
+                await bot.send_sticker(call.from_user.id, win_coin_sticker_id)
+                new_balance = await db.get_user(user_id=call.from_user.id)
+                balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
+                await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(bet)*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
+                await db.update_user(id=user['user_id'], balance=balance)
+            elif coin == 'tails':
+                await bot.send_sticker(call.from_user.id, lose_coin_sticker_id)
+                new_balance = await db.get_user(user_id=call.from_user.id)
+                balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
+                await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['balance'])+float(bet)*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
+                await db.update_user(id=user['user_id'], balance=balance)
+        else:
+            if coin == 'eagle':
+                await bot.send_sticker(call.from_user.id, lose_coin_sticker_id)
+                await call.message.answer(ded(lang.lose_game(summ=bet, balance=float(user['balance']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
+            if coin == 'tails':
+                await bot.send_sticker(call.from_user.id, win_coin_sticker_id)
+                await call.message.answer(ded(lang.lose_game(summ=bet, balance=float(user['balance']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
+    elif type_balance == 'demo':
+        if random.uniform(0, 1) < game_settings['chance_demo']:
+            if coin == 'eagle':
+                await bot.send_sticker(call.from_user.id, win_coin_sticker_id)
+                new_balance = await db.get_user(user_id=call.from_user.id)
+                balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
+                await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
+                await db.update_user(id=user['user_id'], test_balance=balance)
+            elif coin == 'tails':
+                await bot.send_sticker(call.from_user.id, lose_coin_sticker_id)
+                new_balance = await db.get_user(user_id=call.from_user.id)
+                balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
+                await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), kef=game_settings['factor'], balance=float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
+                await db.update_user(id=user['user_id'], test_balance=balance)
+        else:
+            if coin == 'eagle':
+                await bot.send_sticker(call.from_user.id, lose_coin_sticker_id)
+                await call.message.answer(ded(lang.lose_game(summ=bet, balance=float(user['test_balance']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
+            if coin == 'tails':
+                await bot.send_sticker(call.from_user.id, win_coin_sticker_id)
+                await call.message.answer(ded(lang.lose_game(summ=bet, balance=float(user['test_balance']))), reply_markup=game_next(lang=lang, bet=bet, type_balance=type_balance, game=game))
