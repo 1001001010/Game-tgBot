@@ -207,3 +207,9 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
     lang = await get_language(call.from_user.id)
     photo_path = InputFile('./bot/data/photo/game.png')
     await bot.send_photo(call.from_user.id, photo=photo_path, caption=lang.game_menu, reply_markup=game_menu(texts=lang))
+    
+@dp.callback_query_handler(text="withdrawal", state="*")
+async def user_lang(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    

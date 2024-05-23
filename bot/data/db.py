@@ -101,6 +101,10 @@ class DB(AsyncClass):
         params.append(id)
         await self.con.execute(queryy + "WHERE user_id = ?", params)
         await self.con.commit()
+        
+    async def all_deposit(self):
+        row = await self.con.execute("SELECT total_pay FROM users")
+        return await row.fetchall()
     
     # Регистрация пользователя в БД
     async def register_user(self, user_id, user_name, first_name):

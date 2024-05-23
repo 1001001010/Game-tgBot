@@ -61,6 +61,11 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     football_info = await db.get_game_settings(name='football')
     bowling_info = await db.get_game_settings(name='bowling')
     dice_info = await db.get_game_settings(name='dice')
+    all_deposits = await db.all_deposit()
+    summ_deposits = 0
+    for row in all_deposits:
+        summ_deposits += float(row['total_pay'])
+        
     for user in all_users:
         if int(user['reg_date_unix']) - int(settings['profit_day']) >= 0:
             show_users_day += 1
@@ -75,6 +80,8 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     👥 Всего пользователей: <code>{all_user}</code>  чел.
     👥 Ползователей за неделю <code>{show_users_week}</code>  чел.
     👥 Пользователей за день <code>{show_users_day}</code>  чел.
+        
+    <b>Всего пополненно:</b> <code>{summ_deposits}</code> 💎
     
     <b>Игры:</b>
     🎰 Слоты: 

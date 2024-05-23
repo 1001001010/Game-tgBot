@@ -1,14 +1,16 @@
 from AsyncPayments.cryptoBot import AsyncCryptoBot
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
-
+from xrocket import PayAPI
 
 from bot.data.loader import dp, bot
-from bot.data.config import cryptobot_token, db
+from bot.data.config import cryptobot_token, xrocket_token, db
 from bot.keyboards.inline import payment_method_back, kb_payment_link
+# , crypto
 from bot.state.users import UserPayment
 from bot.utils.utils_functions import is_number, get_language
 cryptoBot = AsyncCryptoBot(cryptobot_token)
+xRoketApi = PayAPI(api_key=xrocket_token)
 
 @dp.callback_query_handler(text_startswith='payment', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
@@ -16,7 +18,15 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
     lang = await get_language(call.from_user.id)
     type_payment = call.data.split(":")[1]
     await call.message.delete()
-    await call.message.answer(lang.need_summa, reply_markup=payment_method_back())
+    if type_payment == 'cryptobot':
+        await call.message.answer(lang.need_summa_cryptobot, reply_markup=payment_method_back())
+    elif type_payment == 'xrocket':
+        # values = await xRoketApi.currencies_available()
+        # print(values)
+        cheque = await xRoketApi.cheque_create(currency='BOLT', amount=1, enable_captcha=False)
+        print(cheque)
+        # await call.message.answer(lang.vibor_crypto, reply_markup=await crypto())
+        # await call.message.answer(lang.need_summa_, reply_markup=payment_method_back())
     await UserPayment.amount.set()
     await state.update_data(method=type_payment)
     
@@ -46,7 +56,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
         if invoices.status == 'active':
             await call.answer(lang.not_pay)
         if invoices.status == 'paid':
-            # await call.message.delete()
+            await call.message.delete()
             await call.answer(lang.yes_pay)
             user = await db.get_user(user_id = call.from_user.id)
             if user['ref_id'] is not None:

@@ -31,12 +31,8 @@ bot_token = read_config['settings']['token'].strip().replace(" ", "")  # Ток�
 channel_id = read_config['settings']['channel_id'].strip().replace(" ", "")
 channel_url = read_config['settings']['channel_url'].strip().replace(" ", "")
 cryptobot_token = read_config['settings']['crypto_bot_token']
+xrocket_token = read_config['settings']['crypto_bot_token']
 path_database = "tgbot/data/database.db"  # Путь к Базе Данных
-
-# CryptoBot
-cryptoBot = AsyncCryptoBot(read_config['settings']['crypto_bot_token'].strip().replace(" ", ""))
-
-xrocket = read_config['settings']['crypto_bot_token'].strip().replace(" ", "")
 
 game_slots = {
     'slots': 'game_slots',
