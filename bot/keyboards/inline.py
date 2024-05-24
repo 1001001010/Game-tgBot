@@ -4,6 +4,17 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.data import config
 from bot.data.config import db
 
+def kb_vivod_zayavka(summa, user_id):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    kb.append(InlineKeyboardButton("✅ Принять", callback_data=f"vivod:yes:{summa}:{user_id}"))
+    kb.append(InlineKeyboardButton("❌ Отклонить", callback_data=f"vivod:no:{summa}:{user_id}"))
+
+    keyboard.add(kb[0], kb[1])
+
+    return keyboard
+
+
 def kb_payment_link(lang, method, link, pay_id, summa):
     keyboard = InlineKeyboardMarkup()
     kb = []

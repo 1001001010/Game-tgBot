@@ -2,13 +2,14 @@ import os
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.types import InputFile 
+from datetime import datetime
 
 from bot.data.loader import dp, bot
-from bot.data.config import lang_ru, lang_en, db
+from bot.data.config import lang_ru, lang_en, db, admin_chat
 from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, \
-                                choose_languages_kb, game_menu, payment_method
-from bot.utils.utils_functions import get_language, ded
-from bot.state.users import UsersCoupons
+                                choose_languages_kb, game_menu, payment_method, kb_vivod_zayavka
+from bot.utils.utils_functions import get_language, ded, is_number
+from bot.state.users import UsersCoupons, UserVivid
 
 #Открытие пополнения
 @dp.message_handler(text=lang_ru.refill, state="*")
@@ -218,5 +219,68 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(text="withdrawal", state="*")
 async def user_lang(call: CallbackQuery, state: FSMContext):
     await state.finish()
+    lang = await get_language(call.from_user.id)
     await call.message.delete()
+    balance = await db.get_user(user_id = call.from_user.id)
+    await call.message.answer(lang.summa_vivoda.format(balance=balance['balance']))
+    await UserVivid.amount.set()
     
+@dp.message_handler(state=UserVivid.amount)
+async def functions_profile_get(message: Message, state: FSMContext):
+    lang = await get_language(message.from_user.id)
+    user = await db.get_user(user_id=message.from_user.id)
+    if is_number(message.text):
+        if float(user['balance']) >= float(message.text):
+            await state.update_data(amount = message.text)
+            await message.answer(lang.need_Crypto)
+            await UserVivid.method.set()
+        else:
+            await message.answer(lang.need_balance)
+    else:
+        await message.answer(lang.need_number)
+        
+@dp.message_handler(state=UserVivid.method)
+async def functions_profile_get(message: Message, state: FSMContext):
+    await state.update_data(method = message.text)
+    lang = await get_language(message.from_user.id)
+    await message.answer(lang.need_adress)
+    await UserVivid.adress.set()
+
+@dp.message_handler(state=UserVivid.adress)
+async def functions_profile_get(message: Message, state: FSMContext):
+    lang = await get_language(message.from_user.id)
+    await state.update_data(adress = message.text)
+    data = await state.get_data()
+    # print(data)
+    user = await db.get_user(user_id=message.from_user.id)
+    if user['user_name'] == "":
+        us = await bot.get_chat(message.from_user.id)
+        name = us.get_mention(as_html=True)
+    else:
+        name = f"@{user['user_name']}"
+    msg = f"""
+    Новая заявка от {name}
+    Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+    
+    💰 Сумма: <code>{data['amount']}</code>
+    🪙 Монета: <code>{data['method']}</code>
+    💎 Адресс: <code>{data['adress']}</code>
+    """
+    await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=data['amount'], user_id=user['user_id']))
+    await db.update_user(id=user['user_id'], balance=float(user['balance']-float(data['amount'])))
+    await message.answer(lang.succes_msg)
+    
+@dp.callback_query_handler(text_startswith='vivod', state="*")
+async def func_value(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    status = call.data.split(":")[1]
+    summa = call.data.split(":")[2]
+    user_id = call.data.split(":")[3]
+    user = await db.get_user(user_id=user_id)
+    if status == 'yes':
+        await bot.send_message(user_id, lang.vivod_success_msg)
+    elif status == 'no':
+        await bot.send_message(user_id, lang.vivod_mimo)
+        await db.update_user(id=user_id, balance=float(user['balance'])+float(summa))

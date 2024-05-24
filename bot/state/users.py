@@ -23,3 +23,8 @@ class UserPayment(StatesGroup):
     amount = State()
     method = State()
     coin = State()
+    
+class UserVivid(StatesGroup):
+    amount = State()
+    method = State()
+    adress = State()
