@@ -17,6 +17,13 @@ async def func__refill(message: Message, state: FSMContext):
     await state.finish()
     lang = await get_language(message.from_user.id)
     await message.answer(lang.refil_sposob, reply_markup=payment_method())
+    
+@dp.callback_query_handler(text='payment_method', state="*")
+async def back_to_menu(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    await call.message.answer(lang.refil_sposob, reply_markup=payment_method())
 
 #Открытие Профиля
 @dp.message_handler(text=lang_ru.reply_kb2, state="*")

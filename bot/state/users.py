@@ -22,3 +22,4 @@ class UserCube(StatesGroup):
 class UserPayment(StatesGroup):
     amount = State()
     method = State()
+    coin = State()

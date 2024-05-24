@@ -1,21 +1,17 @@
-import asyncio
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
-from aiogram.types import ContentType
-import random
+import requests
 
-bot = Bot(token='5851624722:AAGB2LVdgGgaUAcOIwD0pM8POuIsFY8bAm4')
-dp = Dispatcher(bot)
+def RubToTon(rub_amount):
+    response = requests.get('https://api.exchangerate-api.com/v4/latest/RUB')
+    data = response.json()
+    usd_price = 1 / data['rates']['USD']
+    response = requests.get(f'https://api.coingecko.com/api/v3/coins/the-open-network?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false')
+    data = response.json()
+    ton_price_usd = data['market_data']['current_price']['usd']
+    ton_price_rub = ton_price_usd * usd_price
+    ton_amount = rub_amount / ton_price_rub
+    return ton_amount
 
-@dp.message_handler(lambda message: message.text == '🏀')
-async def throw_ball(message: types.Message):
-    print("всеэ")
-    success_rate = 1  # Шанс попадания 70%
-    if random.random() < success_rate:
-        await message.answer("Поздравляю, мяч попал в корзину! 🎉🏀")
-    else:
-        await message.answer("Мяч промахнулся... Попробуйте еще раз! 🏀")
-    
-if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)  # Используйте executor.start_polling вместо loop
+# Пример использования
+rub_amount = 1
+ton_amount = RubToTon(rub_amount)
+print(f'{rub_amount} RUB is equal to {ton_amount:.8f} TONCOIN(s)')

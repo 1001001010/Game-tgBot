@@ -4,11 +4,11 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.data import config
 from bot.data.config import db
 
-def kb_payment_link(lang, method, link, pay_id):
+def kb_payment_link(lang, method, link, pay_id, summa):
     keyboard = InlineKeyboardMarkup()
     kb = []
     kb.append(InlineKeyboardButton(lang.pay_link, url=link))
-    kb.append(InlineKeyboardButton(lang.pay_id, callback_data=f"cheak_pay:{method}:{pay_id}"))
+    kb.append(InlineKeyboardButton(lang.pay_id, callback_data=f"cheak_pay:{method}:{pay_id}:{summa}"))
 
     keyboard.add(kb[0])
     keyboard.add(kb[1])
@@ -33,6 +33,25 @@ def payment_method():
     kb.append(InlineKeyboardButton('🚀 xRocket', callback_data="payment:xrocket"))
     
     keyboard.add(kb[0], kb[1])
+    return keyboard
+
+def crypto(amount):
+    keyboard = InlineKeyboardMarkup()
+    kb=[]
+    kb.append(InlineKeyboardButton('TONCOIN', callback_data=f"valute:TONCOIN:{amount}"))
+    # kb.append(InlineKeyboardButton('SCALE', callback_data=f"valute:SCALE:{amount}"))
+    # kb.append(InlineKeyboardButton('HEDGE', callback_data=f"valute:HEDGE:{amount}"))
+    # kb.append(InlineKeyboardButton('AMBR', callback_data=f"valute:AMBR:{amount}"))
+    # kb.append(InlineKeyboardButton('TAKE', callback_data=f"valute:TAKE:{amount}"))
+    # kb.append(InlineKeyboardButton('TNX', callback_data=f"valute:TNX:{amount}"))
+    kb.append(InlineKeyboardButton('BOLT', callback_data=f"valute:BOLT:{amount}"))
+    kb.append(InlineKeyboardButton('GRBS', callback_data=f"valute:GRBS:{amount}"))
+    kb.append(InlineKeyboardButton('jUSDT', callback_data=f"valute:jUSDT:{amount}"))
+    kb.append(InlineKeyboardButton('Отмена', callback_data="payment_method"))
+    
+    keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[2], kb[3])
+    keyboard.add(kb[4])
     return keyboard
 
 def choose_vertical(lang, type_balance, bet):

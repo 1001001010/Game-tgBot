@@ -31,7 +31,7 @@ bot_token = read_config['settings']['token'].strip().replace(" ", "")  # Ток�
 channel_id = read_config['settings']['channel_id'].strip().replace(" ", "")
 channel_url = read_config['settings']['channel_url'].strip().replace(" ", "")
 cryptobot_token = read_config['settings']['crypto_bot_token']
-xrocket_token = read_config['settings']['crypto_bot_token']
+xrocket_token = read_config['settings']['xrocket_token']
 path_database = "tgbot/data/database.db"  # Путь к Базе Данных
 
 game_slots = {
