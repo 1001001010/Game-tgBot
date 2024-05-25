@@ -28,3 +28,4 @@ class UserVivid(StatesGroup):
     amount = State()
     method = State()
     adress = State()
+    network = State()

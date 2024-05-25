@@ -4,6 +4,31 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.data import config
 from bot.data.config import db
 
+def kb_network():
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    kb.append(InlineKeyboardButton("The Open Network (TON)", callback_data=f"network:TON"))
+    kb.append(InlineKeyboardButton("TRON (TRC20)", callback_data=f"network:TRC20"))
+    kb.append(InlineKeyboardButton("Ethereum (ERC20)", callback_data=f"network:ERC20"))
+    kb.append(InlineKeyboardButton("BNB Smart Chain (BER20)", callback_data=f"network:BER20"))
+
+    keyboard.add(kb[0])
+    keyboard.add(kb[1])
+    keyboard.add(kb[2])
+    keyboard.add(kb[3])
+
+    return keyboard
+
+def yes_or_no_vivod(network, adress, amount_vivod, comma_vivod):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    kb.append(InlineKeyboardButton("✅ Подтвердить", callback_data=f"ok_vivod:yes:{network}:{adress}:{amount_vivod}"))
+    kb.append(InlineKeyboardButton("❌ Отменить", callback_data=f"ok_vivod:no"))
+
+    keyboard.add(kb[0], kb[1])
+
+    return keyboard
+
 def kb_vivod_zayavka(summa, user_id):
     keyboard = InlineKeyboardMarkup()
     kb = []
@@ -14,6 +39,14 @@ def kb_vivod_zayavka(summa, user_id):
 
     return keyboard
 
+def kb_vivod_moneta():
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    kb.append(InlineKeyboardButton("USDT", callback_data=f"moneta:USDT"))
+
+    keyboard.add(kb[0])
+
+    return keyboard
 
 def kb_payment_link(lang, method, link, pay_id, summa):
     keyboard = InlineKeyboardMarkup()

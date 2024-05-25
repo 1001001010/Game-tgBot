@@ -7,9 +7,11 @@ from datetime import datetime
 from bot.data.loader import dp, bot
 from bot.data.config import lang_ru, lang_en, db, admin_chat
 from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, \
-                                choose_languages_kb, game_menu, payment_method, kb_vivod_zayavka
+                                choose_languages_kb, game_menu, payment_method, kb_vivod_zayavka, kb_vivod_moneta, \
+                                kb_network, yes_or_no_vivod
 from bot.utils.utils_functions import get_language, ded, is_number
 from bot.state.users import UsersCoupons, UserVivid
+from bot.utils.converter import convert_dollars_to_rubles
 
 #Открытие пополнения
 @dp.message_handler(text=lang_ru.refill, state="*")
@@ -232,18 +234,37 @@ async def functions_profile_get(message: Message, state: FSMContext):
     if is_number(message.text):
         if float(user['balance']) >= float(message.text):
             await state.update_data(amount = message.text)
-            await message.answer(lang.need_Crypto)
-            await UserVivid.method.set()
+            await message.answer(lang.need_Crypto, reply_markup=kb_vivod_moneta())
+            # await UserVivid.method.set()
         else:
             await message.answer(lang.need_balance)
     else:
         await message.answer(lang.need_number)
         
-@dp.message_handler(state=UserVivid.method)
-async def functions_profile_get(message: Message, state: FSMContext):
-    await state.update_data(method = message.text)
-    lang = await get_language(message.from_user.id)
-    await message.answer(lang.need_adress)
+@dp.callback_query_handler(text_startswith='moneta', state="*")
+async def func_value(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    moneta = call.data.split(":")[1]
+    await state.update_data(method = moneta)
+    await call.message.answer(lang.need_network, reply_markup=kb_network())
+    # await UserVivid.adress.set()
+
+@dp.callback_query_handler(text_startswith='network', state="*")
+async def func_value(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    network = call.data.split(":")[1]
+    if network == 'TON':
+        network_name = 'The Open Network (TON)'
+    elif network == 'TRC20':
+        network_name = 'TRON (TRC20)'
+    elif network == 'ERC20':
+        network_name = 'Ethereum (ERC20)'
+    elif network == 'BER20':
+        network_name = 'BNB Smart Chain (BER20)'
+    await state.update_data(network = network_name)
+    await call.message.answer(lang.need_adress)
     await UserVivid.adress.set()
 
 @dp.message_handler(state=UserVivid.adress)
@@ -251,25 +272,47 @@ async def functions_profile_get(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     await state.update_data(adress = message.text)
     data = await state.get_data()
+    await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
+                                               adress=data['adress'],
+                                               amount_vivod=data['amount'],
+                                               comma_vivod='0.5 USDT ($0.5)')), reply_markup=yes_or_no_vivod(network=data['network'],
+                                                                                                            adress=data['adress'],
+                                                                                                            amount_vivod=data['amount'],
+                                                                                                            comma_vivod='0.5 USDT ($0.5)'))
     # print(data)
-    user = await db.get_user(user_id=message.from_user.id)
-    if user['user_name'] == "":
-        us = await bot.get_chat(message.from_user.id)
-        name = us.get_mention(as_html=True)
+@dp.callback_query_handler(text_startswith='ok_vivod', state="*")
+async def func_value(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    status = call.data.split(":")[1]
+    if status == 'yes':
+        network = call.data.split(":")[2]
+        adress = call.data.split(":")[3]
+        amount_vivod = call.data.split(":")[4]
+        comma_vivod = call.data.split(":")[5]
+        user = await db.get_user(user_id=call.from_user.id)
+        if user['user_name'] == "":
+            us = await bot.get_chat(call.from_user.id)
+            name = us.get_mention(as_html=True)
+        else:
+            name = f"@{user['user_name']}"
+        comma = convert_dollars_to_rubles(0.5)
+        msg = f"""
+        Новая заявка от {name}
+        Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+        
+        💰 Сумма: <code>{amount_vivod}</code>
+        💵 Сумма с учетом комиссии: <code>{float(amount_vivod) - float(comma)}</code>
+        🪙 Сеть: <code>{network}</code>
+        💎 Адресс: <code>{adress}</code>
+        💚  Комиссия: <code>{comma_vivod}</code>
+        """
+        await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=amount_vivod, user_id=user['user_id']))
+        await db.update_user(id=user['user_id'], balance=float(user['balance']-float(amount_vivod)))
+        await call.message.answer(lang.succes_msg)
     else:
-        name = f"@{user['user_name']}"
-    msg = f"""
-    Новая заявка от {name}
-    Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-    
-    💰 Сумма: <code>{data['amount']}</code>
-    🪙 Монета: <code>{data['method']}</code>
-    💎 Адресс: <code>{data['adress']}</code>
-    """
-    await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=data['amount'], user_id=user['user_id']))
-    await db.update_user(id=user['user_id'], balance=float(user['balance']-float(data['amount'])))
-    await message.answer(lang.succes_msg)
-    
+        await call.message.answer(lang.otklon_vivod, reply_markup=back_to_profile(lang))
+        
 @dp.callback_query_handler(text_startswith='vivod', state="*")
 async def func_value(call: CallbackQuery, state: FSMContext):
     await state.finish()
@@ -280,6 +323,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     user_id = call.data.split(":")[3]
     user = await db.get_user(user_id=user_id)
     if status == 'yes':
+        await db.update_user(id=user_id, vivod=float(user['vivod'])+float(summa))
         await bot.send_message(user_id, lang.vivod_success_msg)
     elif status == 'no':
         await bot.send_message(user_id, lang.vivod_mimo)

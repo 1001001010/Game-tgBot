@@ -101,3 +101,24 @@ async def RubToJusdt(rub_amount):
     jusdt_price_rub = jusdt_price_usd * usd_price
     jusdt_amount = rub_amount / jusdt_price_rub
     return jusdt_amount
+
+class RealTimeCurrencyConverter:
+    def __init__(self, url):
+        self.url = url
+        self.data = requests.get(url).json()
+
+    def get_rate(self, from_currency, to_currency):
+        if from_currency != 'USD':
+            from_currency_rate = self.data['rates'][from_currency]
+            return self.data['rates'][to_currency] / from_currency_rate
+        else:
+            return self.data['rates'][to_currency]
+
+def convert_dollars_to_rubles(amount):
+    url = f'https://v6.exchangerate-api.com/v6/YOUR_API_KEY/latest/USD'
+    converter = RealTimeCurrencyConverter(url)
+    exchange_rate = converter.get_rate('USD', 'RUB')
+
+    rubles = amount * exchange_rate
+
+    print(f"{amount} USD is equal to {rubles} RUB.")
