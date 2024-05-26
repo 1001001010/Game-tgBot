@@ -10,12 +10,13 @@ class Texts:
     back = "🔙 To main menu"
     back_to_adm_m = "🔙 Back"
     back = "⬅Back"
+    conclusion = "💸 Withdraw balance"
     refill = "💰 Refill balance"
     groups_list = "Groups 📰"
     support_inl = "⚙️ Tech. Support"
     test_balance = "🏦 Get demo balance"
-    change_language = "🇬🇧 Change Language"
-    promo = "🎫 Enter promo code"
+    change_language = "🇷🇺 Change Language"
+    promo = "🎫 Promo code"
     new_promo = "💎 Create a promotional code"
     del_promo = "🎲 Remove promo code"
     ####GAMES####
@@ -24,7 +25,7 @@ class Texts:
     game_basketball = "🏀 Basketball"
     game_bowling = "🎳 Bowling"
     game_football = "⚽ Football"
-    game_coin = "🪙 Coin"
+    game_coin = "🪙 Coin" 
     adm_edit_factor = "📊 Factor: X{factor}"
     min_bet = "Min. Bet: {min_bet} 🪙"
     real_chance = "💸 Chance of winning: {real_chance}%"
@@ -37,12 +38,15 @@ class Texts:
     adm_user_give_demo = "🏦 Give Demo"
     adm_user_ban = "⛔ Block"
     adm_user_unban = "🟢 Unban"
-    
+    go_next = "Play more 🔃"
+    pay_link = "⛓ Payment link"
+    pay_id = "🔃 Check payment"
+
     
 ################################################## #########################
-################################## Messages ############### ################
+################################## Messages ################ ################
 ################################################## #########################
-    reg_user = "💎 New user {name} has been registered" # {name} - username of the user
+    reg_user = "💎 New user {name} has been registered" # {name} - username of the user 
     welcome = "Welcome 👋"
     admin_menu = "welcome to the Administrator menu 👋"
     def open_profile(self, user_id, balance, user_name, referals, referals_sum, refer_lvl, balance_vivod, refer_link, test_balance, reffer):
@@ -53,16 +57,16 @@ class Texts:
                 🏦 Demo balance: <code>{test_balance}</code>
                 💸 Output: <code>{balance_vivod}</code>
             
-                👥 Users invited: <code>{referals}</code>
-                🍬 Income from referrals: <code>{referals_sum}</code> | Level: <code>{refer_lvl}</code>
+                👥 Users invited: <code>{referals}</code> 
+                🍬 Income from referrals: <code>{referals_sum}</code> | Level: <code>{refer_lvl}</code> 
                 ⚙️ You were invited by: {reffer}
-                🔗 Referral link:
+                🔗 Referral link: 
                 <code>{refer_link}</code>"""
         return msg
     admin_settings = "⚙️ Settings menu"
-    admin_edit_faq = "✍ Enter new text for FAQ"
+    admin_edit_faq = "✍ Enter new text for FAQ"   
     faq_success = "✅ FAQ Changed successfully"
-    admin_mail = "❗ Select mailing type"
+    admin_mail = "❗ Select mailing type" 
     mail_only_text = "💎 Just text"
     mail_with_photo = "🖼Text with picture"
     admin_text_send = "🖊️ Enter your newsletter text"
@@ -85,14 +89,15 @@ class Texts:
     def bet_msg(self, game_name_text, min_bet, user_balance):
         msg = f"""Game: {game_name_text}
     
-                💰 Minimum bet: <code>{min_bet}</code>
+                💰 Minimum bet: <code>{min_bet}</code> 
                 🏦 Your balance: <code>{user_balance}</code> 🪙
                 <b>❗ Enter the bet amount:</b> """
         return msg
     def bet_msg_demo(self, game_name_text, min_bet, demo_balance):
         msg = f"""Game: {game_name_text}
     
-                💰 Minimum bet: <code>{min_bet}</code>
+                💰 Minimum bet: <code>{min_bet}</code> 
+            
                 🏦 Your Demo balance: <code>{demo_balance}</code> 🪙
                 <b>❗ Enter the bet amount:</b> """
         return msg
@@ -103,7 +108,7 @@ class Texts:
     admin_edit_min_bet = "🌟 Enter a new <b>minimum bet</b>"
     admin_edit_factor = "🧮 Enter a new <b>factor</b>"
     admin_open_profile ="""<b>👤 Profile:
-                💎 User: {name}
+                💎 User: {name} 
                 🆔 ID: <code>{user_id}</code>
                 📅 Registration date: <code>{total_refill}</code>
             
@@ -125,7 +130,7 @@ class Texts:
                 🔗 Ban status: <code>{ban_status}</code>
                 {cause_ban}
                 👥 Referrals: <code>{count_refers} people</code>
-                💎 Earned from referrals: <code>{referalst_summa}</code>
+                💎 Earned from referrals: <code>{referalst_summa} 🪙</code>
                 📜 List of referrals:\n</b>"""
     need_number = "<b>You need to enter a number!</b>"
     wright_summ = "<b>Enter sum:</b>"
@@ -141,3 +146,53 @@ class Texts:
     nobody = "<code>Nobody</code>"
     no_money = "Insufficient balance!"
     no_sub = "<b>❗ Error!\nYou have not subscribed to the channel.</b>"
+    def lose_game(self, summ, balance):
+        msg = f"""<b>Alas, you lost 🥴</b>
+                
+                    Your loss: -{summ} 🪙
+                
+                    Your balance: {balance} 🪙"""
+        return msg
+    def win_game(self, summ, balance, kef):
+        msg = f"""<b>Hurray, you won 🤩</b>
+                
+                    Coefficient: X{kef}
+                    Your winnings: {summ} 🪙
+                
+                    Your balance: {balance} 🪙"""
+        return msg
+    refil_sposob = "💳 Select a replenishment method"
+    choose_coin = "Choose coin side 🪙"
+    Eagle = "🦅 Eagle"
+    Tails = "1️⃣ Tails"
+    need_summa_cryptobot = "Enter the top-up amount in <code>₽</code>:"
+    need_summa_xRoket = "Enter the top-up amount in <code>{coin}</code>:"
+    payment_link = "Pay using the link and click on the button below to verify your payment"
+    not_pay = "❌ Payment not found"
+    yes_pay = "✅ Paid successfully"
+    success_pay = "💰 Balance successfully replenished"
+    ref_plus_balance = "💚 Your referral has replenished the balance, your percentage: {percent}"
+    your_cube = "Your cube ⬇️"
+    enemy_cube = "Enemy Cube ⬇️"
+    bank_money = "Draw!\nMoney returned to balance"
+    vibor_crypto = "💎 Select the desired cryptocurrency for payment"
+    summa_vivoda = "💰 Your balance: <code>{balance}</code>\n\nEnter the amount to withdraw: "
+    need_Crypto = "<b>📤 Withdrawal</b>\nSelect a withdrawal method: "
+    need_adress = "Enter your withdrawal address"
+    need_network = "<b>Select a network to send USDT balance to</b>"
+    succes_msg = "Your application has been sent successfully, please wait for confirmation"
+    need_balance = "Not enough balance"
+    otklon_vivod = "Canceled"
+    vivod_mimo = "Your withdrawal request was rejected by the administrator\nThe money has been returned to your balance"
+    vivod_success_msg = "Your withdrawal request has been approved! Wait for the funds to arrive"
+    Confirmation_msg = """
+        <b>Check and confirmation</b>
+    
+        <b>Network:</b> <code>{network}</code>
+        <b>Address:</b> <code>{adress}</code>
+    
+        <b>Output:</b> <code>{amount_vivod}</code>
+        <b>Commission:</b> <code>{comma_vivod}</code>
+    
+        <b>Are you sure you want to withdraw this amount?</b>     
+        """

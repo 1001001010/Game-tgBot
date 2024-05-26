@@ -43,3 +43,7 @@ class AdminPlusPrice(StatesGroup):
     type = State()
     user_id = State()
     summa = State()
+
+class АdminMethod(StatesGroup):
+    percent = State()
+    method = State()

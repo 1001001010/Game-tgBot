@@ -4,6 +4,24 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.data import config
 from bot.data.config import db
 
+async def kb_edit_network(texts):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    settings = await db.get_settings(id=1)
+    kb.append(InlineKeyboardButton(f"The Open Network (TON) | {settings['Commission_TON']}", callback_data=f"new_Edit_network:TON"))
+    kb.append(InlineKeyboardButton(f"TRON (TRC20) | {settings['Commission_TRC20']}", callback_data=f"new_Edit_network:TRC20"))
+    kb.append(InlineKeyboardButton(f"Ethereum (ERC20) | {settings['Commission_ERC20']}", callback_data=f"new_Edit_network:ERC20"))
+    kb.append(InlineKeyboardButton(f"BNB Smart Chain (BER20) | {settings['CommissionBER20']}", callback_data=f"new_Edit_network:BER20"))
+    kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
+
+    keyboard.add(kb[0])
+    keyboard.add(kb[1])
+    keyboard.add(kb[2])
+    keyboard.add(kb[3])
+    keyboard.add(kb[4])
+
+    return keyboard
+
 def kb_network():
     keyboard = InlineKeyboardMarkup()
     kb = []
@@ -19,11 +37,11 @@ def kb_network():
 
     return keyboard
 
-def yes_or_no_vivod(network, adress, amount_vivod, comma_vivod):
+def yes_or_no_vivod(vivod_id):
     keyboard = InlineKeyboardMarkup()
     kb = []
-    kb.append(InlineKeyboardButton("✅ Подтвердить", callback_data=f"ok_vivod:yes:{network}:{adress}:{amount_vivod}"))
-    kb.append(InlineKeyboardButton("❌ Отменить", callback_data=f"ok_vivod:no"))
+    kb.append(InlineKeyboardButton("✅ Подтвердить", callback_data=f"ok_vivod:yes:{vivod_id}"))
+    kb.append(InlineKeyboardButton("❌ Отменить", callback_data=f"ok_vivod:no:{vivod_id}"))
 
     keyboard.add(kb[0], kb[1])
 
@@ -168,6 +186,7 @@ async def kb_admin_settings(texts):
     kb.append(InlineKeyboardButton(f"Реф. Процент 1 лвл. | {ref_percent_1}%", callback_data="ref_percent:edit:1"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 2 лвл. | {ref_percent_2}%", callback_data="ref_percent:edit:2"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 3 лвл. | {ref_percent_3}%", callback_data="ref_percent:edit:3"))
+    kb.append(InlineKeyboardButton("🌐 Комиссия сети", callback_data="comma_network"))
     kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
     keyboard.add(kb[0], kb[1], kb[2])
     keyboard.add(kb[3])
@@ -176,6 +195,7 @@ async def kb_admin_settings(texts):
     keyboard.add(kb[6])
     keyboard.add(kb[7])
     keyboard.add(kb[8])
+    keyboard.add(kb[9])
 
     return keyboard
 

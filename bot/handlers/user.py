@@ -272,45 +272,62 @@ async def functions_profile_get(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     await state.update_data(adress = message.text)
     data = await state.get_data()
+    settings_info = await db.get_settings(id=1)
+    if data['network'] == 'The Open Network (TON)':
+        comma = settings_info['Commission_TON']
+    elif data['network'] == 'TRON (TRC20)':
+        comma = settings_info['Commission_TRC20']
+    elif data['network'] == 'Ethereum (ERC20)':
+        comma = settings_info['Commission_ERC20']
+    elif data['network'] == 'BNB Smart Chain (BER20)':
+        comma = settings_info['CommissionBER20']
+        
+    await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
+    vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
     await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
                                                adress=data['adress'],
                                                amount_vivod=data['amount'],
-                                               comma_vivod='0.5 USDT ($0.5)')), reply_markup=yes_or_no_vivod(network=data['network'],
-                                                                                                            adress=data['adress'],
-                                                                                                            amount_vivod=data['amount'],
-                                                                                                            comma_vivod='0.5 USDT ($0.5)'))
-    # print(data)
+                                               comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+
 @dp.callback_query_handler(text_startswith='ok_vivod', state="*")
 async def func_value(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     lang = await get_language(call.from_user.id)
     status = call.data.split(":")[1]
     if status == 'yes':
-        network = call.data.split(":")[2]
-        adress = call.data.split(":")[3]
-        amount_vivod = call.data.split(":")[4]
-        comma_vivod = call.data.split(":")[5]
         user = await db.get_user(user_id=call.from_user.id)
         if user['user_name'] == "":
             us = await bot.get_chat(call.from_user.id)
             name = us.get_mention(as_html=True)
         else:
             name = f"@{user['user_name']}"
-        comma = convert_dollars_to_rubles(0.5)
+        id = call.data.split(":")[2]
+        await db.update_vivod(id=id, status='Waiting')
+        comma = await db.get_settings(id=1)
+        info_vivod = await db.get_vivod(id=id)
+        if info_vivod['network'] == 'The Open Network (TON)':
+            comma = comma['Commission_TON']
+        elif info_vivod['network'] == 'TRON (TRC20)':
+            comma = comma['Commission_TRC20']
+        elif info_vivod['network'] == 'Ethereum (ERC20)':
+            comma = comma['Commission_ERC20']
+        elif info_vivod['network'] == 'BNB Smart Chain (BER20)':
+            comma = comma['CommissionBER20']
         msg = f"""
         Новая заявка от {name}
         Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         
-        💰 Сумма: <code>{amount_vivod}</code>
-        💵 Сумма с учетом комиссии: <code>{float(amount_vivod) - float(comma)}</code>
-        🪙 Сеть: <code>{network}</code>
-        💎 Адресс: <code>{adress}</code>
-        💚  Комиссия: <code>{comma_vivod}</code>
+        💰 Сумма: <code>{info_vivod['summa']}</code>
+        💵 Сумма с учетом комиссии: <code>{float(info_vivod['summa']) - float(comma)}</code>
+        🪙 Сеть: <code>{info_vivod['network']}</code>
+        💎 Адресс: <code>{info_vivod['adress']}</code>
+        💚  Комиссия: <code>{comma}</code>
         """
-        await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=amount_vivod, user_id=user['user_id']))
-        await db.update_user(id=user['user_id'], balance=float(user['balance']-float(amount_vivod)))
+        await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=info_vivod['summa'], user_id=user['user_id']))
+        await db.update_user(id=user['user_id'], balance=float(user['balance']-float(info_vivod['summa'])))
         await call.message.answer(lang.succes_msg)
     else:
+        await db.update_vivod(id=call.data.split(":")[2], status='canceled')
         await call.message.answer(lang.otklon_vivod, reply_markup=back_to_profile(lang))
         
 @dp.callback_query_handler(text_startswith='vivod', state="*")

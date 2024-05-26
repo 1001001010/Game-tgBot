@@ -101,7 +101,21 @@ class DB(AsyncClass):
         params.append(id)
         await self.con.execute(queryy + "WHERE user_id = ?", params)
         await self.con.commit()
-        
+    
+    async def update_vivod(self, id, **kwargs):
+        queryy = f"UPDATE conclusion SET"
+        queryy, params = query(queryy, kwargs)
+        params.append(id)
+        await self.con.execute(queryy + "WHERE id = ?", params)
+        await self.con.commit()
+    
+    async def get_vivod(self, **kwargs):
+        sql = "SELECT * FROM conclusion"
+        sql, parameters = query_args(sql, kwargs)
+        row = await self.con.execute(sql, parameters)
+
+        return await row.fetchone()
+    
     async def all_deposit(self):
         row = await self.con.execute("SELECT total_pay FROM users")
         return await row.fetchall()
@@ -172,6 +186,10 @@ class DB(AsyncClass):
         await self.con.execute(f"INSERT INTO activ_coupons(user_id) VALUES (?)", (user_id,))
         await self.con.commit()
 
+    async def add_vivod(self, user_id, summa, network, status, adress, data):
+        await self.con.execute('''INSERT INTO conclusion (user_id, summa, network, status, adress, data) VALUES (?, ?, ?, ?, ?, ?)''', (user_id, summa, network, status, adress, data))
+        await self.con.commit()
+
     # Редактирование промокода
     async def update_coupon(self, coupon, **kwargs):
         sql = f"UPDATE coupons SET"
@@ -198,7 +216,7 @@ class DB(AsyncClass):
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
         if len(await users_info.fetchall()) == 26:
-            print("database was found (Users | 1/3)")
+            print("database was found (Users | 1/7)")
         else:
             await self.con.execute("CREATE TABLE users ("
                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -227,12 +245,12 @@ class DB(AsyncClass):
                                    "amount_coin INTEGER DEFAULT 0,"
                                    "vivod INTEGER,"
                                    "balance INTEGER)")
-            print("database was not found (Users | 1/3), creating...")
+            print("database was not found (Users | 1/7), creating...")
             await self.con.commit()
             
         settings = await self.con.execute("PRAGMA table_info(settings)")
-        if len(await settings.fetchall()) == 11:
-            print("database was found (Settings | 2/18)")
+        if len(await settings.fetchall()) == 15:
+            print("database was found (Settings | 2/7)")
         else:
             await self.con.execute("CREATE TABLE settings("
                                     "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -245,9 +263,13 @@ class DB(AsyncClass):
                                     "ref_lvl_2 INTEGER DEFAULT 0,"
                                     "ref_lvl_3 INTEGER DEFAULT 0,"
                                     "FAQ TEXT,"
+                                    "Commission_TON INTEGER DEFAULT 0,"
+                                    "Commission_TRC20 INTEGER DEFAULT 0,"
+                                    "Commission_ERC20 INTEGER DEFAULT 0,"
+                                    "CommissionBER20 INTEGER DEFAULT 0,"
                                     "support TEXT)")
 
-            print("database was not found (Settings | 2/3), creating...")
+            print("database was not found (Settings | 2/7), creating...")
             await self.con.execute("INSERT INTO settings("
                                             "FAQ, support, profit_day, profit_week) "
                                             "VALUES (?, ?, ?, ?)", ['FAQ', '-', f'{get_unix()}', f'{get_unix()}'])
@@ -255,7 +277,7 @@ class DB(AsyncClass):
             
         langs = await self.con.execute("PRAGMA table_info(languages)")
         if len(await langs.fetchall()) == 3:
-            print("database was found (Languages | 12/18)")
+            print("database was found (Languages | 3/7)")
         else:
             await self.con.execute("CREATE TABLE languages("
                                     "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -269,36 +291,51 @@ class DB(AsyncClass):
                                 "language, name) "
                                 "VALUES (?, ?)", ['en', '🇺🇸 English'])
 
-            print("database was not found (Languages | 3/3), creating...")
+            print("database was not found (Languages | 3/7), creating...")
 
             await self.con.commit()
 
         # Промокоды
         promos = await self.con.execute("PRAGMA table_info(coupons)")
         if len(await promos.fetchall()) == 3:
-            print("database was found (Promocodes| 9/18)")
+            print("database was found (Promocodes| 4/7)")
         else:
             await self.con.execute('CREATE TABLE coupons('
                                    'coupon TEXT,'
                                    'uses INTEGER,'
                                    'summa_promo INTEGER);')
-            print("database was not found (Promocodes | 9/18), creating...")
+            print("database was not found (Promocodes | 4/7), creating...")
             await self.con.commit()
 
         # Активные промокоды
         ac_prs = await self.con.execute("PRAGMA table_info(activ_coupons)")
         if len(await ac_prs.fetchall()) == 2:
-            print("database was found (Active Promocodes | 10/18)")
+            print("database was found (Active Promocodes | 5/7)")
         else:
             await self.con.execute('CREATE TABLE activ_coupons('
                                    'coupon_name TEXT,'
                                    'user_id INTEGER);')
-            print("database was not found (Active Promocodes | 10/18), creating...")
+            print("database was not found (Active Promocodes | 5/7), creating...")
+            await self.con.commit()
+
+        conclusion = await self.con.execute("PRAGMA table_info(conclusion)")
+        if len(await conclusion.fetchall()) == 7:
+            print("database was found (Conclusion | 6/7)")
+        else:
+            await self.con.execute("CREATE TABLE conclusion("
+                                   "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                   "user_id INTEGER,"
+                                   "summa INTEGER,"
+                                   "network TEXT,"
+                                   "status TEXT,"
+                                   "adress TEXT,"
+                                   "data TEXT);")
+            print("database was not found (Active Promocodes | 6/7), creating...")
             await self.con.commit()
 
         game_stats = await self.con.execute("PRAGMA table_info(game_settings)")
         if len(await game_stats.fetchall()) == 6:
-            print("database was found (Languages | 12/18)")
+            print("database was found (Languages | 7/7)")
         else:
             await self.con.execute("""
                 CREATE TABLE game_settings (
@@ -331,5 +368,5 @@ class DB(AsyncClass):
                                     ['dice', 1, 1, 0, 1])
 
 
-            print("database was not found (Languages | 3/3), creating...")
+            print("database was not found (Languages | 7/7), creating...")
             await self.con.commit()

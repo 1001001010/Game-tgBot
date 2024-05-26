@@ -8,11 +8,11 @@ from bot.utils.utils_functions import get_language, ded, send_admins, get_admins
 from bot.filters.filters import IsAdmin
 from bot.keyboards.inline import admin_menu, kb_admin_settings, back_to_adm_m, mail_types, \
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
-                                 edit_game_chance
+                                 edit_game_chance, kb_edit_network
                                  
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
                             AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit, AdminRevorkPrice, \
-                            AdminPlusPrice
+                            AdminPlusPrice, АdminMethod
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -738,3 +738,37 @@ async def settings_ref_per_set(message: Message, state: FSMContext):
     await send_admins(
         f"<b>❗ Администратор  @{message.from_user.username} изменил процент для {lvl} реферального уровня на: \n{message.text}</b>")
     await message.answer(f"<b>✅ Готово! Процент для {lvl} реферального уровня изменен!</b>", reply_markup=back_to_adm_m(texts=lang))
+    
+@dp.callback_query_handler(IsAdmin(), text="comma_network", state="*")
+async def settings_set_faq(call: CallbackQuery, state: FSMContext):
+    lang = await get_language(call.from_user.id)
+    await call.message.delete()
+    await call.message.answer("Выберите сеть для изменения: ", reply_markup=await kb_edit_network(texts=lang))
+    
+@dp.callback_query_handler(IsAdmin(), text_startswith="new_Edit_network", state="*")
+async def settings_set_faq(call: CallbackQuery, state: FSMContext):
+    method = call.data.split(":")[1]
+    await call.message.delete()
+    await call.message.answer(f"Введите комиссию для {method}")
+    await АdminMethod.percent.set()
+    await state.update_data(method=method)
+    
+@dp.message_handler(IsAdmin(), state=АdminMethod.percent)
+async def settings_ref_per_set(message: Message, state: FSMContext):
+    lang = await get_language(message.from_user.id)
+    if is_number(message.text):
+        await state.update_data(percent=message.text)
+        data = await state.get_data()
+        if data['method'] == 'TON':
+            await db.update_settings(id=1, Commission_TON=data['percent'])
+        elif data['method'] == 'TRC20':
+            await db.update_settings(id=1, Commission_TRC20=data['percent'])
+        elif data['method'] == 'ERC20':
+            await db.update_settings(id=1, Commission_ERC20=data['percent'])
+        elif data['method'] == 'BER20':
+            await db.update_settings(id=1, CommissionBER20=data['percent'])
+        await message.answer("Успешно измененно!")
+        await state.finish()
+    else: 
+        await message.answer(lang.need_number)
+    
