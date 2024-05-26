@@ -8,7 +8,7 @@ from bot.data.loader import dp, bot
 from bot.data.config import lang_ru, lang_en, db, admin_chat
 from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, \
                                 choose_languages_kb, game_menu, payment_method, kb_vivod_zayavka, kb_vivod_moneta, \
-                                kb_network, yes_or_no_vivod
+                                kb_network, yes_or_no_vivod, kb_rework_network
 from bot.utils.utils_functions import get_language, ded, is_number
 from bot.state.users import UsersCoupons, UserVivid
 from bot.utils.converter import convert_rub_to_usd
@@ -286,7 +286,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
                                                         amount_vivod=data['amount'],
                                                         comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
         else: 
-            await message.answer(lang.need_real_adress)
+            await message.answer(lang.need_real_adress.format(crypto=data['network']), reply_markup=kb_rework_network(lang=lang))
     elif data['network'] == 'TRON (TRC20)':
         comma = settings_info['Commission_TRC20']
         if len(data['adress']) == 34 and  str(data['adress'])[:1] == 'T':
@@ -301,7 +301,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
                                                         amount_vivod=data['amount'],
                                                         comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
         else: 
-            await message.answer(lang.need_real_adress)
+            await message.answer(lang.need_real_adress.format(crypto=data['network']), reply_markup=kb_rework_network(lang=lang))
     elif data['network'] == 'Ethereum (ERC20)':
         comma = settings_info['Commission_ERC20']
         if len(data['adress']) == 42 and  str(data['adress'])[:2] == '0x':
@@ -316,7 +316,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
                                                         amount_vivod=data['amount'],
                                                         comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
         else: 
-            await message.answer(lang.need_real_adress)
+            await message.answer(lang.need_real_adress.format(crypto=data['network']), reply_markup=kb_rework_network(lang=lang))
     elif data['network'] == 'BNB Smart Chain (BER20)':
         comma = settings_info['CommissionBER20']
         if len(data['adress']) == 42 and  str(data['adress'])[:2] == '0x':
@@ -331,7 +331,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
                                                         amount_vivod=data['amount'],
                                                         comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
         else: 
-            await message.answer(lang.need_real_adress)
+            await message.answer(lang.need_real_adress.format(crypto=data['network']), reply_markup=kb_rework_network(lang=lang))
 
 @dp.callback_query_handler(text_startswith='ok_vivod', state="*")
 async def func_value(call: CallbackQuery, state: FSMContext):

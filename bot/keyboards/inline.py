@@ -4,6 +4,15 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.data import config
 from bot.data.config import db
 
+def kb_rework_network(lang):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    kb.append(InlineKeyboardButton(lang.edit_network, callback_data=f"moneta:USDT"))
+
+    keyboard.add(kb[0])
+
+    return keyboard
+
 async def kb_edit_network(texts):
     keyboard = InlineKeyboardMarkup()
     kb = []
@@ -61,7 +70,7 @@ def kb_vivod_moneta():
     keyboard = InlineKeyboardMarkup()
     kb = []
     kb.append(InlineKeyboardButton("USDT", callback_data=f"moneta:USDT"))
-
+    kb.append(InlineKeyboardButton("🧾 Чек/check", callback_data=f"check:USDT"))
     keyboard.add(kb[0])
 
     return keyboard

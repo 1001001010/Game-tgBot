@@ -41,6 +41,7 @@ class Texts:
     go_next = "Play more 🔃"
     pay_link = "⛓ Payment link"
     pay_id = "🔃 Check payment"
+    edit_network = "Edit network"
 
     
 ################################################## #########################
@@ -196,4 +197,4 @@ class Texts:
     
         <b>Are you sure you want to withdraw this amount?</b>     
         """
-    need_real_adress = "Please enter a valid address"
+    need_real_adress = "😞 Incorrect address. Send the correct wallet address, which is located in the {crypto} network."
