@@ -11,7 +11,7 @@ from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, ba
                                 kb_network, yes_or_no_vivod
 from bot.utils.utils_functions import get_language, ded, is_number
 from bot.state.users import UsersCoupons, UserVivid
-from bot.utils.converter import convert_dollars_to_rubles
+from bot.utils.converter import convert_rub_to_usd
 
 #Открытие пополнения
 @dp.message_handler(text=lang_ru.refill, state="*")
@@ -274,20 +274,64 @@ async def functions_profile_get(message: Message, state: FSMContext):
     data = await state.get_data()
     settings_info = await db.get_settings(id=1)
     if data['network'] == 'The Open Network (TON)':
-        comma = settings_info['Commission_TON']
+        if len(data['adress']) == 48 and  str(data['adress'])[:2] == 'UQ':
+            comma = settings_info['Commission_TON']
+            if float(comma) >= float(data['amount']):
+                await message.answer(lang.no_money)
+            else:
+                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
+                vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
+                await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
+                                                        adress=data['adress'],
+                                                        amount_vivod=data['amount'],
+                                                        comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+        else: 
+            await message.answer(lang.need_real_adress)
     elif data['network'] == 'TRON (TRC20)':
         comma = settings_info['Commission_TRC20']
+        if len(data['adress']) == 34 and  str(data['adress'])[:1] == 'T':
+            comma = settings_info['Commission_TON']
+            if float(comma) >= float(data['amount']):
+                await message.answer(lang.no_money)
+            else:
+                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
+                vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
+                await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
+                                                        adress=data['adress'],
+                                                        amount_vivod=data['amount'],
+                                                        comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+        else: 
+            await message.answer(lang.need_real_adress)
     elif data['network'] == 'Ethereum (ERC20)':
         comma = settings_info['Commission_ERC20']
+        if len(data['adress']) == 42 and  str(data['adress'])[:2] == '0x':
+            comma = settings_info['Commission_TON']
+            if float(comma) >= float(data['amount']):
+                await message.answer(lang.no_money)
+            else:
+                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
+                vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
+                await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
+                                                        adress=data['adress'],
+                                                        amount_vivod=data['amount'],
+                                                        comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+        else: 
+            await message.answer(lang.need_real_adress)
     elif data['network'] == 'BNB Smart Chain (BER20)':
         comma = settings_info['CommissionBER20']
-        
-    await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
-    vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
-    await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
-                                               adress=data['adress'],
-                                               amount_vivod=data['amount'],
-                                               comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+        if len(data['adress']) == 42 and  str(data['adress'])[:2] == '0x':
+            comma = settings_info['Commission_TON']
+            if float(comma) >= float(data['amount']):
+                await message.answer(lang.no_money)
+            else:
+                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
+                vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
+                await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
+                                                        adress=data['adress'],
+                                                        amount_vivod=data['amount'],
+                                                        comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+        else: 
+            await message.answer(lang.need_real_adress)
 
 @dp.callback_query_handler(text_startswith='ok_vivod', state="*")
 async def func_value(call: CallbackQuery, state: FSMContext):
@@ -313,15 +357,20 @@ async def func_value(call: CallbackQuery, state: FSMContext):
             comma = comma['Commission_ERC20']
         elif info_vivod['network'] == 'BNB Smart Chain (BER20)':
             comma = comma['CommissionBER20']
+            
+        usdt_summa_vivod = convert_rub_to_usd(float(info_vivod['summa']))
+        usdt_comma = convert_rub_to_usd(float(comma))
+        usdt_summa_vivod = round(usdt_summa_vivod, 2)
+        usdt_comma = round(usdt_comma, 2)
         msg = f"""
         Новая заявка от {name}
         Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         
-        💰 Сумма: <code>{info_vivod['summa']}</code>
-        💵 Сумма с учетом комиссии: <code>{float(info_vivod['summa']) - float(comma)}</code>
+        💰 Сумма: <code>${usdt_summa_vivod}</code> | <code>{float(info_vivod['summa'])}</code>
+        💵 Сумма с учетом комиссии: <code>${round((float(usdt_summa_vivod) - float(usdt_comma)), 2)}</code> | <code>{(float(info_vivod['summa']) - float(comma))}</code>
         🪙 Сеть: <code>{info_vivod['network']}</code>
         💎 Адресс: <code>{info_vivod['adress']}</code>
-        💚  Комиссия: <code>{comma}</code>
+        💚  Комиссия: <code>${usdt_comma}</code> | <code>{float(comma)}</code>
         """
         await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=info_vivod['summa'], user_id=user['user_id']))
         await db.update_user(id=user['user_id'], balance=float(user['balance']-float(info_vivod['summa'])))

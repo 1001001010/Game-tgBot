@@ -196,3 +196,4 @@ class Texts:
     
         <b>Are you sure you want to withdraw this amount?</b>     
         """
+    need_real_adress = "Please enter a valid address"

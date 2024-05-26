@@ -113,12 +113,10 @@ class RealTimeCurrencyConverter:
             return self.data['rates'][to_currency] / from_currency_rate
         else:
             return self.data['rates'][to_currency]
-
-def convert_dollars_to_rubles(amount):
-    url = f'https://v6.exchangerate-api.com/v6/YOUR_API_KEY/latest/USD'
-    converter = RealTimeCurrencyConverter(url)
-    exchange_rate = converter.get_rate('USD', 'RUB')
-
-    rubles = amount * exchange_rate
-
-    print(f"{amount} USD is equal to {rubles} RUB.")
+    
+def convert_rub_to_usd(amount_rub):
+    response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
+    data = response.json()
+    rate = data["rates"]["RUB"]
+    amount_usd = amount_rub / rate
+    return amount_usd

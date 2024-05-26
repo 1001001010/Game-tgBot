@@ -187,6 +187,7 @@ async def kb_admin_settings(texts):
     kb.append(InlineKeyboardButton(f"Реф. Процент 2 лвл. | {ref_percent_2}%", callback_data="ref_percent:edit:2"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 3 лвл. | {ref_percent_3}%", callback_data="ref_percent:edit:3"))
     kb.append(InlineKeyboardButton("🌐 Комиссия сети", callback_data="comma_network"))
+    kb.append(InlineKeyboardButton("🧾 Комиссия вывод чеком", callback_data="check_comma"))
     kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
     keyboard.add(kb[0], kb[1], kb[2])
     keyboard.add(kb[3])
@@ -196,6 +197,7 @@ async def kb_admin_settings(texts):
     keyboard.add(kb[7])
     keyboard.add(kb[8])
     keyboard.add(kb[9])
+    keyboard.add(kb[10])
 
     return keyboard
 
