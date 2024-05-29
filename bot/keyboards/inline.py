@@ -58,11 +58,22 @@ def yes_or_no_vivod(vivod_id):
 
     return keyboard
 
-def kb_vivod_zayavka(summa, user_id):
+
+def yes_or_no_cheack(vivod_id):
     keyboard = InlineKeyboardMarkup()
     kb = []
-    kb.append(InlineKeyboardButton("✅ Принять", callback_data=f"vivod:yes:{summa}:{user_id}"))
-    kb.append(InlineKeyboardButton("❌ Отклонить", callback_data=f"vivod:no:{summa}:{user_id}"))
+    kb.append(InlineKeyboardButton("✅ Подтвердить", callback_data=f"ok_check:yes:{vivod_id}"))
+    kb.append(InlineKeyboardButton("❌ Отменить", callback_data=f"ok_check:no:{vivod_id}"))
+
+    keyboard.add(kb[0], kb[1])
+
+    return keyboard
+
+def kb_vivod_zayavka(summa, vivod_id):
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+    kb.append(InlineKeyboardButton("✅ Принять", callback_data=f"vivod:yes:{summa}:{vivod_id}"))
+    kb.append(InlineKeyboardButton("❌ Отклонить", callback_data=f"vivod:no:{summa}:{vivod_id}"))
 
     keyboard.add(kb[0], kb[1])
 

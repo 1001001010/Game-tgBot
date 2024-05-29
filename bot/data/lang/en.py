@@ -199,3 +199,11 @@ class Texts:
         <b>Are you sure you want to withdraw this amount?</b>     
         """
     need_real_adress = "😞 Incorrect address. Send the correct wallet address, which is located in the {crypto} network."
+    Confirmation_msg_chek = """
+        <b>Check and confirmation</b>
+    
+        <b>Output:</b> <code>{amount_vivod}</code>
+        <b>Commission:</b> <code>{comma_vivod}</code>
+    
+        <b>Are you sure you want to withdraw this amount?</b>     
+        """

@@ -43,7 +43,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.update_data(type_bet='real', game=call.data.split(":")[1])
     
 #Переключение между Демо и Реал балансом
-@dp.callback_query_handler(IsAdmin(), text_startswith='user_use_balance', state="*")
+@dp.callback_query_handler(text_startswith='user_use_balance', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.finish()
     type_balance = call.data.split(":")[1]
