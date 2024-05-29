@@ -42,6 +42,7 @@ class Texts:
     pay_link = "⛓ Payment link"
     pay_id = "🔃 Check payment"
     edit_network = "Edit network"
+    back_vivod_to_method = "⬅️ Change method"
 
     
 ################################################## #########################

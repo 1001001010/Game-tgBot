@@ -249,7 +249,7 @@ class DB(AsyncClass):
             await self.con.commit()
             
         settings = await self.con.execute("PRAGMA table_info(settings)")
-        if len(await settings.fetchall()) == 15:
+        if len(await settings.fetchall()) == 16:
             print("database was found (Settings | 2/7)")
         else:
             await self.con.execute("CREATE TABLE settings("
@@ -267,6 +267,7 @@ class DB(AsyncClass):
                                     "Commission_TRC20 INTEGER DEFAULT 0,"
                                     "Commission_ERC20 INTEGER DEFAULT 0,"
                                     "CommissionBER20 INTEGER DEFAULT 0,"
+                                    "Commission_check INTEGER DEFAULT 0,"
                                     "support TEXT)")
 
             print("database was not found (Settings | 2/7), creating...")

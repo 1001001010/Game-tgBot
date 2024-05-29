@@ -31,18 +31,20 @@ async def kb_edit_network(texts):
 
     return keyboard
 
-def kb_network():
+def kb_network(lang, summa):
     keyboard = InlineKeyboardMarkup()
     kb = []
     kb.append(InlineKeyboardButton("The Open Network (TON)", callback_data=f"network:TON"))
     kb.append(InlineKeyboardButton("TRON (TRC20)", callback_data=f"network:TRC20"))
     kb.append(InlineKeyboardButton("Ethereum (ERC20)", callback_data=f"network:ERC20"))
     kb.append(InlineKeyboardButton("BNB Smart Chain (BER20)", callback_data=f"network:BER20"))
+    kb.append(InlineKeyboardButton(lang.back_vivod_to_method, callback_data=f"back_to_method:{summa}"))
 
     keyboard.add(kb[0])
     keyboard.add(kb[1])
     keyboard.add(kb[2])
     keyboard.add(kb[3])
+    keyboard.add(kb[4])
 
     return keyboard
 
@@ -70,8 +72,9 @@ def kb_vivod_moneta():
     keyboard = InlineKeyboardMarkup()
     kb = []
     kb.append(InlineKeyboardButton("USDT", callback_data=f"moneta:USDT"))
-    kb.append(InlineKeyboardButton("🧾 Чек/check", callback_data=f"check:USDT"))
+    kb.append(InlineKeyboardButton("🧾 Чек/check", callback_data=f"check"))
     keyboard.add(kb[0])
+    keyboard.add(kb[1])
 
     return keyboard
 
@@ -196,7 +199,7 @@ async def kb_admin_settings(texts):
     kb.append(InlineKeyboardButton(f"Реф. Процент 2 лвл. | {ref_percent_2}%", callback_data="ref_percent:edit:2"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 3 лвл. | {ref_percent_3}%", callback_data="ref_percent:edit:3"))
     kb.append(InlineKeyboardButton("🌐 Комиссия сети", callback_data="comma_network"))
-    kb.append(InlineKeyboardButton("🧾 Комиссия вывод чеком", callback_data="check_comma"))
+    kb.append(InlineKeyboardButton("🧾 Комиссия вывод чеком", callback_data="new_Edit_network:check"))
     kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
     keyboard.add(kb[0], kb[1], kb[2])
     keyboard.add(kb[3])

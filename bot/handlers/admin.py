@@ -767,6 +767,8 @@ async def settings_ref_per_set(message: Message, state: FSMContext):
             await db.update_settings(id=1, Commission_ERC20=data['percent'])
         elif data['method'] == 'BER20':
             await db.update_settings(id=1, CommissionBER20=data['percent'])
+        elif data['method'] == 'check':
+            await db.update_settings(id=1, Commission_check=data['percent'])
         await message.answer("Успешно измененно!")
         await state.finish()
     else: 

@@ -241,13 +241,60 @@ async def functions_profile_get(message: Message, state: FSMContext):
     else:
         await message.answer(lang.need_number)
         
+@dp.callback_query_handler(text_startswith='back_to_method', state="*")
+async def func_value(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    amount = call.data.split(":")[1]
+    await state.update_data(amount = amount)
+    user = await db.get_user(user_id=call.from_user.id)
+    await call.message.answer(lang.need_Crypto, reply_markup=kb_vivod_moneta())
+
+@dp.callback_query_handler(text='check', state="*")
+async def func_value(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    data = await state.get_data()
+    user = await db.get_user(user_id=call.from_user.id)
+    settings_info = await db.get_settings(id=1)
+    comma = settings_info['Commission_check']
+    await db.add_vivod(user_id=call.from_user.id, summa=data['amount'], network='NULL', status='check', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress='NULL')
+    vivod_id = await db.get_vivod(user_id=call.from_user.id, status='not confirmed')
+    await call.message.answer(lang.succes_msg)
+    await db.update_user(id=call.from_user.id, balance=float(user['balance']-float(data['amount'])))
+    usdt_summa_vivod = convert_rub_to_usd(float(data['amount']))
+    usdt_comma = convert_rub_to_usd(float(comma))
+    usdt_summa_vivod = round(usdt_summa_vivod, 2)
+    usdt_comma = round(usdt_comma, 2)
+    if user['user_name'] == "":
+            us = await bot.get_chat(call.from_user.id)
+            name = us.get_mention(as_html=True)
+    else:
+        name = f"@{user['user_name']}"
+    msg = f"""
+    Новая заявка от {name}
+    Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+    
+    💰 Сумма: <code>${usdt_summa_vivod}</code> | <code>{float(data['amount'])}</code>
+    💵 Сумма с учетом комиссии: <code>${round((float(usdt_summa_vivod) - float(usdt_comma)), 2)}</code> | <code>{(float(data['amount']) - float(comma))}</code>
+    🪙 Метод: <code>🧾 Чек</code>
+    💚  Комиссия: <code>${usdt_comma}</code> | <code>{float(comma)}</code>
+    """
+    await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=data['amount'], user_id=user['user_id']))
+    # await call.message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
+    #                                         adress=data['adress'],
+    #                                         amount_vivod=data['amount'],
+    #                                         comma_vivod=comma)), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+    
+    
 @dp.callback_query_handler(text_startswith='moneta', state="*")
 async def func_value(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     lang = await get_language(call.from_user.id)
     moneta = call.data.split(":")[1]
     await state.update_data(method = moneta)
-    await call.message.answer(lang.need_network, reply_markup=kb_network())
+    data = await state.get_data()
+    await call.message.answer(lang.need_network, reply_markup=kb_network(lang=lang, summa=data['amount']))
     # await UserVivid.adress.set()
 
 @dp.callback_query_handler(text_startswith='network', state="*")

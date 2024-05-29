@@ -23,7 +23,7 @@ class UserCube(StatesGroup):
 async def my_sleep():
     await asyncio.sleep(3.1)
 
-@dp.callback_query_handler(IsAdmin(), text_startswith='game', state="*")
+@dp.callback_query_handler(text_startswith='game', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.finish()
     lang = await get_language(call.from_user.id)
