@@ -207,7 +207,7 @@ class Texts:
         <b>Проверка и подтверждение</b>
         
         <b>Выводите:</b> <code>{amount_vivod}</code>
-        <b>Комиссия:</b> <code>{comma_vivod}</code>%
+        <b>Комиссия:</b> <code>{comma_vivod}</code>
         
         <b>Итог:</b> <code>{full_summa}</code>
         

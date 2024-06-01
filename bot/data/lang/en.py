@@ -207,7 +207,7 @@ class Texts:
         <b>Check and confirmation</b>
     
         <b>Output:</b> <code>{amount_vivod}</code>
-        <b>Commission:</b> <code>{comma_vivod}</code>%
+        <b>Commission:</b> <code>{comma_vivod}</code>
         
         <b>Total:</b> <code>{full_summa}</code>
     
