@@ -267,7 +267,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     else:
         await db.add_vivod(user_id=call.from_user.id, summa=data['amount'], network='NULL', status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress='NULL')
         vivod_id = await db.get_vivod(user_id=call.from_user.id, status='not confirmed')
-        await call.message.answer(ded(lang.Confirmation_msg_chek.format(amount_vivod=data['amount'], comma_vivod=comma, full_summa=float(data['amount']) - (float(data['amount']) * float(comma) / 100))), reply_markup=yes_or_no_cheack(vivod_id=vivod_id['id']))
+        await call.message.answer(ded(lang.Confirmation_msg_chek.format(amount_vivod=data['amount'], comma_vivod=round(((float(data['amount']) * float(comma) / 100)), 2), full_summa=float(data['amount']) - (float(data['amount']) * float(comma) / 100))), reply_markup=yes_or_no_cheack(vivod_id=vivod_id['id']))
         
 @dp.callback_query_handler(text_startswith='ok_check', state="*")
 async def func_value(call: CallbackQuery, state: FSMContext):
@@ -296,7 +296,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
         💰 Сумма: <code>${round(usdt_summa_vivod, 2)}</code> | <code>{float(vivod['summa'])}</code>
         💵 Сумма с учетом комиссии: <code>${round((float(usdt_summa_vivod) - ((float(usdt_summa_vivod) * float(settings_info['Commission_check']) / 100))), 2)}</code> | <code>{float(vivod['summa']) - (float(vivod['summa']) * float(settings_info['Commission_check']) / 100)}</code>
         🪙 Метод: <code>🧾 Чек</code>
-        💚  Комиссия: <code>{float(settings_info['Commission_check'])}</code>%
+        💚  Комиссия: <code>{float(settings_info['Commission_check'])}</code>
         """
         await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=vivod['summa'], vivod_id=vivod_id))
     else:
