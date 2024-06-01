@@ -12,7 +12,7 @@ from bot.keyboards.inline import admin_menu, kb_admin_settings, back_to_adm_m, m
                                  
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
                             AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit, AdminRevorkPrice, \
-                            AdminPlusPrice, АdminMethod
+                            AdminPlusPrice, АdminMethod, АdminVivoCheack
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -744,6 +744,26 @@ async def settings_set_faq(call: CallbackQuery, state: FSMContext):
     lang = await get_language(call.from_user.id)
     await call.message.delete()
     await call.message.answer("Выберите сеть для изменения: ", reply_markup=await kb_edit_network(texts=lang))
+    
+@dp.callback_query_handler(IsAdmin(), text="MinimumSumma", state="*")
+async def settings_set_faq(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
+    await call.message.answer(f"Введите минимальную сумма для вывода чеком")
+    await АdminVivoCheack.percent.set()
+    
+@dp.message_handler(IsAdmin(), state=АdminVivoCheack.percent)
+async def settings_ref_per_set(message: Message, state: FSMContext):
+    lang = await get_language(message.from_user.id)
+    if is_number(message.text):
+        await state.update_data(percent=message.text)
+        data = await state.get_data()
+        await db.update_settings(Minimum_check=data['percent'])
+        await message.answer("Минимальная сумма успешно установлена")
+        await state.finish()
+    else: 
+        await message.answer(lang.need_number)
+    
+
     
 @dp.callback_query_handler(IsAdmin(), text_startswith="new_Edit_network", state="*")
 async def settings_set_faq(call: CallbackQuery, state: FSMContext):

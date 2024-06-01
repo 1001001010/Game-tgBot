@@ -47,3 +47,7 @@ class AdminPlusPrice(StatesGroup):
 class АdminMethod(StatesGroup):
     percent = State()
     method = State()
+    
+class АdminVivoCheack(StatesGroup):
+    percent = State()
+    

@@ -151,7 +151,7 @@ def choose_vertical(lang, type_balance, bet):
 def payment_method_back():
     keyboard = InlineKeyboardMarkup()
     kb=[]
-    kb.append(InlineKeyboardButton('Отмена', callback_data="back_to_m"))
+    kb.append(InlineKeyboardButton('⬅️ Вернуться', callback_data=f"payment_method"))
     # kb.append(InlineKeyboardButton('xRocket', callback_data="payment:xrocket"))
     
     keyboard.add(kb[0])
@@ -200,26 +200,29 @@ async def kb_admin_settings(texts):
     ref_percent_1 = s['ref_percent_1']
     ref_percent_2 = s['ref_percent_2']  
     ref_percent_3 = s['ref_percent_3']
+    ref_percent_cheack = s['Commission_check']
+    min_cheack = s['Minimum_check']
     
     kb.append(InlineKeyboardButton(texts.reply_kb3, callback_data="settings_faq"))
     kb.append(InlineKeyboardButton(texts.reply_kb4, callback_data="settings_supp"))
-    kb.append(InlineKeyboardButton(texts.groups_list, callback_data="settings_groups"))
+    # kb.append(InlineKeyboardButton(texts.groups_list, callback_data="settings_groups"))
     kb.append(InlineKeyboardButton(f"2️⃣ Изменить кол-во рефералов для 2 лвла", callback_data="ref_lvl_edit:2"))
     kb.append(InlineKeyboardButton(f"3️⃣ Изменить кол-во рефералов для 3 лвла", callback_data="ref_lvl_edit:3"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 1 лвл. | {ref_percent_1}%", callback_data="ref_percent:edit:1"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 2 лвл. | {ref_percent_2}%", callback_data="ref_percent:edit:2"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 3 лвл. | {ref_percent_3}%", callback_data="ref_percent:edit:3"))
     kb.append(InlineKeyboardButton("🌐 Комиссия сети", callback_data="comma_network"))
-    kb.append(InlineKeyboardButton("🧾 Комиссия вывод чеком", callback_data="new_Edit_network:check"))
+    kb.append(InlineKeyboardButton(f"🧾 Комиссия | {ref_percent_cheack}%", callback_data="edit_min_summa:check"))
+    kb.append(InlineKeyboardButton(f"🧾 Мин. сумма | {min_cheack}", callback_data="MinimumSumma"))
     kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
-    keyboard.add(kb[0], kb[1], kb[2])
+    keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[2])
     keyboard.add(kb[3])
     keyboard.add(kb[4])
     keyboard.add(kb[5])
     keyboard.add(kb[6])
     keyboard.add(kb[7])
-    keyboard.add(kb[8])
-    keyboard.add(kb[9])
+    keyboard.add(kb[8], kb[9])
     keyboard.add(kb[10])
 
     return keyboard
@@ -343,7 +346,7 @@ def game_menu(texts):
     kb.append(InlineKeyboardButton(texts.game_football, callback_data="game:football"))
     kb.append(InlineKeyboardButton(texts.game_bowling, callback_data="game:bowling"))
     kb.append(InlineKeyboardButton(texts.game_dice, callback_data="game:dice"))
-    kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_m"))
+    kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_profile"))
 
     keyboard.add(kb[0], kb[1])
     keyboard.add(kb[2], kb[3])

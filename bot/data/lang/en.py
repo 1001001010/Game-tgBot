@@ -93,14 +93,15 @@ class Texts:
     
                 💰 Minimum bet: <code>{min_bet}</code> 
                 🏦 Your balance: <code>{user_balance}</code> 🪙
+                
                 <b>❗ Enter the bet amount:</b> """
         return msg
     def bet_msg_demo(self, game_name_text, min_bet, demo_balance):
         msg = f"""Game: {game_name_text}
     
                 💰 Minimum bet: <code>{min_bet}</code> 
-            
                 🏦 Your Demo balance: <code>{demo_balance}</code> 🪙
+                
                 <b>❗ Enter the bet amount:</b> """
         return msg
     vibor_game_to_edit = "<b>Select a game to edit 🕹</b>"
@@ -187,6 +188,7 @@ class Texts:
     otklon_vivod = "Canceled"
     vivod_mimo = "Your withdrawal request was rejected by the administrator\nThe money has been returned to your balance"
     vivod_success_msg = "Your withdrawal request has been approved! Wait for the funds to arrive"
+    vivod_success_msg_check = "Your withdrawal request has been approved!\n\nThe administrator will write to you and give you your check\n\nWait ⏳"
     Confirmation_msg = """
         <b>Check and confirmation</b>
     
@@ -195,6 +197,8 @@ class Texts:
     
         <b>Output:</b> <code>{amount_vivod}</code>
         <b>Commission:</b> <code>{comma_vivod}</code>
+        
+        <b>Total:</b> <code>{full_summa}</code>
     
         <b>Are you sure you want to withdraw this amount?</b>     
         """
@@ -203,7 +207,9 @@ class Texts:
         <b>Check and confirmation</b>
     
         <b>Output:</b> <code>{amount_vivod}</code>
-        <b>Commission:</b> <code>{comma_vivod}</code>
+        <b>Commission:</b> <code>{comma_vivod}</code>%
+        
+        <b>Total:</b> <code>{full_summa}</code>
     
         <b>Are you sure you want to withdraw this amount?</b>     
         """
