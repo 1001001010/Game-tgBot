@@ -212,7 +212,7 @@ async def kb_admin_settings(texts):
     kb.append(InlineKeyboardButton(f"Реф. Процент 2 лвл. | {ref_percent_2}%", callback_data="ref_percent:edit:2"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 3 лвл. | {ref_percent_3}%", callback_data="ref_percent:edit:3"))
     kb.append(InlineKeyboardButton("🌐 Комиссия сети", callback_data="comma_network"))
-    kb.append(InlineKeyboardButton(f"🧾 Комиссия | {ref_percent_cheack}%", callback_data="edit_min_summa:check"))
+    kb.append(InlineKeyboardButton(f"🧾 Комиссия | {ref_percent_cheack}%", callback_data="new_Edit_network:check"))
     kb.append(InlineKeyboardButton(f"🧾 Мин. сумма | {min_cheack}", callback_data="MinimumSumma"))
     kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
     keyboard.add(kb[0], kb[1])
@@ -295,11 +295,12 @@ async def kb_profile(texts, user_id):
         keyboard.add(InlineKeyboardButton(texts.test_balance, callback_data="test_balance"))
 
     kb.append(InlineKeyboardButton(texts.promo, callback_data='promo'))
-    kb.append(InlineKeyboardButton(texts.change_language, callback_data='change_language'))
+    # kb.append(InlineKeyboardButton(texts.change_language, callback_data='change_language'))
     # kb.append(InlineKeyboardButton(texts.refill, callback_data='refil_balance'))
     kb.append(InlineKeyboardButton(texts.conclusion, callback_data='withdrawal'))
-    keyboard.add(kb[0], kb[1])
-    keyboard.add(kb[2])
+    # keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[0])
+    keyboard.add(kb[1])
     return keyboard
 
 def kb_adm_promo(texts):
