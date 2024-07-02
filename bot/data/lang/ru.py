@@ -115,12 +115,12 @@ class Texts:
                 🆔 ID: <code>{user_id}</code>
                 📅 Дата регистрации: <code>{total_refill}</code>
                 
-                💰 Баланс: <code>{balance}</code>
-                🏦 Демо баланс: <code>{demo_balance}</code>
+                💰 Баланс: ₽ <code>{balance}</code>
+                🏦 Демо баланс: ₽ <code>{demo_balance}</code>
                 
                 ⚙️ Язык бота: <code>{lang}</code>
-                💵 Всего пополнено: <code>{tr}</code>
-                💵 Выведено: <code>{vivod}</code>
+                💵 Пополнено: ₽ <code>{tr}</code>
+                💵 Выведено: ₽ <code>{vivod}</code>
                 
                 🎱Всего игр: <code>{amount_all_games}</code>
                 🎰 Слоты: <code>{amount_slots}</code>
@@ -133,7 +133,7 @@ class Texts:
                 🔗 Статус блокировки: <code>{ban_status}</code>
                 {cause_ban}
                 👥 Рефералов: <code>{count_refers} чел</code>
-                💎 Заработано с рефералов: <code>{referalst_summa} 🪙</code>
+                💎 Заработано с рефералов: ₽ <code>{referalst_summa}</code>
                 📜 Список рефералов: \n</b>"""
     need_number = "<b>Нужно ввести число!</b>"
     wright_summ = "<b>Введите сумму:</b>"

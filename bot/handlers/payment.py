@@ -1,7 +1,7 @@
 from AsyncPayments.cryptoBot import AsyncCryptoBot
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
-from xrocket import PayAPI
+# from xrocket import PayAPI
 import requests
 
 from bot.data.loader import dp, bot
