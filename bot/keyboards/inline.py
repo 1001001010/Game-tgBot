@@ -117,7 +117,7 @@ def payment_method():
     kb.append(InlineKeyboardButton('💠 CryptoBot', callback_data="payment:cryptobot"))
     # kb.append(InlineKeyboardButton('🚀 xRocket', callback_data="payment:xrocket"))
     
-    keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[0])
     return keyboard
 
 def crypto(amount):
