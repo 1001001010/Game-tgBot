@@ -55,12 +55,12 @@ class Texts:
         msg = f"""🆔 Ваш ID: <code>{user_id}</code>
                 🤖 Username: <code>{user_name}</code>
                 
-                💰 Ваш баланс: <code>{balance}</code> 🪙
-                🏦 Демо баланс: <code>{test_balance}</code>
-                💸 Выведено: <code>{balance_vivod}</code>
+                💰 Ваш баланс: ₽ <code>{balance}</code>
+                🏦 Демо баланс: ₽ <code>{test_balance}</code>
+                💸 Выведено: ₽ <code>{balance_vivod}</code>
                 
                 👥 Приглашено пользователей: <code>{referals}</code> 
-                🍬 Доход с рефералов: <code>{referals_sum}</code> | Уровень: <code>{refer_lvl}</code> 
+                🍬 Доход с рефералов: ₽ <code>{referals_sum}</code> | Уровень: <code>{refer_lvl}</code> 
                 ⚙️ Вас пригласил: {reffer}
                 🔗 Реферальная ссылка: 
                 <code>{refer_link}</code>"""
@@ -91,16 +91,16 @@ class Texts:
     def bet_msg(self, game_name_text, min_bet, user_balance):
         msg = f"""Игра: {game_name_text}
         
-                💰 Минимальная ставка: <code>{min_bet}</code> 
-                🏦 Ваш баланс: <code>{user_balance}</code> 🪙
+                💰 Минимальная ставка: ₽ <code>{min_bet}</code>
+                🏦 Ваш баланс: ₽ <code>{user_balance}</code>
                 
                 <b>❗ Укажите сумму ставки:</b> """
         return msg
     def bet_msg_demo(self, game_name_text, min_bet, demo_balance):
         msg = f"""Игра: {game_name_text}
         
-                💰 Минимальная ставка: <code>{min_bet}</code> 
-                🏦 Ваш Демо баланс: <code>{demo_balance}</code> 🪙
+                💰 Минимальная ставка: ₽ <code>{min_bet}</code> 
+                🏦 Ваш Демо баланс: ₽ <code>{demo_balance}</code>
                 
                 <b>❗ Укажите сумму ставки:</b> """
         return msg

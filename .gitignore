@@ -4,4 +4,6 @@ __pycache__/
 .venv/
 venv/
 
+settings.ini
+
 bot/data/database.db

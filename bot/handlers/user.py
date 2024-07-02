@@ -52,12 +52,12 @@ async def func__profile(message: Message, state: FSMContext):
                         caption=ded(lang.open_profile(
                         user_id=user_info['user_id'], 
                         user_name=user_info['user_name'], 
-                        balance=user_info['balance'],
-                        test_balance=user_info['test_balance'], 
+                        balance=round(float(user_info['balance']), 2),
+                        test_balance=round(float(user_info['test_balance']), 2), 
                         referals=user_info['ref_count'], 
                         referals_sum=user_info['total_refill'], 
                         refer_lvl=ref_lvl, 
-                        balance_vivod=user_info['vivod'], 
+                        balance_vivod=round(float(user_info['vivod']), 2), 
                         reffer = reffer,
                         refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=message.from_user.id))
 
@@ -84,12 +84,12 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
                         caption=ded(lang.open_profile(
                         user_id=user_info['user_id'], 
                         user_name=user_info['user_name'], 
-                        balance=user_info['balance'],
-                        test_balance=user_info['test_balance'], 
+                        balance=round(float(user_info['balance']), 2),
+                        test_balance=round(float(user_info['test_balance']), 2), 
                         referals=user_info['ref_count'], 
                         referals_sum=user_info['total_refill'], 
                         refer_lvl=ref_lvl, 
-                        balance_vivod=user_info['vivod'], 
+                        balance_vivod=round(float(user_info['vivod']), 2), 
                         reffer = reffer,
                         refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=call.from_user.id))
 
@@ -129,12 +129,12 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
                         caption=ded(lang.open_profile(
                         user_id=user_info['user_id'], 
                         user_name=user_info['user_name'], 
-                        balance=user_info['balance'],
-                        test_balance=user_info['test_balance'], 
+                        balance=round(float(user_info['balance']), 2),
+                        test_balance=round(float(user_info['test_balance']), 2), 
                         referals=user_info['ref_count'], 
                         referals_sum=user_info['total_refill'], 
                         refer_lvl=ref_lvl, 
-                        balance_vivod=user_info['vivod'], 
+                        balance_vivod=round(float(user_info['vivod']), 2), 
                         reffer = reffer,
                         refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=call.from_user.id))
     elif user_info['request_test'] == 1:
@@ -262,11 +262,12 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     settings_info = await db.get_settings(id=1)
     comma = settings_info['Commission_check']
     min_summa = settings_info['Minimum_check']
+    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if float(data['amount']) <= float(min_summa):
         await call.message.answer(lang.need_balance)
     else:
-        await db.add_vivod(user_id=call.from_user.id, summa=data['amount'], network='NULL', status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress='NULL')
-        vivod_id = await db.get_vivod(user_id=call.from_user.id, status='not confirmed')
+        await db.add_vivod(user_id=call.from_user.id, summa=data['amount'], network='NULL', status='not confirmed', data=time, adress='NULL')
+        vivod_id = await db.get_vivod(user_id=call.from_user.id, data=time)
         await call.message.answer(ded(lang.Confirmation_msg_chek.format(amount_vivod=data['amount'], comma_vivod=round(((float(data['amount']) * float(comma) / 100)), 2), full_summa=float(data['amount']) - (float(data['amount']) * float(comma) / 100))), reply_markup=yes_or_no_cheack(vivod_id=vivod_id['id']))
         
 @dp.callback_query_handler(text_startswith='ok_check', state="*")
@@ -276,6 +277,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     status = call.data.split(":")[1]
     vivod_id = call.data.split(":")[2]
     vivod = await db.get_vivod(id=vivod_id)
+    # print(vivod)
     user = await db.get_user(user_id=call.from_user.id)
     settings_info = await db.get_settings(id=1)
     if status == 'yes':
@@ -342,8 +344,9 @@ async def functions_profile_get(message: Message, state: FSMContext):
             if float(comma) >= float(data['amount']):
                 await message.answer(lang.no_money)
             else:
-                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
-                vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
+                time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=time, adress=data['adress'])
+                vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed', data=time)
                 await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
                                                         adress=data['adress'],
                                                         amount_vivod=data['amount'],

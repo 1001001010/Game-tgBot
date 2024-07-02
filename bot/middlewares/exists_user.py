@@ -38,7 +38,7 @@ class ExistsUserMiddleware(BaseMiddleware):
                             us = await bot.get_chat(self.id)
                             name = us.get_mention(as_html=True)
                         await bot.send_message(chat_id=self.id, text="<b>Выберите язык / Select language</b>",
-                                                   reply_markup=await choose_languages_kb())
+                                                  reply_markup=await choose_languages_kb())
                         await send_admins(f"<b>{texts.reg_user.format(name=name)}</b>", False)
                     else:
                         self.user = await db.get_user(user_id=self.id)

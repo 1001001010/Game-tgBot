@@ -55,12 +55,12 @@ class Texts:
         msg = f"""🆔 Your ID: <code>{user_id}</code>
                 🤖 Username: <code>{user_name}</code>
             
-                💰 Your balance: <code>{balance}</code> 🪙
-                🏦 Demo balance: <code>{test_balance}</code>
-                💸 Output: <code>{balance_vivod}</code>
+                💰 Your balance: ₽ <code>{balance}</code> 🪙
+                🏦 Demo balance: ₽ <code>{test_balance}</code>
+                💸 Output: ₽ <code>{balance_vivod}</code>
             
                 👥 Users invited: <code>{referals}</code> 
-                🍬 Income from referrals: <code>{referals_sum}</code> | Level: <code>{refer_lvl}</code> 
+                🍬 Income from referrals: ₽ <code>{referals_sum}</code> | Level: <code>{refer_lvl}</code> 
                 ⚙️ You were invited by: {reffer}
                 🔗 Referral link: 
                 <code>{refer_link}</code>"""
@@ -91,16 +91,16 @@ class Texts:
     def bet_msg(self, game_name_text, min_bet, user_balance):
         msg = f"""Game: {game_name_text}
     
-                💰 Minimum bet: <code>{min_bet}</code> 
-                🏦 Your balance: <code>{user_balance}</code> 🪙
+                💰 Minimum bet: ₽ <code>{min_bet}</code> 
+                🏦 Your balance: ₽ <code>{user_balance}</code> 🪙
                 
                 <b>❗ Enter the bet amount:</b> """
         return msg
     def bet_msg_demo(self, game_name_text, min_bet, demo_balance):
         msg = f"""Game: {game_name_text}
     
-                💰 Minimum bet: <code>{min_bet}</code> 
-                🏦 Your Demo balance: <code>{demo_balance}</code> 🪙
+                💰 Minimum bet: ₽ <code>{min_bet}</code> 
+                🏦 Your Demo balance: ₽ <code>{demo_balance}</code>
                 
                 <b>❗ Enter the bet amount:</b> """
         return msg

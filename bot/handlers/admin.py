@@ -81,7 +81,7 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     👥 Ползователей за неделю <code>{show_users_week}</code>  чел.
     👥 Пользователей за день <code>{show_users_day}</code>  чел.
         
-    <b>Всего пополненно:</b> <code>{summ_deposits}</code> 💎
+    <b>Всего пополненно:</b> <code>{round(float(summ_deposits), 2)}</code> 💎
     
     <b>Игры:</b>
     🎰 Слоты: 
@@ -313,8 +313,8 @@ async def find_profile_op(message: Message, state: FSMContext):
             us = await bot.get_chat(user_id)
             name = us.get_mention(as_html=True)
         total_refill = convert_date(user['reg_date_unix'])
-        balance = user['balance']
-        demo_balance = user['test_balance'] 
+        balance = round(float(user['balance']), 2)
+        demo_balance = round(float(user['test_balance']), 2) 
         lang = user['language']
         if user['is_ban'] == True:
             ban_status = '⛔ Заблокирован'
@@ -329,9 +329,9 @@ async def find_profile_op(message: Message, state: FSMContext):
                                                 user_id=user_id,
                                                 total_refill=total_refill,
                                                 balance=balance,
-                                                demo_balance=demo_balance,
+                                                demo_balance=round(float(demo_balance), 2),
                                                 lang=lang,
-                                                tr=user['total_pay'],
+                                                tr=round(float(user['total_pay']), 2),
                                                 ban_status=ban_status,
                                                 cause_ban=cause_ban,
                                                 count_refers=user['ref_count'],
@@ -343,7 +343,7 @@ async def find_profile_op(message: Message, state: FSMContext):
                                                 amount_bowling=user['amount_bowling'],
                                                 amount_football=user['amount_football'],
                                                 amount_coin=user['amount_coin'],
-                                                referalst_summa=user['total_refill']))
+                                                referalst_summa=round(float(user['total_refill']), 2)))
         referal_list = await db.get_userAll(ref_id=user_id)
         for refik in referal_list:
             user = await db.get_user(user_id=int(refik['user_id']))
@@ -374,8 +374,8 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
             us = await bot.get_chat(user_id)
             name = us.get_mention(as_html=True)
         total_refill = convert_date(user['reg_date_unix'])
-        balance = user['balance']
-        demo_balance = user['test_balance'] 
+        balance = round(float(user['balance']), 2)
+        demo_balance = round(float(user['test_balance']), 2) 
         lang = user['language']
         if user['is_ban'] == True:
             ban_status = '⛔ Заблокирован'
@@ -390,9 +390,9 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
                                                 user_id=user_id,
                                                 total_refill=total_refill,
                                                 balance=balance,
-                                                demo_balance=demo_balance,
+                                                demo_balance=round(float(demo_balance), 2),
                                                 lang=lang,
-                                                tr=user['total_pay'],
+                                                tr=round(float(user['total_pay']), 2),
                                                 ban_status=ban_status,
                                                 cause_ban=cause_ban,
                                                 count_refers=user['ref_count'],
@@ -404,7 +404,7 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
                                                 amount_bowling=user['amount_bowling'],
                                                 amount_football=user['amount_football'],
                                                 amount_coin=user['amount_coin'],
-                                                referalst_summa=user['total_refill']))
+                                                referalst_summa=round(float(user['total_refill']), 2)))
         referal_list = await db.get_userAll(ref_id=user_id)
         for refik in referal_list:
             user = await db.get_user(user_id=int(refik['user_id']))
@@ -428,8 +428,8 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
         us = await bot.get_chat(user_id)
         name = us.get_mention(as_html=True)
     total_refill = convert_date(user['reg_date_unix'])
-    balance = user['balance']
-    demo_balance = user['test_balance'] 
+    balance = round(float(user['balance']), 2)
+    demo_balance = round(float(user['test_balance']), 2) 
     lang = user['language']
     if user['is_ban'] == True:
         ban_status = '⛔ Заблокирован'
@@ -444,9 +444,9 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
                                             user_id=user_id,
                                             total_refill=total_refill,
                                             balance=balance,
-                                            demo_balance=demo_balance,
+                                            demo_balance=round(float(demo_balance), 2),
                                             lang=lang,
-                                            tr=user['total_pay'],
+                                            tr=round(float(user['total_pay']), 2),
                                             ban_status=ban_status,
                                             cause_ban=cause_ban,
                                             count_refers=user['ref_count'],
@@ -458,7 +458,7 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
                                             amount_bowling=user['amount_bowling'],
                                             amount_football=user['amount_football'],
                                             amount_coin=user['amount_coin'],
-                                            referalst_summa=user['total_refill']))
+                                            referalst_summa=round(float(user['total_refill']), 2)))
     referal_list = await db.get_userAll(ref_id=user_id)
     for refik in referal_list:
         user = await db.get_user(user_id=int(refik['user_id']))
@@ -580,8 +580,8 @@ async def func_edit_game_two(message: Message, state: FSMContext):
             us = await bot.get_chat(user_id)
             name = us.get_mention(as_html=True)
         total_refill = convert_date(user['reg_date_unix'])
-        balance = user['balance']
-        demo_balance = user['test_balance'] 
+        balance = round(float(user['balance']), 2)
+        demo_balance = round(float(user['test_balance']), 2) 
         lang = user['language']
         if user['is_ban'] == True:
             ban_status = '⛔ Заблокирован'
@@ -593,24 +593,24 @@ async def func_edit_game_two(message: Message, state: FSMContext):
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
         await message.answer(ded(texts.admin_open_profile.format(name=name,
-                                                                    user_id=user_id,
-                                                                    total_refill=total_refill,
-                                                                    balance=balance,
-                                                                    demo_balance=demo_balance,
-                                                                    lang=lang,
-                                                                    tr=user['total_pay'],
-                                                                    ban_status=ban_status,
-                                                                    cause_ban=cause_ban,
-                                                                    count_refers=user['ref_count'],
-                                                                    vivod=user['vivod'],
-                                                                    amount_all_games=user['amount_all_games'],
-                                                                    amount_slots=user['amount_slots'],
-                                                                    amount_dice=user['amount_dice'],
-                                                                    amount_basketball=user['amount_basketball'],
-                                                                    amount_bowling=user['amount_bowling'],
-                                                                    amount_football=user['amount_football'],
-                                                                    amount_coin=user['amount_coin'],
-                                                                    referalst_summa=user['total_refill'])), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
+                                                                user_id=user_id,
+                                                                total_refill=total_refill,
+                                                                balance=balance,
+                                                                demo_balance=round(float(demo_balance), 2),
+                                                                lang=lang,
+                                                                tr=round(float(user['total_pay']), 2),
+                                                                ban_status=ban_status,
+                                                                cause_ban=cause_ban,
+                                                                count_refers=user['ref_count'],
+                                                                vivod=user['vivod'],
+                                                                amount_all_games=user['amount_all_games'],
+                                                                amount_slots=user['amount_slots'],
+                                                                amount_dice=user['amount_dice'],
+                                                                amount_basketball=user['amount_basketball'],
+                                                                amount_bowling=user['amount_bowling'],
+                                                                amount_football=user['amount_football'],
+                                                                amount_coin=user['amount_coin'],
+                                                                referalst_summa=round(float(user['total_refill']), 2))), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
         await state.finish()
     else:
         await message.answer(texts.need_number)
@@ -645,8 +645,8 @@ async def func_edit_game_two(message: Message, state: FSMContext):
             us = await bot.get_chat(user_id)
             name = us.get_mention(as_html=True)
         total_refill = convert_date(user['reg_date_unix'])
-        balance = user['balance']
-        demo_balance = user['test_balance'] 
+        balance = round(float(user['balance']), 2)
+        demo_balance = round(float(user['test_balance']), 2) 
         lang = user['language']
         if user['is_ban'] == True:
             ban_status = '⛔ Заблокирован'
@@ -658,24 +658,24 @@ async def func_edit_game_two(message: Message, state: FSMContext):
             ban_status = "❗ Непредвиденная ошибка, обратитесь к разработчику софта"
             cause_ban = ''
         await message.answer(ded(texts.admin_open_profile.format(name=name,
-                                                                    user_id=user_id,
-                                                                    total_refill=total_refill,
-                                                                    balance=balance,
-                                                                    demo_balance=demo_balance,
-                                                                    lang=lang,
-                                                                    tr=user['total_pay'],
-                                                                    ban_status=ban_status,
-                                                                    cause_ban=cause_ban,
-                                                                    count_refers=user['ref_count'],
-                                                                    vivod=user['vivod'],
-                                                                    amount_all_games=user['amount_all_games'],
-                                                                    amount_slots=user['amount_slots'],
-                                                                    amount_dice=user['amount_dice'],
-                                                                    amount_basketball=user['amount_basketball'],
-                                                                    amount_bowling=user['amount_bowling'],
-                                                                    amount_football=user['amount_football'],
-                                                                    amount_coin=user['amount_coin'],
-                                                                    referalst_summa=user['total_refill'])), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
+                                                                user_id=user_id,
+                                                                total_refill=total_refill,
+                                                                balance=balance,
+                                                                demo_balance=round(float(demo_balance), 2),
+                                                                lang=lang,
+                                                                tr=round(float(user['total_pay']), 2),
+                                                                ban_status=ban_status,
+                                                                cause_ban=cause_ban,
+                                                                count_refers=user['ref_count'],
+                                                                vivod=user['vivod'],
+                                                                amount_all_games=user['amount_all_games'],
+                                                                amount_slots=user['amount_slots'],
+                                                                amount_dice=user['amount_dice'],
+                                                                amount_basketball=user['amount_basketball'],
+                                                                amount_bowling=user['amount_bowling'],
+                                                                amount_football=user['amount_football'],
+                                                                amount_coin=user['amount_coin'],
+                                                                referalst_summa=round(float(user['total_refill']), 2))), reply_markup=await admin_user_menu(texts=texts, user_id=user_id))
         await state.finish()
     else:
         await message.answer(texts.need_number)

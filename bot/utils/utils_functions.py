@@ -170,3 +170,9 @@ def convert_ref(lang, ref):
         count = 2
 
     return f"{refs[count]}"
+
+async def autobackup_db():
+    db_path = "bot/data/database.db"
+    with open(db_path, "rb") as data:
+        for admin in get_admins():
+            await bot.send_document(chat_id=admin, document=data, caption="<b>⚙️ АвтоБэкап базы данных ⚙️</b>")

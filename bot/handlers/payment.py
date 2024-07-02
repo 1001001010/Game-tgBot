@@ -5,14 +5,15 @@ from xrocket import PayAPI
 import requests
 
 from bot.data.loader import dp, bot
-from bot.data.config import cryptobot_token, xrocket_token, db
+# from bot.data.config import cryptobot_token, xrocket_token, db
+from bot.data.config import cryptobot_token, db
 from bot.keyboards.inline import payment_method_back, kb_payment_link, crypto
 from bot.state.users import UserPayment
 from bot.utils.utils_functions import is_number, get_language
 from bot.utils.converter import RubToTon, RubToScale, RubToHedge, RubToAmbr, RubToTake, \
                                 RubToTnx, RubToBolt, RubToGrbs, RubToJusdt
 cryptoBot = AsyncCryptoBot(cryptobot_token)
-xRoketApi = PayAPI(api_key=xrocket_token)
+# xRoketApi = PayAPI(api_key=xrocket_token)
 
 @dp.callback_query_handler(text_startswith='payment', state="*")
 async def func_payment(call: CallbackQuery, state: FSMContext):
@@ -32,35 +33,35 @@ async def func_payment(call: CallbackQuery, state: FSMContext):
         # cheque = await xRoketApi.invoice_create(amount=1, currency='jUSDT')
         # await call.message.answer(lang.vibor_crypto, reply_markup=crypto())
     
-@dp.callback_query_handler(text_startswith='valute', state="*")
-async def func_value(call: CallbackQuery, state: FSMContext):
-    await state.finish()
-    await call.message.delete()
-    lang = await get_language(call.from_user.id)
-    moneta = call.data.split(":")[1]
-    amount = call.data.split(":")[2]
-    if moneta == 'TONCOIN':
-        crypto = await RubToTon(float(amount))
-    # elif moneta == 'SCALE':
-    #     crypto = await RubToScale(float(amount))
-    # elif moneta == 'HEDGE':
-    #     crypto = await RubToHedge(float(amount))
-    # elif moneta == 'AMBR':
-    #     crypto = await RubToAmbr(float(amount))
-    # elif moneta == 'TAKE':
-    #     crypto = await RubToTake(float(amount))
-    # elif moneta == 'TNX':
-    #     crypto = await RubToTnx(float(amount))
-    elif moneta == 'BOLT':
-        crypto = await RubToBolt(float(amount))
-    elif moneta == 'GRBS':
-        crypto = await RubToGrbs(float(amount))
-    elif moneta == 'jUSDT':
-        crypto = await RubToJusdt(float(amount))
-    cheque = await xRoketApi.invoice_create(amount=float(crypto), currency=moneta)
-    id = cheque['data']['id']
-    link = cheque['data']['link']
-    await call.message.answer(lang.payment_link, reply_markup=kb_payment_link(lang=lang, link=link, pay_id=id, method='xrocket', summa=amount))
+# @dp.callback_query_handler(text_startswith='valute', state="*")
+# async def func_value(call: CallbackQuery, state: FSMContext):
+#     await state.finish()
+#     await call.message.delete()
+#     lang = await get_language(call.from_user.id)
+#     moneta = call.data.split(":")[1]
+#     amount = call.data.split(":")[2]
+#     if moneta == 'TONCOIN':
+#         crypto = await RubToTon(float(amount))
+#     # elif moneta == 'SCALE':
+#     #     crypto = await RubToScale(float(amount))
+#     # elif moneta == 'HEDGE':
+#     #     crypto = await RubToHedge(float(amount))
+#     # elif moneta == 'AMBR':
+#     #     crypto = await RubToAmbr(float(amount))
+#     # elif moneta == 'TAKE':
+#     #     crypto = await RubToTake(float(amount))
+#     # elif moneta == 'TNX':
+#     #     crypto = await RubToTnx(float(amount))
+#     elif moneta == 'BOLT':
+#         crypto = await RubToBolt(float(amount))
+#     elif moneta == 'GRBS':
+#         crypto = await RubToGrbs(float(amount))
+#     elif moneta == 'jUSDT':
+#         crypto = await RubToJusdt(float(amount))
+#     cheque = await xRoketApi.invoice_create(amount=float(crypto), currency=moneta)
+#     id = cheque['data']['id']
+#     link = cheque['data']['link']
+#     await call.message.answer(lang.payment_link, reply_markup=kb_payment_link(lang=lang, link=link, pay_id=id, method='xrocket', summa=amount))
             
             
     # cheque = await xRoketApi.invoice_create(amount=1, currency='jUSDT')
@@ -101,7 +102,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
             await call.answer(lang.not_pay)
         if invoices.status == 'paid':
             await call.message.delete()
-            await call.answer(lang.yes_pay)
+            await call.message.answer('✅ Счет успешно пополнен и зачислен на баланс\n\n🍀 Приятной игры на Clams Casino 🍀')
             user = await db.get_user(user_id = call.from_user.id)
             if user['ref_id'] is not None:
                 referral = await db.get_user(user_id = user['ref_id'])
@@ -112,26 +113,26 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 await db.update_user(id=referral['user_id'], balance=float(referral['balance']) + float(ego_procent), total_refill = float(referral['total_refill']) + float(ego_procent))
                 await bot.send_message(referral['user_id'], lang.ref_plus_balance.format(percent=ego_procent))
             await db.update_user(id=call.from_user.id, balance=float(user['balance']) + float(invoices.amount), total_pay=float(user['total_pay']) + float(invoices.amount))
-    elif method == 'xrocket':
-        invoices = await xRoketApi.invoice_info(invoice_id=pay_id)
-        status = invoices['data']['status']
-        if status == 'active':
-        # if status == 'paid':
-            await call.answer(lang.not_pay)
-        if status == 'paid':
-        # elif status == 'active':
-            # await call.message.delete()
-            summa = call.data.split(":")[3]
-            await call.answer(lang.yes_pay)
-            user = await db.get_user(user_id = call.from_user.id)
-            # rub_amount = TonToRub(float(invoices['data']['amount']))
-            # rub_amount = round(rub_amount, 2)
-            if user['ref_id'] is not None:
-                referral = await db.get_user(user_id = user['ref_id'])
-                user_ref_lvl = referral['ref_lvl']
-                game_sett = await db.get_settings(id=1)
-                percent = game_sett[f'ref_percent_{user_ref_lvl}']
-                ego_procent = float(float(summa) * float(percent / 100))
-                await db.update_user(id=referral['user_id'], balance=float(referral['balance']) + float(ego_procent), total_refill = float(referral['total_refill']) + float(ego_procent))
-                await bot.send_message(referral['user_id'], lang.ref_plus_balance.format(percent=ego_procent))
-            await db.update_user(id=call.from_user.id, balance=float(user['balance']) + float(summa), total_pay=float(user['total_pay']) + float(summa))
+    # elif method == 'xrocket':
+    #     invoices = await xRoketApi.invoice_info(invoice_id=pay_id)
+    #     status = invoices['data']['status']
+    #     if status == 'active':
+    #     # if status == 'paid':
+    #         await call.answer(lang.not_pay)
+    #     if status == 'paid':
+    #     # elif status == 'active':
+    #         await call.message.delete()
+    #         summa = call.data.split(":")[3]
+    #         await call.message.answer('✅ Счет успешно пополнен и зачислен на баланс\n\n🍀 Приятной игры на Clams Casino 🍀')
+    #         user = await db.get_user(user_id = call.from_user.id)
+    #         # rub_amount = TonToRub(float(invoices['data']['amount']))
+    #         # rub_amount = round(rub_amount, 2)
+    #         if user['ref_id'] is not None:
+    #             referral = await db.get_user(user_id = user['ref_id'])
+    #             user_ref_lvl = referral['ref_lvl']
+    #             game_sett = await db.get_settings(id=1)
+    #             percent = game_sett[f'ref_percent_{user_ref_lvl}']
+    #             ego_procent = float(float(summa) * float(percent / 100))
+    #             await db.update_user(id=referral['user_id'], balance=float(referral['balance']) + float(ego_procent), total_refill = float(referral['total_refill']) + float(ego_procent))
+    #             await bot.send_message(referral['user_id'], lang.ref_plus_balance.format(percent=ego_procent))
+    #         await db.update_user(id=call.from_user.id, balance=float(user['balance']) + float(summa), total_pay=float(user['total_pay']) + float(summa))
