@@ -75,42 +75,43 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
         all_user += 1
 
     msg = f"""📊 Статистика
-    
-    <b>Пользователи:</b>
-    👥 Всего пользователей: <code>{all_user}</code>  чел.
-    👥 Ползователей за неделю <code>{show_users_week}</code>  чел.
-    👥 Пользователей за день <code>{show_users_day}</code>  чел.
-        
-    <b>Всего пополненно:</b> <code>{round(float(summ_deposits), 2)}</code> 💎
-    
-    <b>Игры:</b>
-    🎰 Слоты: 
-    ╠🧮 Коэффициент: <code>X{slots_info['factor']}</code> 
-    ╚💰 Мин. ставка: <code>{slots_info['min_bet']}</code>🪙 
-    
-    🎲 Кости: 
-    ╠🧮 Коэффициент: <code>X{dice_info['factor']}</code> 
-    ╚💰 Мин. ставка: <code>{dice_info['min_bet']}</code>🪙 
-    
-    🏀 Баскетбол:
-    ╠🧮 Коэффициент: <code>X{basketball_info['factor']}</code> 
-    ╚💰 Мин. ставка: <code>{basketball_info['min_bet']}</code>🪙 
-    
-    🎳 Боулинг:
-    ╠🧮 Коэффициент: <code>X{bowling_info['factor']}</code> 
-    ╚💰 Мин. ставка: <code>{bowling_info['min_bet']}</code>🪙 
-    
-    ⚽ Футбол:
-    ╠🧮 Коэффициент: <code>X{football_info['factor']}</code> 
-    ╚💰 Мин. ставка: <code>{football_info['min_bet']}</code>🪙 
-    
-    🪙 Монетка:
-    ╠🧮 Коэффициент: <code>X{coin_info['factor']}</code> 
-    ╠💰 Мин. ставка: <code>{coin_info['min_bet']}</code>🪙 
-    ╠📈 Шанс победы: <code>{int(coin_info['chance_real'])*100}</code>% 
-    ╚📉 Демо шанс: <code>{int(coin_info['chance_demo'])*100}</code>%
 
-    👨‍💻 Всего администраторов: {admin_count}\n"""
+    <b>👥 Пользователи:</b>
+    ♾️ Всего пользователей: <code>{all_user}</code> чел.
+    📅 За неделю: <code>{show_users_week}</code> чел.
+    ⌛ За день: <code>{show_users_day}</code> чел.
+
+    <b>Всего пополненно:</b> <code>{round(float(summ_deposits), 2)}</code> 💎
+
+    <b>Игры:</b>
+
+    <b>🎰 Слоты:</b>
+    Коэффициент: <code>X{slots_info['factor']}</code>
+    Мин. ставка: ₽ <code>{slots_info['min_bet']}</code>
+
+    <b>🎲 Кости:</b>
+    Коэффициент: <code>X{dice_info['factor']}</code>
+    Мин. ставка: ₽ <code>{dice_info['min_bet']}</code>
+
+    <b>🏀 Баскетбол:</b>
+    Коэффициент: <code>X{basketball_info['factor']}</code>
+    Мин. ставка: ₽ <code>{basketball_info['min_bet']}</code>
+
+    <b>🎳 Боулинг:</b>
+    Коэффициент: <code>X{bowling_info['factor']}</code>
+    Мин. ставка: ₽ <code>{bowling_info['min_bet']}</code>
+
+    <b>⚽ Футбол:</b>
+    Коэффициент: <code>X{football_info['factor']}</code>
+    Мин. ставка: ₽ <code>{football_info['min_bet']}</code>
+
+    <b>🪙 Монетка:</b>
+    Коэффициент: <code>X{coin_info['factor']}</code>
+    Мин. ставка: ₽ <code>{coin_info['min_bet']}</code>
+    Шанс победы: <code>{int(coin_info['chance_real'])*100}</code>%
+    Демо шанс: <code>{int(coin_info['chance_demo'])*100}</code>%
+
+    <b>👨‍💻 Администраторы:</b> {admin_count}\n"""
     for admin in get_admins():
         try:
             user = await db.get_user(user_id=admin)
