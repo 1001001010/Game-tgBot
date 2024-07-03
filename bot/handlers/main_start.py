@@ -6,7 +6,7 @@ from bot.data.config import db
 from bot.keyboards.reply import user_menu
 from bot.keyboards.inline import admin_menu, choose_languages_kb, sub
 from bot.utils.utils_functions import get_language, convert_ref
-from bot.filters.filters import IsAdmin, IsBan, IsSub
+from bot.filters.filters import IsAdmin, IsBan, IsSub, IsWork
 
 #Проверка на бан
 @dp.message_handler(IsBan(), state="*")
@@ -16,6 +16,18 @@ async def is_ban(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     await message.answer(lang.is_ban_text.format(ban_msg=user['ban_cause']))
 
+@dp.message_handler(IsWork(), state="*")
+async def is_work(message: Message, state: FSMContext):
+    await state.finish()
+    texts = await get_language(message.from_user.id)
+    await message.answer(texts.is_work_text)
+
+
+@dp.callback_query_handler(IsWork(), state="*")
+async def is_work(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    texts = await get_language(call.from_user.id)
+    await call.answer(texts.is_work_text)
 
 @dp.callback_query_handler(IsBan(), state="*")
 async def is_ban(call: CallbackQuery, state: FSMContext):

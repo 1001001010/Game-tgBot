@@ -51,6 +51,20 @@ async def adm_edit_faq(message: Message, state: FSMContext):
     await db.update_settings(FAQ=data['msg'])
     await message.answer(lang.faq_success, reply_markup=admin_menu(texts=lang))
     await state.finish()
+    
+@dp.callback_query_handler(IsAdmin(), text_startswith="work:on_off", state="*")
+async def settings_vkl_work(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    s = await db.get_only_settings()
+    status_work = s['is_work']
+
+    if status_work == "True":
+        await db.update_settings(is_work="False")
+    if status_work == "False":
+        await db.update_settings(is_work="True")
+
+    lang = await get_language(call.from_user.id)
+    await call.message.edit_text(lang.admin_settings, reply_markup=await kb_admin_settings(texts=lang))
 #Статистика
 @dp.callback_query_handler(IsAdmin(), text='stats', state="*")
 async def open_stats(call: CallbackQuery, state: FSMContext):

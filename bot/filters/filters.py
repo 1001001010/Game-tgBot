@@ -30,3 +30,12 @@ class IsSub(BoundFilter):
                 return True
             else:
                 return False
+            
+class IsWork(BoundFilter):
+    async def check(self, message: Message) -> bool:
+        s = await db.get_only_settings()
+        user = await db.get_user(user_id=message.from_user.id)
+        if s['is_work'] == "True" and not user['user_id'] in get_admins():
+            return True
+        else:
+            return False

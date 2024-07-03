@@ -205,10 +205,14 @@ async def kb_admin_settings(texts):
     ref_percent_3 = s['ref_percent_3']
     ref_percent_cheack = s['Commission_check']
     min_cheack = s['Minimum_check']
+    work = s['is_work']
+    if work == "True":
+        work_emoji = "✅"
+    else:
+        work_emoji = "❌"
     
     kb.append(InlineKeyboardButton(texts.reply_kb3, callback_data="settings_faq"))
     kb.append(InlineKeyboardButton(texts.reply_kb4, callback_data="settings_supp"))
-    # kb.append(InlineKeyboardButton(texts.groups_list, callback_data="settings_groups"))
     kb.append(InlineKeyboardButton(f"2️⃣ Изменить кол-во рефералов для 2 лвла", callback_data="ref_lvl_edit:2"))
     kb.append(InlineKeyboardButton(f"3️⃣ Изменить кол-во рефералов для 3 лвла", callback_data="ref_lvl_edit:3"))
     kb.append(InlineKeyboardButton(f"Реф. Процент 1 лвл. | {ref_percent_1}%", callback_data="ref_percent:edit:1"))
@@ -218,7 +222,9 @@ async def kb_admin_settings(texts):
     kb.append(InlineKeyboardButton(f"🧾 Комиссия | {ref_percent_cheack}%", callback_data="new_Edit_network:check"))
     kb.append(InlineKeyboardButton(f"🧾 Мин. сумма | {min_cheack}", callback_data="MinimumSumma"))
     kb.append(InlineKeyboardButton(texts.back_to_adm_m, callback_data="back_to_adm_m"))
+    kb.append(InlineKeyboardButton(f"Тех. Работы | {work_emoji}", callback_data="work:on_off"))
     keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[11])
     keyboard.add(kb[2])
     keyboard.add(kb[3])
     keyboard.add(kb[4])

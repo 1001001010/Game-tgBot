@@ -89,6 +89,8 @@ class Texts:
     game_menu = "<b>Выберите режим игры 🕹</b>"
     why_ban = "❗Укажите причину блокировки"
     incorrect_amount = "Введите сумму от ₽ <code>1</code> до <code>1000</code>"
+    is_work_text = f"<b>❌ Бот находиться на тех. работах!</b>"
+    is_work_text = f"<b>❌ The bot is on those. works!</b>"
     def bet_msg(self, game_name_text, min_bet, user_balance):
         msg = f"""Игра: {game_name_text}
         

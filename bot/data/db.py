@@ -265,10 +265,11 @@ class DB(AsyncClass):
             await self.con.commit()
             
         settings = await self.con.execute("PRAGMA table_info(settings)")
-        if len(await settings.fetchall()) == 17:
+        if len(await settings.fetchall()) == 18:
             print("database was found (Settings | 2/8)")
         else:
             await self.con.execute("CREATE TABLE settings("
+                                   "is_work TEXT,"
                                     "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                                     "profit_day INTEGER,"
                                     "profit_week INTEGER,"
@@ -289,8 +290,8 @@ class DB(AsyncClass):
 
             print("database was not found (Settings | 2/8), creating...")
             await self.con.execute("INSERT INTO settings("
-                                            "FAQ, support, profit_day, profit_week) "
-                                            "VALUES (?, ?, ?, ?)", ['FAQ', '-', f'{get_unix()}', f'{get_unix()}'])
+                                            "is_work, FAQ, support, profit_day, profit_week) "
+                                            "VALUES (?, ?, ?, ?, ?)", ['True', 'FAQ', '-', f'{get_unix()}', f'{get_unix()}'])
             await self.con.commit()
             
         langs = await self.con.execute("PRAGMA table_info(languages)")
