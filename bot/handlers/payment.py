@@ -33,17 +33,20 @@ async def functions_profile_get(message: Message, state: FSMContext):
     if is_number(message.text):
         await state.update_data(amount = message.text)
         data = await state.get_data()
-        if data['method'] == 'cryptobot':
-            link = await cryptoBot.create_invoice(amount=float(data['amount']), 
-                                                  currency_type='fiat', 
-                                                  fiat='RUB')
-            await message.answer(lang.payment_link, reply_markup=kb_payment_link(lang=lang, 
-                                                                                 link=link.pay_url, 
-                                                                                 pay_id=link.invoice_id, 
-                                                                                 method='cryptobot', 
-                                                                                 summa=None))
-        elif data['method'] == 'xrocket':
-            await message.answer(lang.vibor_crypto, reply_markup=crypto(amount=data['amount']))
+        if (float(data['amount']) < 1 and float(data['amount']) >= 1000):
+            if data['method'] == 'cryptobot':
+                link = await cryptoBot.create_invoice(amount=float(data['amount']), 
+                                                    currency_type='fiat', 
+                                                    fiat='RUB')
+                await message.answer(lang.payment_link, reply_markup=kb_payment_link(lang=lang, 
+                                                                                    link=link.pay_url, 
+                                                                                    pay_id=link.invoice_id, 
+                                                                                    method='cryptobot', 
+                                                                                    summa=None))
+            # elif data['method'] == 'xrocket':
+            #     await message.answer(lang.vibor_crypto, reply_markup=crypto(amount=data['amount']))
+        else:
+            await message.answer(lang.incorrect_amount)
     else:
         await message.answer(lang.need_number)
         

@@ -149,6 +149,7 @@ class Texts:
     nobody = "<code>Nobody</code>"
     no_money = "Insufficient balance!"
     no_sub = "<b>❗ Error!\nYou have not subscribed to the channel.</b>"
+    incorrect_amount = "Enter the amount from ₽ <code>1</code> to <code>1000</code>"
     def lose_game(self, summ, balance):
         msg = f"""<b>Alas, you lost 🥴</b>
                 
