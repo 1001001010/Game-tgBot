@@ -24,6 +24,7 @@ class AdminCoupons(StatesGroup):
     
 class AdminFind(StatesGroup):
     here_user = State()
+    here_check = State()
     
 class AdminBanCause(StatesGroup):
     cause = State()

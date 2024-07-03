@@ -176,6 +176,14 @@ class DB(AsyncClass):
 
         return await row.fetchone()
     
+    # Получение Чека
+    async def get_check(self, **kwargs):
+        sql = "SELECT * FROM [check]"
+        sql, parameters = query_args(sql, kwargs)
+        row = await self.con.execute(sql, parameters)
+        
+        return await row.fetchone()
+    
     # Получение активироного промокода
     async def get_activate_coupon(self, **kwargs):
         sql = "SELECT * FROM activ_coupons"

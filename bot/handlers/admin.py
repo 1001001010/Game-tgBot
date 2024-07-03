@@ -354,7 +354,57 @@ async def find_profile_op(message: Message, state: FSMContext):
                 name = us.get_mention(as_html=True)
             msgg += f"{name}\n "
         await message.answer(msgg, reply_markup=await admin_user_menu(texts=text, user_id=user_id))
-        
+
+#Открытие чека из админки
+@dp.callback_query_handler(IsAdmin(), text="find_check", state="*")
+async def find_check_open(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    lang = await get_language(call.from_user.id)
+    await call.message.edit_text("<b>❗ Введите номер чека 🧾</b>", reply_markup=back_to_adm_m(texts=lang))
+    await AdminFind.here_check.set()
+    
+@dp.message_handler(IsAdmin(), state=AdminFind.here_check)
+async def find_profile_op(message: Message, state: FSMContext):
+    text = await get_language(message.from_user.id)
+    if message.text.isdigit():
+        check_info = await db.get_check(unix=message.text)
+        if check_info:
+            check_type = 'Пополнение' if check_info['transaction_type'] == 'deposit' else 'Вывод'
+            if check_info['transaction_type'] == 'deposit':
+                await message.answer(ded(f"""
+                                        Информаци о чеке: {check_info['unix']} 
+                                        
+                                        ID: {check_info['id']}
+                                        Пользователь: {check_info['user_id']}
+                                        Тип: {check_type}
+                                        Сумма: {check_info['summa']}
+                                        """))
+            else:
+                withdrawal_info = await db.get_vivod(id=check_info['conclusion_id'])
+                status_vivod = 'Отменено' if withdrawal_info['status'] == 'canceled' else 'Принят'
+                adress = 'Чек' if withdrawal_info['network'] == 'NULL' and withdrawal_info['adress'] == 'NULL' else withdrawal_info['adress']
+                network = withdrawal_info['network'] if withdrawal_info['network'] != 'NULL' else ''
+                
+                await message.answer(ded(f"""
+                                        Информаци о чеке: {check_info['unix']} 
+                                        
+                                        ID: {check_info['id']}
+                                        Пользователь: {withdrawal_info['user_id']}
+                                        Тип: {check_type}
+                                        Сумма: {check_info['summa']}
+                                        
+                                        Информация о выводе: 
+                                        ID: {withdrawal_info['id']}
+                                        Дата: {withdrawal_info['data']}
+                                        Статус: {status_vivod}
+                                        Адресс: {adress}
+                                        {network}
+                                        """))
+        else:
+            await message.answer("Чек не найден")
+    else:
+        await message.answer("Неверный формат чека")
+
 @dp.callback_query_handler(IsAdmin(), text_startswith="block", state="*")
 async def find_profile_open(call: CallbackQuery, state: FSMContext):
     await state.finish()
