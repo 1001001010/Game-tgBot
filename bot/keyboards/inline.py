@@ -179,16 +179,18 @@ def admin_menu(texts):
 
     kb.append(InlineKeyboardButton("🖤 Общие настройки", callback_data="settings"))
     kb.append(InlineKeyboardButton("🎲 Доп. настройки", callback_data="extra_settings"))
-    kb.append(InlineKeyboardButton("🔍 Искать", callback_data="find_user"))
-    kb.append(InlineKeyboardButton("Промокод", callback_data="adm_promo"))
+    kb.append(InlineKeyboardButton("👤 Пользователь", callback_data="find_user"))
+    kb.append(InlineKeyboardButton("🧾 Чек", callback_data="find_check"))
+    kb.append(InlineKeyboardButton("🎫 Промокод", callback_data="adm_promo"))
     kb.append(InlineKeyboardButton("📌 Рассылка", callback_data="mail_start"))
     kb.append(InlineKeyboardButton("📊 Статистика", callback_data="stats"))
     kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_m"))
 
     keyboard.add(kb[0], kb[1])
-    keyboard.add(kb[4], kb[3])
-    keyboard.add(kb[2], kb[5])
+    keyboard.add(kb[4], kb[5])
+    keyboard.add(kb[2], kb[3])
     keyboard.add(kb[6])
+    keyboard.add(kb[7])
 
     return keyboard
 

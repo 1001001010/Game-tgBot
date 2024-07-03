@@ -9,7 +9,7 @@ from bot.data.config import lang_ru, lang_en, db, admin_chat
 from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, \
                                 choose_languages_kb, game_menu, payment_method, kb_vivod_zayavka, kb_vivod_moneta, \
                                 kb_network, yes_or_no_vivod, kb_rework_network, yes_or_no_cheack
-from bot.utils.utils_functions import get_language, ded, is_number
+from bot.utils.utils_functions import get_language, ded, is_number, gen_id
 from bot.state.users import UsersCoupons, UserVivid
 from bot.utils.converter import convert_rub_to_usd
 
@@ -461,6 +461,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     user = await db.get_user(user_id=vivod_info['user_id'])
     if status == 'yes':
         await db.update_vivod(id=vivod_id, status='accepted')
+        await db.add_check(unix=gen_id(), user_id=user['user_id'], transaction_type='withdrawal', conclusion_id=vivod_id, summa=float(summa))
         await db.update_user(id=vivod_info['user_id'], vivod=float(user['vivod'])+float(summa))
         if vivod_info['adress'] == 'NULL':
             await bot.send_message(vivod_info['user_id'], lang.vivod_success_msg_check)
