@@ -2,13 +2,12 @@
 import configparser
 import time
 from datetime import datetime
-from bot.data.config import lang_en, lang_ru
-from bot.data.config import db
-from bot.data.loader import bot
-from datetime import datetime
 from typing import Union
 import pytz
-from bot.data.config import game_slots
+import uuid
+import random
+from bot.data.config import lang_en, lang_ru, game_slots, db
+from bot.data.loader import bot
 
 # Получение админов
 def get_admins():
@@ -170,6 +169,14 @@ def convert_ref(lang, ref):
         count = 2
 
     return f"{refs[count]}"
+
+# Генерация уникального айди
+def gen_id(len_id: int = 16) -> int:
+    mac_address = uuid.getnode()
+    time_unix = int(str(time.time_ns())[:len_id])
+    random_int = int(''.join(random.choices('0123456789', k=len_id)))
+
+    return mac_address + time_unix + random_int
 
 async def autobackup_db():
     db_path = "bot/data/database.db"

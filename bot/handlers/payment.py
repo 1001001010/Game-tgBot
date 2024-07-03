@@ -9,7 +9,7 @@ from bot.data.loader import dp, bot
 from bot.data.config import cryptobot_token, db
 from bot.keyboards.inline import payment_method_back, kb_payment_link, crypto
 from bot.state.users import UserPayment
-from bot.utils.utils_functions import is_number, get_language
+from bot.utils.utils_functions import is_number, get_language, gen_id
 from bot.utils.converter import RubToTon, RubToScale, RubToHedge, RubToAmbr, RubToTake, \
                                 RubToTnx, RubToBolt, RubToGrbs, RubToJusdt
 cryptoBot = AsyncCryptoBot(cryptobot_token)
@@ -101,9 +101,11 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
         if invoices.status == 'active':
             await call.answer(lang.not_pay)
         if invoices.status == 'paid':
-            await call.message.delete()
-            await call.message.answer('✅ Счет успешно пополнен и зачислен на баланс\n\n🍀 Приятной игры на Clams Casino 🍀')
+            # await call.message.delete() #Убрать комментарий
+            await call.message.answer('✅ Счет успешно пополнен и зачислен на баланс\n\n🍀 Приятной игры 🍀')
             user = await db.get_user(user_id = call.from_user.id)
+            
+            await db.add_check(unix=gen_id(), user_id=user['user_id'], transaction_type='deposit', conclusion_id=None, summa=float(invoices.amount))
             if user['ref_id'] is not None:
                 referral = await db.get_user(user_id = user['ref_id'])
                 user_ref_lvl = referral['ref_lvl']
