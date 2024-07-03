@@ -206,12 +206,11 @@ def is_number(get_number: Union[str, int, float]) -> bool:
     if str(get_number).isdigit():
         return True
     else:
-        if "," in str(get_number): get_number = str(get_number).replace(",", ".")
-
-        try:
-            float(get_number)
-            return True
-        except ValueError:
+        # if "," in str(get_number): get_number = str(get_number).replace(",", ".")
+        # try:
+        #     float(get_number)
+        #     return True
+        # except ValueError:
             return False
 
 def convert_ref(lang, ref):

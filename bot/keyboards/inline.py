@@ -184,13 +184,14 @@ def admin_menu(texts):
     kb.append(InlineKeyboardButton("🎫 Промокод", callback_data="adm_promo"))
     kb.append(InlineKeyboardButton("📌 Рассылка", callback_data="mail_start"))
     kb.append(InlineKeyboardButton("📊 Статистика", callback_data="stats"))
+    kb.append(InlineKeyboardButton("💾 Бэкап БД", callback_data="backup"))
     kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_m"))
 
     keyboard.add(kb[0], kb[1])
     keyboard.add(kb[4], kb[5])
     keyboard.add(kb[2], kb[3])
-    keyboard.add(kb[6])
-    keyboard.add(kb[7])
+    keyboard.add(kb[6], kb[7])
+    keyboard.add(kb[8])
 
     return keyboard
 

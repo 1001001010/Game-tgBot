@@ -4,7 +4,7 @@ from aiogram.types import InputFile
 
 from bot.data.loader import dp, bot
 from bot.data.config import lang_ru, lang_en, db
-from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game, is_number
+from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game, is_number, autobackup_db
 from bot.filters.filters import IsAdmin
 from bot.keyboards.inline import admin_menu, kb_admin_settings, back_to_adm_m, mail_types, \
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
@@ -21,6 +21,11 @@ async def func__admin_menu(message: Message, state: FSMContext):
     await state.finish()
     lang = await get_language(message.from_user.id)
     await message.answer(lang.admin_menu, reply_markup=admin_menu(texts=lang))
+    
+@dp.callback_query_handler(IsAdmin(), text='backup', state="*")
+async def back_to_menu(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await autobackup_db()
     
 @dp.callback_query_handler(IsAdmin(), text='settings', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
