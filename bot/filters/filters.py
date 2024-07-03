@@ -24,7 +24,8 @@ class IsSub(BoundFilter):
         if channel_id == "":
             return False
         else:
-            user_status = await bot.get_chat_member(chat_id=channel_id, user_id=message.from_user.id)
+            user_status = await bot.get_chat_member(chat_id=channel_id, 
+                                                    user_id=message.from_user.id)
             if user_status["status"] == 'left':
                 return True
             else:

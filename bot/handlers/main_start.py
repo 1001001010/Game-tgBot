@@ -113,7 +113,8 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
     lang = await get_language(call.from_user.id)
-    await bot.send_message(call.from_user.id, lang.welcome, reply_markup=await user_menu(texts=lang, user_id=call.from_user.id))
+    await bot.send_message(call.from_user.id, lang.welcome, reply_markup=await user_menu(texts=lang, 
+                                                                                         user_id=call.from_user.id))
     
 @dp.callback_query_handler(IsAdmin(), text='back_to_adm_m', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):

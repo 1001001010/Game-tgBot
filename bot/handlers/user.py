@@ -59,7 +59,8 @@ async def func__profile(message: Message, state: FSMContext):
                         refer_lvl=ref_lvl, 
                         balance_vivod=round(float(user_info['vivod']), 2), 
                         reffer = reffer,
-                        refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=message.from_user.id))
+                        refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, 
+                                                                             user_id=message.from_user.id))
 
 @dp.callback_query_handler(text="back_to_profile", state="*")
 async def user_lang(call: CallbackQuery, state: FSMContext):
@@ -91,7 +92,8 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
                         refer_lvl=ref_lvl, 
                         balance_vivod=round(float(user_info['vivod']), 2), 
                         reffer = reffer,
-                        refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=call.from_user.id))
+                        refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, 
+                                                                             user_id=call.from_user.id))
 
 #Открытие FAQ
 @dp.message_handler(text=lang_ru.reply_kb3, state="*")
@@ -111,7 +113,9 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
     user_info = await db.get_user(user_id = call.from_user.id)
     if user_info['request_test'] == 0:
         await call.message.delete()
-        await db.update_user(id = call.from_user.id, request_test=1, test_balance=25)
+        await db.update_user(id = call.from_user.id, 
+                             request_test=1, 
+                             test_balance=25)
         await call.answer(lang.yes_demo)
         bott = await bot.get_me()
         bot_name = bott.username
@@ -136,7 +140,8 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
                         refer_lvl=ref_lvl, 
                         balance_vivod=round(float(user_info['vivod']), 2), 
                         reffer = reffer,
-                        refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, user_id=call.from_user.id))
+                        refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, 
+                                                                             user_id=call.from_user.id))
     elif user_info['request_test'] == 1:
         await call.answer(lang.no_demo)
 
@@ -158,7 +163,10 @@ async def sup_open(message: Message, state: FSMContext):
     else:
         kb = await support_inll(texts=lang)
     photo_path = InputFile('./bot/data/photo/helper.png')
-    await bot.send_photo(message.from_user.id, photo=photo_path, caption=msg, reply_markup=kb)
+    await bot.send_photo(message.from_user.id, 
+                         photo=photo_path, 
+                         caption=msg, 
+                         reply_markup=kb)
 
 #Промокод 
 @dp.callback_query_handler(text="promo", state="*")
@@ -182,7 +190,8 @@ async def functions_profile_get(message: Message, state: FSMContext):
         summa = (await db.get_coupon_search(coupon=coupon))["summa_promo"]
         user_id = message.from_user.id
         user = await db.get_user(user_id=user_id)
-        activ_cop = await db.get_activate_coupon(user_id=user_id, coupon_name=cop)
+        activ_cop = await db.get_activate_coupon(user_id=user_id, 
+                                                 coupon_name=cop)
         if uses == 0:
             await message.answer(lang.no_uses_coupon)
             await db.delete_coupon(coupon=coupon)
@@ -211,7 +220,10 @@ async def func__game(message: Message, state: FSMContext):
     await state.finish()
     lang = await get_language(message.from_user.id)
     photo_path = InputFile('./bot/data/photo/game.png')
-    await bot.send_photo(message.from_user.id, photo=photo_path, caption=lang.game_menu, reply_markup=game_menu(texts=lang))
+    await bot.send_photo(message.from_user.id, 
+                         photo=photo_path, 
+                         caption=lang.game_menu, 
+                         reply_markup=game_menu(texts=lang))
     
 @dp.callback_query_handler(text="back_to_game_menu", state="*")
 async def user_lang(call: CallbackQuery, state: FSMContext):
@@ -219,7 +231,10 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     lang = await get_language(call.from_user.id)
     photo_path = InputFile('./bot/data/photo/game.png')
-    await bot.send_photo(call.from_user.id, photo=photo_path, caption=lang.game_menu, reply_markup=game_menu(texts=lang))
+    await bot.send_photo(call.from_user.id, 
+                         photo=photo_path, 
+                         caption=lang.game_menu, 
+                         reply_markup=game_menu(texts=lang))
     
 @dp.callback_query_handler(text="withdrawal", state="*")
 async def user_lang(call: CallbackQuery, state: FSMContext):
@@ -266,9 +281,18 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     if float(data['amount']) <= float(min_summa):
         await call.message.answer(lang.need_balance)
     else:
-        await db.add_vivod(user_id=call.from_user.id, summa=data['amount'], network='NULL', status='not confirmed', data=time, adress='NULL')
-        vivod_id = await db.get_vivod(user_id=call.from_user.id, data=time)
-        await call.message.answer(ded(lang.Confirmation_msg_chek.format(amount_vivod=data['amount'], comma_vivod=round(((float(data['amount']) * float(comma) / 100)), 2), full_summa=float(data['amount']) - (float(data['amount']) * float(comma) / 100))), reply_markup=yes_or_no_cheack(vivod_id=vivod_id['id']))
+        await db.add_vivod(user_id=call.from_user.id, 
+                           summa=data['amount'], 
+                           network='NULL', 
+                           status='not confirmed', 
+                           data=time, 
+                           adress='NULL')
+        vivod_id = await db.get_vivod(user_id=call.from_user.id, 
+                                      data=time)
+        await call.message.answer(ded(lang.Confirmation_msg_chek.format(amount_vivod=data['amount'], 
+                                                                        comma_vivod=round(((float(data['amount']) * float(comma) / 100)), 2), 
+                                                                        full_summa=float(data['amount']) - (float(data['amount']) * float(comma) / 100))), 
+                                                                        reply_markup=yes_or_no_cheack(vivod_id=vivod_id['id']))
         
 @dp.callback_query_handler(text_startswith='ok_check', state="*")
 async def func_value(call: CallbackQuery, state: FSMContext):
@@ -282,10 +306,10 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     settings_info = await db.get_settings(id=1)
     if status == 'yes':
         await call.message.answer(lang.succes_msg)
-        await db.update_user(id=call.from_user.id, balance=float(user['balance']-float(vivod['summa'])))
+        await db.update_user(id=call.from_user.id, 
+                             balance=float(user['balance']-float(vivod['summa'])))
         usdt_summa_vivod = convert_rub_to_usd(float(vivod['summa']))
         usdt_comma = convert_rub_to_usd(float(settings_info['Commission_check']))
-        # print(float(usdt_summa_vivod) - ((float(usdt_summa_vivod) * float(usdt_comma) / 100)))
         if user['user_name'] == "":
                 us = await bot.get_chat(call.from_user.id)
                 name = us.get_mention(as_html=True)
@@ -300,7 +324,8 @@ async def func_value(call: CallbackQuery, state: FSMContext):
         🪙 Метод: <code>🧾 Чек</code>
         💚  Комиссия: <code>{float(settings_info['Commission_check'])}</code>
         """
-        await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=vivod['summa'], vivod_id=vivod_id))
+        await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=vivod['summa'], 
+                                                                                   vivod_id=vivod_id))
     else:
         await db.update_vivod(id=vivod_id, status='canceled')
         await call.message.answer(lang.otklon_vivod, reply_markup=back_to_profile(lang))
@@ -312,7 +337,8 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     moneta = call.data.split(":")[1]
     await state.update_data(method = moneta)
     data = await state.get_data()
-    await call.message.answer(lang.need_network, reply_markup=kb_network(lang=lang, summa=data['amount']))
+    await call.message.answer(lang.need_network, reply_markup=kb_network(lang=lang, 
+                                                                         summa=data['amount']))
     # await UserVivid.adress.set()
 
 @dp.callback_query_handler(text_startswith='network', state="*")
@@ -345,15 +371,23 @@ async def functions_profile_get(message: Message, state: FSMContext):
                 await message.answer(lang.no_money)
             else:
                 time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=time, adress=data['adress'])
-                vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed', data=time)
+                await db.add_vivod(user_id=message.from_user.id, 
+                                   summa=data['amount'], 
+                                   network=data['network'], 
+                                   status='not confirmed', 
+                                   data=time, 
+                                   adress=data['adress'])
+                vivod_id = await db.get_vivod(user_id=message.from_user.id, 
+                                              status='not confirmed', 
+                                              data=time)
                 await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
-                                                        adress=data['adress'],
-                                                        amount_vivod=data['amount'],
-                                                        comma_vivod=comma,
-                                                        full_summa=(float(data['amount'])-float(comma)))), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+                                                                      adress=data['adress'],
+                                                                      amount_vivod=data['amount'],
+                                                                      comma_vivod=comma,
+                                                                      full_summa=(float(data['amount'])-float(comma)))), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
         else: 
-            await message.answer(lang.need_real_adress.format(crypto=data['network']), reply_markup=kb_rework_network(lang=lang))
+            await message.answer(lang.need_real_adress.format(crypto=data['network']), 
+                                                              reply_markup=kb_rework_network(lang=lang))
     elif data['network'] == 'TRON (TRC20)':
         comma = settings_info['Commission_TRC20']
         if len(data['adress']) == 34 and  str(data['adress'])[:1] == 'T':
@@ -361,7 +395,12 @@ async def functions_profile_get(message: Message, state: FSMContext):
             if float(comma) >= float(data['amount']):
                 await message.answer(lang.no_money)
             else:
-                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
+                await db.add_vivod(user_id=message.from_user.id, 
+                                   summa=data['amount'], 
+                                   network=data['network'], 
+                                   status='not confirmed',
+                                   data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                                   adress=data['adress'])
                 vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
                 await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
                                                         adress=data['adress'],
@@ -377,7 +416,12 @@ async def functions_profile_get(message: Message, state: FSMContext):
             if float(comma) >= float(data['amount']):
                 await message.answer(lang.no_money)
             else:
-                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
+                await db.add_vivod(user_id=message.from_user.id, 
+                                   summa=data['amount'], 
+                                   network=data['network'], 
+                                   status='not confirmed', 
+                                   data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                                   adress=data['adress'])
                 vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
                 await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
                                                         adress=data['adress'],
@@ -385,7 +429,8 @@ async def functions_profile_get(message: Message, state: FSMContext):
                                                         comma_vivod=comma,
                                                         full_summa=(float(data['amount'])-float(comma)))), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
         else: 
-            await message.answer(lang.need_real_adress.format(crypto=data['network']), reply_markup=kb_rework_network(lang=lang))
+            await message.answer(lang.need_real_adress.format(crypto=data['network']), 
+                                                              reply_markup=kb_rework_network(lang=lang))
     elif data['network'] == 'BNB Smart Chain (BER20)':
         comma = settings_info['CommissionBER20']
         if len(data['adress']) == 42 and  str(data['adress'])[:2] == '0x':
@@ -393,13 +438,18 @@ async def functions_profile_get(message: Message, state: FSMContext):
             if float(comma) >= float(data['amount']):
                 await message.answer(lang.no_money)
             else:
-                await db.add_vivod(user_id=message.from_user.id, summa=data['amount'], network=data['network'], status='not confirmed', data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), adress=data['adress'])
+                await db.add_vivod(user_id=message.from_user.id, 
+                                   summa=data['amount'], 
+                                   network=data['network'], 
+                                   status='not confirmed', 
+                                   data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                                   adress=data['adress'])
                 vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
                 await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
-                                                        adress=data['adress'],
-                                                        amount_vivod=data['amount'],
-                                                        comma_vivod=comma,
-                                                        full_summa=(float(data['amount'])-float(comma)))), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
+                                                                      adress=data['adress'],
+                                                                      amount_vivod=data['amount'],
+                                                                      comma_vivod=comma,
+                                                                      full_summa=(float(data['amount'])-float(comma)))), reply_markup=yes_or_no_vivod(vivod_id=vivod_id['id']))
         else: 
             await message.answer(lang.need_real_adress.format(crypto=data['network']), reply_markup=kb_rework_network(lang=lang))
 
@@ -442,7 +492,8 @@ async def func_value(call: CallbackQuery, state: FSMContext):
         💎 Адресс: <code>{info_vivod['adress']}</code>
         💚  Комиссия: <code>${usdt_comma}</code> | <code>{float(comma)}</code>
         """
-        await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=info_vivod['summa'], vivod_id=id))
+        await bot.send_message(admin_chat, ded(msg), reply_markup=kb_vivod_zayavka(summa=info_vivod['summa'], 
+                                                                                   vivod_id=id))
         await db.update_user(id=user['user_id'], balance=float(user['balance']-float(info_vivod['summa'])))
         await call.message.answer(lang.succes_msg)
     else:
@@ -461,13 +512,20 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     user = await db.get_user(user_id=vivod_info['user_id'])
     if status == 'yes':
         await db.update_vivod(id=vivod_id, status='accepted')
-        await db.add_check(unix=gen_id(), user_id=user['user_id'], transaction_type='withdrawal', conclusion_id=vivod_id, summa=float(summa))
-        await db.update_user(id=vivod_info['user_id'], vivod=float(user['vivod'])+float(summa))
+        await db.add_check(unix=gen_id(), 
+                           user_id=user['user_id'], 
+                           transaction_type='withdrawal', 
+                           conclusion_id=vivod_id, 
+                           summa=float(summa))
+        await db.update_user(id=vivod_info['user_id'], 
+                             vivod=float(user['vivod'])+float(summa))
         if vivod_info['adress'] == 'NULL':
             await bot.send_message(vivod_info['user_id'], lang.vivod_success_msg_check)
         else: 
             await bot.send_message(vivod_info['user_id'], lang.vivod_success_msg)
     elif status == 'no':
-        await db.update_vivod(id=vivod_id, status='rejected')
+        await db.update_vivod(id=vivod_id, 
+                              status='rejected')
         await bot.send_message(vivod_info['user_id'], lang.vivod_mimo)
-        await db.update_user(id=vivod_info['user_id'], balance=float(user['balance'])+float(summa))
+        await db.update_user(id=vivod_info['user_id'], 
+                             balance=float(user['balance'])+float(summa))

@@ -4,10 +4,10 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 class admin_main_settings(StatesGroup):
     faq = State()
     
-class Newsletter(StatesGroup): #State на рассылку
+class Newsletter(StatesGroup):
     msg = State()
     
-class Newsletter_photo(StatesGroup): #State на рассылку с офто
+class Newsletter_photo(StatesGroup):
     msg = State()
     photo = State()
 

@@ -3,8 +3,16 @@ from aiogram.types import ReplyKeyboardMarkup
 
 from bot.utils.utils_functions import get_admins
 
-#Главное меню
 async def user_menu(texts, user_id):
+    """ Клавиатура главноего меню
+
+    Args:
+        texts (string): Язык текста
+        user_id (integer): Айди пользователя
+
+    Returns:
+        keyboard: Клавиатура
+    """
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.row(texts.reply_kb1, texts.reply_kb2)
     keyboard.row(texts.reply_kb3, texts.reply_kb4)
