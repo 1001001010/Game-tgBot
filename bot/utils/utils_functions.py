@@ -194,6 +194,25 @@ def func__arr_game(game_name, lang):
      
     return game_name_text
 
+def is_number_2(get_number: Union[str, int, float]) -> bool:
+    """ Проверка ввода на число
+
+    Args:
+        get_number (Union[str, int, float]): Введенная строка
+
+    Returns:
+        bool: Является строка числом или нет
+    """
+    if str(get_number).isdigit():
+        return True
+    else:
+        if "," in str(get_number): get_number = str(get_number).replace(",", ".")
+        try:
+            float(get_number)
+            return True
+        except ValueError:
+            return False
+        
 def is_number(get_number: Union[str, int, float]) -> bool:
     """ Проверка ввода на число
 

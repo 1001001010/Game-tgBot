@@ -99,7 +99,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result.dice['value'] in [4, 5, 6]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']), 2)))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                            bet=data['bet'], 
@@ -119,7 +119,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result.dice['value'] in [1, 22, 43]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2),
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                     bet=data['bet'], 
@@ -130,7 +130,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         elif result.dice['value'] in [64]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*5
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'],
                                                                    balance=round(float(new_balance['test_balance'])+float(data['bet'])*5, 2)), reply_markup=game_next(lang=lang, 
                                                                                                                                                                       bet=data['bet'], 
@@ -153,7 +153,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result1.dice['value'] > result2.dice['value']:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']) 
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'],
                                                                    balance=round(float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                     bet=data['bet'], 
@@ -182,7 +182,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result.dice['value'] == 6:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                     bet=data['bet'], 
@@ -202,7 +202,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result.dice['value'] in [3, 4, 5]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']),
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2),
                                                                    kef=game_settings['factor'],
                                                                    balance=round(float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                     bet=data['bet'], 
@@ -236,7 +236,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result.dice['value'] in [4, 5, 6]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                bet=data['bet'], 
@@ -258,7 +258,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result.dice['value'] in [1, 22, 43]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                bet=data['bet'], 
@@ -269,7 +269,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         elif result.dice['value'] in [64]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*5
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(new_balance['balance'])+float(data['bet'])*5, 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                   bet=data['bet'], 
@@ -295,7 +295,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result1.dice['value'] > result2.dice['value']:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']) 
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                bet=data['bet'], 
@@ -326,7 +326,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result.dice['value'] == 6:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang,
                                                                                                                                                                                                bet=data['bet'], 
@@ -348,7 +348,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                         if result.dice['value'] in [3, 4, 5]:
                             new_balance = await db.get_user(user_id=message.from_user.id)
                             balance = float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor'])
-                            await message.answer(ded(lang.win_game(summ=float(data['bet'])*float(game_settings['factor']), 
+                            await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2),
                                                                    kef=game_settings['factor'], 
                                                                    balance=round(float(new_balance['balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                bet=data['bet'], 
@@ -398,7 +398,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result.dice['value'] in [4, 5, 6]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'],
                                                                     balance=round(float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                              bet=bet, 
@@ -418,7 +418,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result.dice['value'] in [1, 22, 43]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                              bet=bet, 
@@ -429,7 +429,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     elif result.dice['value'] in [64]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*5
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['test_balance'])+float(bet)*5, 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                 bet=bet, 
@@ -452,7 +452,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result1.dice['value'] > result2.dice['value']:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']) 
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                              bet=bet, 
@@ -481,7 +481,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result.dice['value'] == 6:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                              bet=bet,
@@ -500,7 +500,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result.dice['value'] in [3, 4, 5]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang,
                                                                                                                                                                                              bet=bet,
@@ -536,7 +536,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result.dice['value'] in [4, 5, 6]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                         bet=bet, 
@@ -558,7 +558,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result.dice['value'] in [1, 22, 43]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'],
                                                                     balance=round(float(new_balance['balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                         bet=bet, 
@@ -569,7 +569,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     elif result.dice['value'] in [64]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*5
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['balance'])+float(bet)*5, 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                            bet=bet, 
@@ -595,7 +595,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result1.dice['value'] > result2.dice['value']:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor']) 
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang,
                                                                                                                                                                                         bet=bet, 
@@ -626,7 +626,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result.dice['value'] == 6:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                         bet=bet, 
@@ -647,7 +647,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     if result.dice['value'] in [3, 4, 5]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
-                        await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                        await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                                     kef=game_settings['factor'], 
                                                                     balance=round(float(new_balance['balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                         bet=bet, 
@@ -684,7 +684,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 await my_sleep(1.8)
                 new_balance = await db.get_user(user_id=call.from_user.id)
                 balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
-                await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                             kef=game_settings['factor'], 
                                                             balance=round(float(new_balance['balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                 bet=bet, 
@@ -697,7 +697,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 await my_sleep(1.8)
                 new_balance = await db.get_user(user_id=call.from_user.id)
                 balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
-                await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                             kef=game_settings['factor'], 
                                                             balance=round(float(new_balance['balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                 bet=bet, 
@@ -729,7 +729,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 await my_sleep(1.8)
                 new_balance = await db.get_user(user_id=call.from_user.id)
                 balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
-                await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                             kef=game_settings['factor'], 
                                                             balance=round(float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                      bet=bet, 
@@ -742,7 +742,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 await my_sleep(1.8)
                 new_balance = await db.get_user(user_id=call.from_user.id)
                 balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
-                await call.message.answer(ded(lang.win_game(summ=float(bet)*float(game_settings['factor']), 
+                await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
                                                             kef=game_settings['factor'], 
                                                             balance=round(float(new_balance['test_balance'])+float(bet)*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                      bet=bet, 

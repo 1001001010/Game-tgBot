@@ -4,7 +4,7 @@ from aiogram.types import InputFile
 
 from bot.data.loader import dp, bot
 from bot.data.config import lang_ru, lang_en, db
-from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game, is_number, autobackup_db
+from bot.utils.utils_functions import get_language, ded, send_admins, get_admins, convert_date, func__arr_game, is_number_2, autobackup_db
 from bot.filters.filters import IsAdmin
 from bot.keyboards.inline import admin_menu, kb_admin_settings, back_to_adm_m, mail_types, \
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
@@ -65,7 +65,8 @@ async def settings_vkl_work(call: CallbackQuery, state: FSMContext):
 
     lang = await get_language(call.from_user.id)
     await call.message.edit_text(lang.admin_settings, reply_markup=await kb_admin_settings(texts=lang))
-#Статистика
+    
+#Статистика 
 @dp.callback_query_handler(IsAdmin(), text='stats', state="*")
 async def open_stats(call: CallbackQuery, state: FSMContext):
     await state.finish()
@@ -127,8 +128,8 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     <b>🪙 Монетка:</b>
     Коэффициент: <code>X{coin_info['factor']}</code>
     Мин. ставка: ₽ <code>{coin_info['min_bet']}</code>
-    Шанс победы: <code>{int(coin_info['chance_real'])*100}</code>%
-    Демо шанс: <code>{int(coin_info['chance_demo'])*100}</code>%
+    Шанс победы: <code>{float(coin_info['chance_real'])*100}</code>%
+    Демо шанс: <code>{float(coin_info['chance_demo'])*100}</code>%
 
     <b>👨‍💻 Администраторы:</b> {admin_count}\n"""
     for admin in get_admins():
@@ -567,7 +568,7 @@ async def find_game_open(call: CallbackQuery, state: FSMContext):
     game_name = func__arr_game(lang=lang, 
                                game_name=game_name)
     await call.message.answer(lang.adm_edit_game_menu.format(game_name=game_name), reply_markup=await edit_game_stats(texts=lang, 
-                                                                                                                      ame_name=en_name_game))
+                                                                                                                      game_name=en_name_game))
 
 @dp.callback_query_handler(IsAdmin(), text_startswith="edit", state="*")
 async def func_edit_game(call: CallbackQuery, state: FSMContext):
@@ -621,7 +622,7 @@ async def func_chance_game(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(IsAdmin(), state=AdminGame_edit.value)
 async def func_edit_game_two(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
-    if is_number(message.text) == True:
+    if is_number_2(message.text) == True:
         await state.update_data(value=message.text)
         data = await state.get_data()
         russian_game = func__arr_game(lang=lang, game_name=data['game'])
@@ -657,7 +658,7 @@ async def func_editit(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(IsAdmin(), state=AdminRevorkPrice.summa)
 async def func_edit_game_two(message: Message, state: FSMContext):
     texts = await get_language(message.from_user.id)
-    if is_number(message.text) == True:
+    if is_number_2(message.text) == True:
         data = await state.get_data()
         if data['type'] == 'balance':
             await db.update_user(id=data['user_id'], 
@@ -724,7 +725,7 @@ async def func_editit(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(IsAdmin(), state=AdminPlusPrice.summa)
 async def func_edit_game_two(message: Message, state: FSMContext):
     texts = await get_language(message.from_user.id)
-    if is_number(message.text) == True:
+    if is_number_2(message.text) == True:
         data = await state.get_data()
         user = await db.get_user(user_id=data['user_id'])
         if data['type'] == 'balance':
@@ -851,7 +852,7 @@ async def settings_set_faq(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(IsAdmin(), state=АdminVivoCheack.percent)
 async def settings_ref_per_set(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
-    if is_number(message.text):
+    if is_number_2(message.text):
         await state.update_data(percent=message.text)
         data = await state.get_data()
         await db.update_settings(Minimum_check=data['percent'])
@@ -873,7 +874,7 @@ async def settings_set_faq(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(IsAdmin(), state=АdminMethod.percent)
 async def settings_ref_per_set(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
-    if is_number(message.text):
+    if is_number_2(message.text):
         await state.update_data(percent=message.text)
         data = await state.get_data()
         if data['method'] == 'TON':
