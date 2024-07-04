@@ -171,10 +171,19 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     await message.answer(lang.admin_photo_send, reply_markup=back_to_adm_m(texts=lang))
     await Newsletter_photo.photo.set()
     
-@dp.message_handler(IsAdmin(), content_types=['photo'], state=Newsletter_photo.photo)
+@dp.message_handler(IsAdmin(), content_types=['photo', 'video', 'animation'], state=Newsletter_photo.photo)
 async def mail_photo_starts(message: Message, state: FSMContext):
-    photo = message.photo[-1].file_id
-    await state.update_data(photo=photo)
+    if message.photo:
+        media = message.photo[-1].file_id
+        media_type = 'photo'
+    elif message.video:
+        media = message.video.file_id
+        media_type = 'video'
+    elif message.animation:
+        media = message.animation.file_id
+        media_type = 'animation'
+
+    await state.update_data(media=media, media_type=media_type)
     data = await state.get_data()
     await send_admins(f"<b>❗ Администратор @{message.from_user.username} запустил рассылку!</b>")
     users = await db.all_users()
@@ -183,9 +192,12 @@ async def mail_photo_starts(message: Message, state: FSMContext):
         user_id = user['id']
         try:
             user_id = user['user_id']
-            await bot.send_photo(chat_id=user_id, 
-                                 photo=data['photo'],
-                                 caption=data['msg'])
+            if data['media_type'] == 'photo':
+                await bot.send_photo(chat_id=user_id, photo=data['media'], caption=data.get('msg', ''))
+            elif data['media_type'] == 'video':
+                await bot.send_video(chat_id=user_id, video=data['media'], caption=data.get('msg', ''))
+            elif data['media_type'] == 'animation':
+                await bot.send_animation(chat_id=user_id, animation=data['media'], caption=data.get('msg', ''))
             yes_users += 1
         except:
             no_users += 1
