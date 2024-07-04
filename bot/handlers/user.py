@@ -5,7 +5,7 @@ from aiogram.types import InputFile
 from datetime import datetime
 
 from bot.data.loader import dp, bot
-from bot.data.config import lang_ru, lang_en, db, admin_chat
+from bot.data.config import lang_ru, lang_en, db, admin_chat, pay_chat
 from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, \
                                 choose_languages_kb, game_menu, payment_method, kb_vivod_zayavka, kb_vivod_moneta, \
                                 kb_network, yes_or_no_vivod, kb_rework_network, yes_or_no_cheack
@@ -550,8 +550,22 @@ async def func_value(call: CallbackQuery, state: FSMContext):
         await db.update_user(id=vivod_info['user_id'], 
                              vivod=float(user['vivod'])+float(summa))
         if vivod_info['adress'] == 'NULL':
+            await bot.send_message(pay_chat, ded(f"""
+                                                ✅ Успешная выплата!
+                                                
+                                                📅 Дата: <code>{vivod_info['data']}</code>
+                                                💰 Сумма: <code>{vivod_info['summa']}</code>₽
+                                                📶 Сеть: <code>🧾 Чек</code>
+                                                """))
             await bot.send_message(vivod_info['user_id'], lang.vivod_success_msg_check)
         else: 
+            await bot.send_message(pay_chat, ded(f"""
+                                    ✅ Успешная выплата!
+                                    
+                                    📅 Дата: <code>{vivod_info['data']}</code>
+                                    💰 Сумма: <code>{vivod_info['summa']}₽</code>
+                                    📶 Сеть: <code>{vivod_info['network']}</code>
+                                        """))
             await bot.send_message(vivod_info['user_id'], lang.vivod_success_msg)
     elif status == 'no':
         await db.update_vivod(id=vivod_id, 

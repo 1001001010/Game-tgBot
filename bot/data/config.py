@@ -29,6 +29,7 @@ read_config.read("settings.ini")
 
 bot_token = read_config['settings']['token'].strip().replace(" ", "")  # Токен бота
 channel_id = read_config['settings']['channel_id'].strip().replace(" ", "")
+pay_chat = read_config['settings']['pay_chat'].strip().replace(" ", "")
 channel_url = read_config['settings']['channel_url'].strip().replace(" ", "")
 cryptobot_token = read_config['settings']['crypto_bot_token']
 # xrocket_token = read_config['settings']['xrocket_token']

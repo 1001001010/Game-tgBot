@@ -390,8 +390,8 @@ class DB(AsyncClass):
             print("database was not found (Languages | 7/8), creating...")
             await self.con.commit()
             
-        conclusion = await self.con.execute("PRAGMA table_info([check])")
-        if len(await conclusion.fetchall()) == 6:
+        check_ = await self.con.execute("PRAGMA table_info([check])")
+        if len(await check_.fetchall()) == 6:
             print("database was found (Check | 8/8)")
         else:
             await self.con.execute("CREATE TABLE [check]("
