@@ -25,7 +25,10 @@ async def func__admin_menu(message: Message, state: FSMContext):
 @dp.callback_query_handler(IsAdmin(), text='backup', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.finish()
-    await autobackup_db()
+    try:
+        await autobackup_db()
+    except:
+        pass
     
 @dp.callback_query_handler(IsAdmin(), text='settings', state="*")
 async def back_to_menu(call: CallbackQuery, state: FSMContext):
