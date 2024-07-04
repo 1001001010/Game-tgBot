@@ -16,7 +16,7 @@ colorama.init()
 async def scheduler_start():
     scheduler.add_job(update_profit_week, "cron", day_of_week="mon", hour=00)
     scheduler.add_job(update_profit_day, "cron", hour=00)
-    scheduler.add_job(autobackup_db, "cron", hour="*")
+    scheduler.add_job(autobackup_db, "cron", hour=00)
 
 #Выполнение функция после запуска бота
 async def on_startup(dp: Dispatcher):
