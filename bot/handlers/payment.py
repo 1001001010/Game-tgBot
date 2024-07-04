@@ -33,7 +33,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
     if is_number(message.text):
         await state.update_data(amount = message.text)
         data = await state.get_data()
-        if (float(data['amount']) < 1 or float(data['amount']) >= 1000):
+        if (float(data['amount']) > 1 and float(data['amount']) <= 1000):
             if data['method'] == 'cryptobot':
                 link = await cryptoBot.create_invoice(amount=float(data['amount']), 
                                                     currency_type='fiat', 

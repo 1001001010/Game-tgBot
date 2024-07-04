@@ -272,7 +272,7 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
     lang = await get_language(call.from_user.id)
     await call.message.delete()
     balance = await db.get_user(user_id = call.from_user.id)
-    await call.message.answer(lang.summa_vivoda.format(balance=balance['balance']))
+    await call.message.answer(lang.summa_vivoda.format(balance=round(balance['balance'], 2)))
     await UserVivid.amount.set()
     
 @dp.message_handler(state=UserVivid.amount)
