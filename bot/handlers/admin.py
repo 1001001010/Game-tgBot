@@ -10,11 +10,12 @@ from bot.keyboards.inline import admin_menu, kb_admin_settings, back_to_adm_m, m
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
                                  edit_game_chance, kb_edit_network, back_to_user_menu, mail_buttons_inl, \
                                  mail_buttons_current_inl, mail_buttons_type_inl, mail_buttons_edit_inl, \
-                                 mail_btn
+                                 mail_btn, pr_buttons_inl, pr_buttons_back
                                  
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
                             AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit, AdminRevorkPrice, \
-                            AdminPlusPrice, АdminMethod, АdminVivoCheack, АdminCheckSend, AdminMail
+                            AdminPlusPrice, АdminMethod, АdminVivoCheack, АdminCheckSend, AdminMail, \
+                            AdminPrButtons
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -1019,3 +1020,63 @@ async def here_new_name_for_mail_button(msg: Message, state: FSMContext):
         await msg.answer('<b>❗ Выберите кнопку:</b>', reply_markup=await mail_buttons_current_inl())
     else:
         await msg.answer('Настройки', reply_markup=mail_buttons_inl())
+        
+@dp.callback_query_handler(text='pr_buttons', state='*')
+async def pr_buttons(c: CallbackQuery, state: FSMContext):
+    await state.finish()
+
+    await c.message.edit_text(f'<b>❗ Выберите действие:</b>', reply_markup=pr_buttons_inl())
+    
+@dp.callback_query_handler(text_startswith='pr_button:', state='*')
+async def pr_buttons2(c: CallbackQuery, state: FSMContext):
+    await state.finish()
+    if c.data.split(':')[1] == 'create':
+        await c.message.edit_text(f'<b>❗ Введите название кнопки:</b>', reply_markup=pr_buttons_back())
+        await AdminPrButtons.here_name_pr_button_create.set()
+    elif c.data.split(':')[1] == 'delete':
+        await c.message.edit_text(f'<b>❗ Введите название кнопки:</b>', reply_markup=pr_buttons_back())
+        await AdminPrButtons.here_name_pr_button_delete.set()
+
+
+@dp.message_handler(state=AdminPrButtons.here_name_pr_button_create)
+async def pr_buttons3(msg: Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['name_pr_button_create'] = msg.text
+
+    await msg.reply('<b>❗ Теперь введи текст кнопки: \n❗Можно использовать Telegram Разметку</b> ')
+    await AdminPrButtons.here_txt_pr_button_create.set()
+
+
+@dp.message_handler(state=AdminPrButtons.here_txt_pr_button_create)
+async def pr_buttons4(msg: Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['txt_pr_button_create'] = msg.parse_entities(as_html=True)
+    await msg.reply('<b>❗ Теперь отправь фото кнопки: \n'
+                    '❗ Если не хотите, чтоб было фото, отправьте <code>-</code></b>')
+    await AdminPrButtons.here_photo_pr_button_create.set()
+
+
+@dp.message_handler(state=AdminPrButtons.here_photo_pr_button_create, content_types=['photo'])
+@dp.message_handler(state=AdminPrButtons.here_photo_pr_button_create, text='-')
+async def pr_buttons5(msg: Message, state: FSMContext):
+    async with state.proxy() as data:
+        name = data['name_pr_button_create']
+        txt = data['txt_pr_button_create']
+    await state.finish()
+    try:
+        photo = msg.photo[-1].file_id
+    except:
+        photo = msg.text
+
+    await db.create_pr_button(name, txt, photo)
+    await msg.reply('<b>✅ Кнопка успешно создана!</b>')
+
+
+@dp.message_handler(state=AdminPrButtons.here_name_pr_button_delete)
+async def pr_buttons6(msg: Message, state: FSMContext):
+    await state.finish()
+    try:
+        await db.delete_pr_button(msg.text)
+        await msg.reply('<b>✅ Кнопка успешно удалена!</b>')
+    except Exception as err:
+        await msg.reply(f'<b>❗ Произошла ошибка при удалении кнопки: {err}</b>')

@@ -67,3 +67,9 @@ class AdminMail(StatesGroup):
     here_category_for_pod_open_mail = State()
     here_category_for_pos_open_mail = State()
     here_pod_category_for_pod_open_mail = State()
+    
+class AdminPrButtons(StatesGroup):
+    here_name_pr_button_create = State()
+    here_name_pr_button_delete = State()
+    here_txt_pr_button_create = State()
+    here_photo_pr_button_create = State()

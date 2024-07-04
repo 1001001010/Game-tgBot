@@ -25,6 +25,31 @@ def kb_rework_network(lang):
 
     return keyboard
 
+def pr_buttons_inl():
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+
+
+    kb.append(InlineKeyboardButton(f"📍 Создать кнопку", callback_data="pr_button:create"))
+    kb.append(InlineKeyboardButton(f"📌 Удалить кнопку", callback_data="pr_button:delete"))
+    kb.append(InlineKeyboardButton("⬅️ Вернуться", callback_data="back_to_adm_m"))
+
+    keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[2])
+
+    return keyboard
+
+def pr_buttons_back():
+    keyboard = InlineKeyboardMarkup()
+    kb = []
+
+
+    kb.append(InlineKeyboardButton("⬅️ Вернуться", callback_data="pr_buttons"))
+
+    keyboard.add(kb[0])
+
+    return keyboard
+
 async def mail_btn():
     btns = await db.get_all_mail_buttons()
     kb = InlineKeyboardMarkup()
@@ -254,14 +279,15 @@ def admin_menu(texts):
     kb.append(InlineKeyboardButton("📊 Статистика", callback_data="stats"))
     kb.append(InlineKeyboardButton("💾 Бэкап БД", callback_data="backup"))
     kb.append(InlineKeyboardButton("🧩 Кнопки в рассылке", callback_data="mail_buttons"))
+    kb.append(InlineKeyboardButton("💫 Рекламные кнопки", callback_data="pr_buttons"))
     kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_m"))
 
     keyboard.add(kb[0], kb[1])
     keyboard.add(kb[4], kb[5])
     keyboard.add(kb[2], kb[3])
     keyboard.add(kb[6], kb[7])
-    keyboard.add(kb[8])
-    keyboard.add(kb[9])
+    keyboard.add(kb[8], kb[9])
+    keyboard.add(kb[10])
 
     return keyboard
 

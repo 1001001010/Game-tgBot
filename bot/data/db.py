@@ -250,6 +250,33 @@ class DB(AsyncClass):
         await self.con.execute(queryy + "WHERE id = ?", params)
         await self.con.commit()
 
+    ##############################################################################################
+    ######################               Рекламные кнопки             ############################
+    ##############################################################################################
+
+    # Получение всех кнопок
+    async def get_all_pr_buttons(self):
+        row = await self.con.execute(f'SELECT * FROM pr_buttons')
+
+        return await row.fetchall()
+
+    # Получение кнопки
+    async def get_pr_button(self, btn_id):
+        row = await self.con.execute(f'SELECT * FROM pr_buttons WHERE id = ?', (btn_id,))
+
+        return await row.fetchone()
+
+    # Создание кнопки
+    async def create_pr_button(self, name, txt, photo):
+        values = [name, txt, photo]
+        await self.con.execute('INSERT INTO pr_buttons(name, txt, photo) VALUES (?, ?, ?)', values)
+        await self.con.commit()
+
+    # Удаление кнопки
+    async def delete_pr_button(self, name):
+        await self.con.execute('DELETE FROM pr_buttons WHERE name = ?', (name,))
+        await self.con.commit()
+
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
@@ -437,5 +464,20 @@ class DB(AsyncClass):
                                        "type TEXT)")
 
             print("database was not found (Mail Buttons | 15/18), creating...")
+
+            await self.con.commit()
+            
+        # Рекламные кнопки
+        pr_buttons = await self.con.execute("PRAGMA table_info(pr_buttons)")
+        if len(await pr_buttons.fetchall()) == 4:
+            print("database was found (AD Buttons | 14/18)")
+        else:
+            await self.con.execute("CREATE TABLE pr_buttons("
+                                       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                       "name TEXT,"
+                                       "txt TEXT,"
+                                       "photo TEXT)")
+
+            print("database was not found (AD Buttons | 14/18), creating...")
 
             await self.con.commit()

@@ -575,3 +575,14 @@ async def func_value(call: CallbackQuery, state: FSMContext):
         await bot.send_message(vivod_info['user_id'], lang.vivod_mimo)
         await db.update_user(id=vivod_info['user_id'], 
                              balance=float(user['balance'])+float(summa))
+        
+@dp.message_handler()
+async def pr_buttons1(msg: Message, state: FSMContext):
+    pr_buttons = await db.get_all_pr_buttons()
+    await state.finish()
+    for button in pr_buttons:
+        if msg.text == button['name']:
+            if button['photo'] != '-':
+                await msg.answer_photo(photo=button['photo'], caption=button['txt'])
+            else:
+                await msg.answer(button['txt'])
