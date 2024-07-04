@@ -52,3 +52,6 @@ class АdminMethod(StatesGroup):
 class АdminVivoCheack(StatesGroup):
     percent = State()
     
+class АdminCheckSend(StatesGroup):
+    user_id = State()
+    check = State()

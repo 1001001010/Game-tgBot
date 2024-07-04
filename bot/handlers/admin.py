@@ -8,11 +8,11 @@ from bot.utils.utils_functions import get_language, ded, send_admins, get_admins
 from bot.filters.filters import IsAdmin
 from bot.keyboards.inline import admin_menu, kb_admin_settings, back_to_adm_m, mail_types, \
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
-                                 edit_game_chance, kb_edit_network
+                                 edit_game_chance, kb_edit_network, back_to_user_menu
                                  
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
                             AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit, AdminRevorkPrice, \
-                            AdminPlusPrice, АdminMethod, АdminVivoCheack
+                            AdminPlusPrice, АdminMethod, АdminVivoCheack, АdminCheckSend
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -861,7 +861,20 @@ async def settings_ref_per_set(message: Message, state: FSMContext):
     else: 
         await message.answer(lang.need_number)
     
-
+@dp.callback_query_handler(IsAdmin(), text_startswith="send_check", state="*")
+async def settings_set_faq(call: CallbackQuery, state: FSMContext):
+    user_id = call.data.split(":")[1]
+    lang = await get_language(call.from_user.id)
+    await call.message.answer("Перешлите чек для отправки пользователю", reply_markup=back_to_user_menu(lang))
+    await АdminCheckSend.check.set()
+    await state.update_data(user_id=user_id)
+    
+@dp.message_handler(IsAdmin(), state=АdminCheckSend.check)
+async def settings_ref_per_set(message: Message, state: FSMContext):
+    data = await state.get_data()
+    user_id = data.get("user_id")
+    await bot.send_message(user_id, message.text)
+    await state.finish()
     
 @dp.callback_query_handler(IsAdmin(), text_startswith="new_Edit_network", state="*")
 async def settings_set_faq(call: CallbackQuery, state: FSMContext):

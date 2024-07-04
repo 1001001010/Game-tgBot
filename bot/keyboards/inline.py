@@ -376,9 +376,11 @@ async def admin_user_menu(texts, user_id):
     kb.append(InlineKeyboardButton(texts.adm_user_give_bal, callback_data=f"give:balance:{user_id}"))
     kb.append(InlineKeyboardButton(texts.adm_user_revork_demo, callback_data=f"revork:demo:{user_id}"))
     kb.append(InlineKeyboardButton(texts.adm_user_give_demo, callback_data=f"give:demo:{user_id}"))
-        
+    kb.append(InlineKeyboardButton("🧾 Отправить чек", callback_data=f"send_check:{user_id}"))
+    
     keyboard.add(kb[0], kb[1])
     keyboard.add(kb[2], kb[3])
+    keyboard.add(kb[4])
     return keyboard
 
 def edit_game_menu(texts):

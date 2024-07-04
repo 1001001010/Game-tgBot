@@ -347,6 +347,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
             name = f"@{user['user_name']}"
         msg = f"""
         Новая заявка от {name}
+        ID: {call.from_user.id}
         Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         
         💰 Сумма: <code>${round(usdt_summa_vivod, 2)}</code> | <code>{float(vivod['summa'])}</code>
@@ -514,6 +515,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
         usdt_comma = round(usdt_comma, 2)
         msg = f"""
         Новая заявка от {name}
+        ID: {call.from_user.id}
         Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         
         💰 Сумма: <code>${usdt_summa_vivod}</code> | <code>{float(info_vivod['summa'])}</code>
