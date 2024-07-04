@@ -4,6 +4,18 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.data import config
 from bot.data.config import db
 
+def get_type(name, type):
+    if type == 'link':
+        return f'{name} (Ссылка)'
+    elif type == 'category_open':
+        return f'{name} (Категория)'
+    elif type == 'pod_category_open':
+        return f'{name} (Под-Категория)'
+    elif type == 'position_open':
+        return f'{name} (Позиция)'
+    elif type == "contest_open":
+        return f'{name} (Розыгрыш)'
+
 def kb_rework_network(lang):
     keyboard = InlineKeyboardMarkup()
     kb = []
@@ -12,6 +24,62 @@ def kb_rework_network(lang):
     keyboard.add(kb[0])
 
     return keyboard
+
+async def mail_btn():
+    btns = await db.get_all_mail_buttons()
+    kb = InlineKeyboardMarkup()
+
+    for btn in btns:
+        name = btn['name']
+        tip = str(btn['type']).split("|")[0]
+        value = str(btn['type']).split("|")[1]
+
+        if tip == 'link':
+            kb.add(InlineKeyboardButton(name, url=value))
+
+    return kb
+
+def mail_buttons_inl():
+    kb = InlineKeyboardMarkup(row_width=1)
+
+    btn0 = InlineKeyboardButton('📍 Создать кнопку', callback_data='mail_buttons:add')
+    btn2 = InlineKeyboardButton('📌 Текущие кнопки', callback_data='mail_buttons:current')
+    btn3 = InlineKeyboardButton("⬅️ Вернуться", callback_data='back_to_adm_m')
+
+    kb.add(btn0, btn2, btn3)
+
+    return kb
+
+def mail_buttons_edit_inl(btn_id):
+    kb = InlineKeyboardMarkup()
+
+    kb.add(InlineKeyboardButton('⭐ Изменить название', callback_data=f'butedits_mail_btn:edit_name:{btn_id}'))
+    kb.add(InlineKeyboardButton('❗ Удалить', callback_data=f'butedits_mail_btn:del:{btn_id}'))
+    kb.add(InlineKeyboardButton("⬅️ Вернуться", callback_data=f'mail_buttons:current'))
+
+    return kb
+
+async def mail_buttons_current_inl():
+    kb = InlineKeyboardMarkup()
+    btns = await db.get_all_mail_buttons()
+
+    for btn in btns:
+        kb.add(InlineKeyboardButton(get_type(btn['name'], str(btn['type'].split('|')[0])), callback_data=f"butedit_mail_button:{btn['id']}"))
+
+    kb.add(InlineKeyboardButton("⬅️ Вернуться", callback_data=f'mail_buttons'))
+
+    return kb
+
+def mail_buttons_type_inl():
+    kb = InlineKeyboardMarkup(row_width=1)
+
+    # btn0 = InlineKeyboardButton('Кнопка открытия профиля', callback_data='add_mail_buttons:profile')
+    btn0 = InlineKeyboardButton('Кнопка-ссылка', callback_data='add_mail_buttons:link')
+    btn1 = InlineKeyboardButton("⬅️ Вернуться", callback_data='mail_buttons')
+
+    kb.add(btn0, btn1)
+
+    return kb
 
 async def kb_edit_network(texts):
     keyboard = InlineKeyboardMarkup()
@@ -185,6 +253,7 @@ def admin_menu(texts):
     kb.append(InlineKeyboardButton("📌 Рассылка", callback_data="mail_start"))
     kb.append(InlineKeyboardButton("📊 Статистика", callback_data="stats"))
     kb.append(InlineKeyboardButton("💾 Бэкап БД", callback_data="backup"))
+    kb.append(InlineKeyboardButton("🧩 Кнопки в рассылке", callback_data="mail_buttons"))
     kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_m"))
 
     keyboard.add(kb[0], kb[1])
@@ -192,6 +261,7 @@ def admin_menu(texts):
     keyboard.add(kb[2], kb[3])
     keyboard.add(kb[6], kb[7])
     keyboard.add(kb[8])
+    keyboard.add(kb[9])
 
     return keyboard
 

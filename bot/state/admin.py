@@ -55,3 +55,15 @@ class АdminVivoCheack(StatesGroup):
 class АdminCheckSend(StatesGroup):
     user_id = State()
     check = State()
+
+class AdminMail(StatesGroup):
+    here_text_mail_text = State()
+    here_text_mail_photo = State()
+    here_photo_mail_photo = State()
+    here_name_for_add_mail_button = State()
+    here_new_name_for_mail_button = State()
+    here_link_for_add_mail_button = State()
+    here_category_for_open_mail = State()
+    here_category_for_pod_open_mail = State()
+    here_category_for_pos_open_mail = State()
+    here_pod_category_for_pod_open_mail = State()

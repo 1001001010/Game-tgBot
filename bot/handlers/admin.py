@@ -8,11 +8,13 @@ from bot.utils.utils_functions import get_language, ded, send_admins, get_admins
 from bot.filters.filters import IsAdmin
 from bot.keyboards.inline import admin_menu, kb_admin_settings, back_to_adm_m, mail_types, \
                                  kb_adm_promo, admin_user_menu, edit_game_menu, edit_game_stats, \
-                                 edit_game_chance, kb_edit_network, back_to_user_menu
+                                 edit_game_chance, kb_edit_network, back_to_user_menu, mail_buttons_inl, \
+                                 mail_buttons_current_inl, mail_buttons_type_inl, mail_buttons_edit_inl, \
+                                 mail_btn
                                  
 from bot.state.admin import admin_main_settings, Newsletter, Newsletter_photo, AdminSettingsEdit, \
                             AdminCoupons, AdminFind, AdminBanCause, AdminGame_edit, AdminRevorkPrice, \
-                            AdminPlusPrice, АdminMethod, АdminVivoCheack, АdminCheckSend
+                            AdminPlusPrice, АdminMethod, АdminVivoCheack, АdminCheckSend, AdminMail
 
 #Открытие Профиля
 @dp.message_handler(IsAdmin(), text=lang_ru.reply_admin, state="*")
@@ -193,11 +195,11 @@ async def mail_photo_starts(message: Message, state: FSMContext):
         try:
             user_id = user['user_id']
             if data['media_type'] == 'photo':
-                await bot.send_photo(chat_id=user_id, photo=data['media'], caption=data.get('msg', ''))
+                await bot.send_photo(chat_id=user_id, photo=data['media'], caption=data.get('msg', ''), reply_markup=await mail_btn())
             elif data['media_type'] == 'video':
-                await bot.send_video(chat_id=user_id, video=data['media'], caption=data.get('msg', ''))
+                await bot.send_video(chat_id=user_id, video=data['media'], caption=data.get('msg', ''), reply_markup=await mail_btn())
             elif data['media_type'] == 'animation':
-                await bot.send_animation(chat_id=user_id, animation=data['media'], caption=data.get('msg', ''))
+                await bot.send_animation(chat_id=user_id, animation=data['media'], caption=data.get('msg', ''), reply_markup=await mail_btn())
             yes_users += 1
         except:
             no_users += 1
@@ -224,7 +226,7 @@ async def func_newsletter_text(message: Message, state: FSMContext):
         try:
             user_id = user['user_id']
             await bot.send_message(chat_id=user_id, 
-                                   text=data['msg'])
+                                   text=data['msg'], reply_markup=await mail_btn())
             yes_users += 1
         except:
             no_users += 1
@@ -920,3 +922,100 @@ async def settings_ref_per_set(message: Message, state: FSMContext):
     else: 
         await message.answer(lang.need_number)
     
+#Кнопки в рассылке
+@dp.callback_query_handler(IsAdmin(), text='mail_buttons', state='*')
+async def mail_buttons(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.edit_text('Настройки', reply_markup=mail_buttons_inl())
+    
+@dp.callback_query_handler(IsAdmin(), text_startswith='mail_buttons:', state='*')
+async def mail_buttons_(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+
+    action = call.data.split(":")[1]
+
+    if action == 'add':
+        await call.message.edit_text('<b>❗ Введите название кнопки:</b>')
+        await AdminMail.here_name_for_add_mail_button.set()
+    elif action == 'current':
+        if len(await db.get_all_mail_buttons()) > 0:
+            await call.message.edit_text('<b>❗ Выберите кнопку:</b>', reply_markup=await mail_buttons_current_inl())
+        else:
+            await call.answer('❗ На данный момент кнопок нет!')
+            
+@dp.message_handler(IsAdmin(), state=AdminMail.here_name_for_add_mail_button)
+async def mail_buttons__(msg: Message, state: FSMContext):
+    await state.finish()
+
+    async with state.proxy() as data:
+        data['name_mail_btn'] = msg.text
+
+    await msg.reply('<b>❗ Выберите тип кнопки:</b>', reply_markup=mail_buttons_type_inl())
+    
+@dp.callback_query_handler(IsAdmin(), text_startswith="add_mail_buttons:", state='*')
+async def mail_buttons_(call: CallbackQuery):
+
+    typ = call.data.split(":")[1]
+
+    if typ == 'link':
+        await call.message.edit_text('<b>❗ Введите ссылку:</b>')
+        await AdminMail.here_link_for_add_mail_button.set()
+    # elif typ == 'profile':
+        
+@dp.message_handler(state=AdminMail.here_link_for_add_mail_button)
+async def __mail_buttons__(msg: Message, state: FSMContext):
+    async with state.proxy() as data:
+        name = data['name_mail_btn']
+
+    if 'http://' in msg.text or 'https://' in msg.text:
+        try:
+            await db.create_mail_button(name, f'link|{msg.text}')
+        except BaseException as err:
+            print(err)
+
+        await msg.reply('<b>✅ Успешно!</b>')
+        await state.finish()
+    else:
+        await msg.reply("Введите ссылку!")
+        
+@dp.callback_query_handler(IsAdmin(), text_startswith='butedit_mail_button:', state='*')
+async def edit_mail_button(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+
+    btn_id = call.data.split(":")[1]
+    btn = await db.get_mail_button(btn_id)
+
+    await call.message.edit_text(f"<b>✨ Кнопка: {btn['name']}</b>", reply_markup=mail_buttons_edit_inl(btn_id))
+    
+@dp.callback_query_handler(IsAdmin(), text_startswith='butedits_mail_btn:', state='*')
+async def edits_mail_btn(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+
+    action = call.data.split(":")[1]
+    btn_id = call.data.split(":")[2]
+
+    async with state.proxy() as data:
+        data['btn_id'] = btn_id
+
+    if action == 'edit_name':
+        await call.message.edit_text('<b>❗ Введите новое название для кнопки:</b>')
+        await AdminMail.here_new_name_for_mail_button.set()
+    elif action == 'del':
+        await db.delete_mail_button(btn_id)
+        if len(await db.get_all_mail_buttons()) > 0:
+            await call.message.edit_text('<b>❗ Выберите кнопку:</b>', reply_markup=await mail_buttons_current_inl())
+        else:
+            await call.message.edit_text('Настройки', reply_markup=mail_buttons_inl())
+            
+@dp.message_handler(IsAdmin(), state=AdminMail.here_new_name_for_mail_button)
+async def here_new_name_for_mail_button(msg: Message, state: FSMContext):
+    async with state.proxy() as data:
+        btn_id = data['btn_id']
+
+    await state.finish()
+    await db.update_mail_button(btn_id, name=msg.text)
+    await msg.reply("<b>✅ Успешно!</b>")
+    if len(await db.get_all_mail_buttons()) > 0:
+        await msg.answer('<b>❗ Выберите кнопку:</b>', reply_markup=await mail_buttons_current_inl())
+    else:
+        await msg.answer('Настройки', reply_markup=mail_buttons_inl())

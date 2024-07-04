@@ -228,6 +228,28 @@ class DB(AsyncClass):
         await self.con.execute("DELETE FROM activ_coupons WHERE coupon_name = ?", (coupon,))
         await self.con.commit()
 
+    async def create_mail_button(self, name: str, typ: str):
+        await self.con.execute('INSERT INTO mail_buttons(name, type) VALUES (?,?)', (name, typ))
+        await self.con.commit()
+
+    async def delete_mail_button(self, id: str):
+        await self.con.execute('DELETE FROM mail_buttons WHERE id = ?', (id,))
+
+    async def get_mail_button(self, id: int):
+        row = await self.con.execute('SELECT * FROM mail_buttons WHERE id = ?', (id,))
+        return await row.fetchone()
+
+    async def get_all_mail_buttons(self):
+        row = await self.con.execute('SELECT * FROM mail_buttons')
+        return await row.fetchall()
+
+    async def update_mail_button(self, id, **kwargs):
+        queryy = f"UPDATE mail_buttons SET"
+        queryy, params = query(queryy, kwargs)
+        params.append(id)
+        await self.con.execute(queryy + "WHERE id = ?", params)
+        await self.con.commit()
+
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
@@ -402,4 +424,18 @@ class DB(AsyncClass):
                                 "summa INTEGER,"
                                 "conclusion_id INTEGER);")
             print("database was not found (Check | 8/8), creating...")
+            await self.con.commit()
+            
+        # Кнопки в рассылках
+        mail_buttons = await self.con.execute("PRAGMA table_info(mail_buttons)")
+        if len(await mail_buttons.fetchall()) == 3:
+            print("database was found (Mail Buttons | 15/18)")
+        else:
+            await self.con.execute("CREATE TABLE mail_buttons("
+                                       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                       "name TEXT,"
+                                       "type TEXT)")
+
+            print("database was not found (Mail Buttons | 15/18), creating...")
+
             await self.con.commit()
