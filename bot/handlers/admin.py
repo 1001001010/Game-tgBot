@@ -386,6 +386,7 @@ async def find_profile_op(message: Message, state: FSMContext):
                                                 amount_bowling=user['amount_bowling'],
                                                 amount_football=user['amount_football'],
                                                 amount_coin=user['amount_coin'],
+                                                amount_darts=user['amount_darts'],
                                                 referalst_summa=round(float(user['total_refill']), 2)))
         referal_list = await db.get_userAll(ref_id=user_id)
         for refik in referal_list:
@@ -500,6 +501,7 @@ async def find_profile_open(call: CallbackQuery, state: FSMContext):
                                                   amount_bowling=user['amount_bowling'],
                                                   amount_football=user['amount_football'],
                                                   amount_coin=user['amount_coin'],
+                                                  amount_darts=user['amount_darts'],
                                                   referalst_summa=round(float(user['total_refill']), 2)))
         referal_list = await db.get_userAll(ref_id=user_id)
         for refik in referal_list:
@@ -557,6 +559,7 @@ async def cause_ban_edit(msg: Message, state: FSMContext):
                                               amount_bowling=user['amount_bowling'],
                                               amount_football=user['amount_football'],
                                               amount_coin=user['amount_coin'],
+                                              amount_darts=user['amount_darts'],
                                               referalst_summa=round(float(user['total_refill']), 2)))
     referal_list = await db.get_userAll(ref_id=user_id)
     for refik in referal_list:
@@ -723,6 +726,7 @@ async def func_edit_game_two(message: Message, state: FSMContext):
                                                                  amount_bowling=user['amount_bowling'],
                                                                  amount_football=user['amount_football'],
                                                                  amount_coin=user['amount_coin'],
+                                                                 amount_darts=user['amount_darts'],
                                                                  referalst_summa=round(float(user['total_refill']), 2))), reply_markup=await admin_user_menu(texts=texts, 
                                                                                                                                                              user_id=user_id))
         await state.finish()
@@ -791,6 +795,7 @@ async def func_edit_game_two(message: Message, state: FSMContext):
                                                                  amount_bowling=user['amount_bowling'],
                                                                  amount_football=user['amount_football'],
                                                                  amount_coin=user['amount_coin'],
+                                                                 amount_darts=user['amount_darts'],
                                                                  referalst_summa=round(float(user['total_refill']), 2))), reply_markup=await admin_user_menu(texts=texts, 
                                                                                                                                                              user_id=user_id))
         await state.finish()

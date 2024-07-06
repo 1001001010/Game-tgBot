@@ -133,6 +133,7 @@ class Texts:
                 🎳 Боулинг: <code>{amount_bowling}</code>
                 ⚽ Футбол: <code>{amount_football}</code>
                 🪙 Монетка: <code>{amount_coin}</code>
+                🎯 Дартс: <code>{amount_darts}</code>
                 
                 🔗 Статус блокировки: <code>{ban_status}</code>
                 {cause_ban}

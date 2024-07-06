@@ -457,7 +457,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                 elif emoji == '🎯':
                     result = await call.message.answer_dice(emoji=DiceEmoji.DART)
                     await my_sleep(1.8)
-                    if result.dice['value'] in [1, 22, 43]:
+                    if result.dice['value'] in [6]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['test_balance'])+float(bet)*float(game_settings['factor'])
                         await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
@@ -627,7 +627,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
                     await db.update_user(id=user['user_id'], 
                                          amount_darts=float(user['amount_darts']+1))
                     await my_sleep(1.8)
-                    if result.dice['value'] in [1, 22, 43]:
+                    if result.dice['value'] in [6]:
                         new_balance = await db.get_user(user_id=call.from_user.id)
                         balance = float(new_balance['balance'])+float(bet)*float(game_settings['factor'])
                         await call.message.answer(ded(lang.win_game(summ=round(float(bet)*float(game_settings['factor']), 2), 
