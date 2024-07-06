@@ -400,12 +400,12 @@ async def kb_profile(texts, user_id):
         keyboard.add(InlineKeyboardButton(texts.test_balance, callback_data="test_balance"))
 
     kb.append(InlineKeyboardButton(texts.promo, callback_data='promo'))
-    # kb.append(InlineKeyboardButton(texts.change_language, callback_data='change_language'))
+    kb.append(InlineKeyboardButton(texts.change_language, callback_data='change_language'))
     # kb.append(InlineKeyboardButton(texts.refill, callback_data='refil_balance'))
     kb.append(InlineKeyboardButton(texts.conclusion, callback_data='withdrawal'))
-    # keyboard.add(kb[0], kb[1])
-    keyboard.add(kb[0])
-    keyboard.add(kb[1])
+    keyboard.add(kb[0], kb[1])
+    keyboard.add(kb[2])
+    # keyboard.add(kb[3])
     return keyboard
 
 def kb_adm_promo(texts):
@@ -452,12 +452,14 @@ def game_menu(texts):
     kb.append(InlineKeyboardButton(texts.game_football, callback_data="game:football"))
     kb.append(InlineKeyboardButton(texts.game_bowling, callback_data="game:bowling"))
     kb.append(InlineKeyboardButton(texts.game_dice, callback_data="game:dice"))
+    kb.append(InlineKeyboardButton(texts.game_darts, callback_data="game:darts"))
     kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_profile"))
 
     keyboard.add(kb[0], kb[1])
     keyboard.add(kb[2], kb[3])
     keyboard.add(kb[4], kb[5])
     keyboard.add(kb[6])
+    keyboard.add(kb[7])
     return keyboard
 
 async def admin_user_menu(texts, user_id):
@@ -489,12 +491,14 @@ def edit_game_menu(texts):
     kb.append(InlineKeyboardButton(texts.game_football, callback_data="edit_game:football"))
     kb.append(InlineKeyboardButton(texts.game_bowling, callback_data="edit_game:bowling"))
     kb.append(InlineKeyboardButton(texts.game_dice, callback_data="edit_game:dice"))
+    kb.append(InlineKeyboardButton(texts.game_darts, callback_data="edit_game:darts"))
     kb.append(InlineKeyboardButton(texts.back, callback_data="back_to_adm_m"))
 
     keyboard.add(kb[0], kb[1])
     keyboard.add(kb[2], kb[3])
     keyboard.add(kb[4], kb[5])
     keyboard.add(kb[6])
+    keyboard.add(kb[7])
     return keyboard
 
 async def edit_game_stats(texts, game_name):

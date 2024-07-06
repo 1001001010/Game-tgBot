@@ -1,6 +1,7 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
-from aiogram.types import InputFile 
+import os
+import asyncio
 
 from bot.data.loader import dp, bot
 from bot.data.config import lang_ru, lang_en, db

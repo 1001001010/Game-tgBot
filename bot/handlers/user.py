@@ -129,7 +129,7 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
         await call.message.delete()
         await db.update_user(id = call.from_user.id, 
                              request_test=1, 
-                             test_balance=25)
+                             test_balance=100)
         await call.answer(lang.yes_demo)
         bott = await bot.get_me()
         bot_name = bott.username

@@ -2,10 +2,10 @@ class Texts:
 ################################################## #########################
 ################################## Buttons ############### ################
 ################################################## #########################
-    reply_kb1 = 'Games 🎮'
-    reply_kb2 = 'Profile 👨‍💻'
-    reply_kb3 = 'FAQ 📖'
-    reply_kb4 = 'Support 🚑'
+    reply_kb1 = '🎮 Games'
+    reply_kb2 = '👨‍💻 Profile'
+    reply_kb3 = '📖 Rules'
+    reply_kb4 = '🚑 Support'
     reply_admin = "👩‍💻Admin Panel"
     back = "🔙 To main menu"
     back_to_adm_m = "🔙 Back"

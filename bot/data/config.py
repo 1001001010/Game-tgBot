@@ -42,7 +42,8 @@ game_slots = {
     'basketball': 'game_basketball',
     'football': 'game_football',
     'bowling': 'game_bowling',
-    'dice': 'game_dice'
+    'dice': 'game_dice',
+    'darts': 'game_darts'
 }
 
 #Не трогать, стикеры монетки

@@ -184,6 +184,14 @@ class DB(AsyncClass):
         
         return await row.fetchone()
     
+    # Получение Чеков
+    async def get_all_check(self, **kwargs):
+        sql = "SELECT * FROM [check]"
+        sql, parameters = query_args(sql, kwargs)
+        row = await self.con.execute(sql, parameters)
+        
+        return await row.fetchall()
+    
     # Получение активироного промокода
     async def get_activate_coupon(self, **kwargs):
         sql = "SELECT * FROM activ_coupons"
@@ -280,7 +288,7 @@ class DB(AsyncClass):
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await users_info.fetchall()) == 26:
+        if len(await users_info.fetchall()) == 27:
             print("database was found (Users | 1/10)")
         else:
             await self.con.execute("CREATE TABLE users ("
@@ -305,6 +313,7 @@ class DB(AsyncClass):
                                    "amount_slots INTEGER DEFAULT 0,"
                                    "amount_dice INTEGER DEFAULT 0,"
                                    "amount_basketball INTEGER DEFAULT 0,"
+                                   "amount_darts INTEGER DEFAULT 0,"
                                    "amount_bowling INTEGER DEFAULT 0,"
                                    "amount_football INTEGER DEFAULT 0,"
                                    "amount_coin INTEGER DEFAULT 0,"
@@ -434,6 +443,9 @@ class DB(AsyncClass):
             await self.con.execute("""INSERT INTO game_settings (
                                     name, factor, min_bet, chance_real, chance_demo) VALUES (?, ?, ?, ?, ?)""", 
                                     ['dice', 1, 1, 0, 1])
+            await self.con.execute("""INSERT INTO game_settings (
+                                    name, factor, min_bet, chance_real, chance_demo) VALUES (?, ?, ?, ?, ?)""", 
+                                    ['darts', 1, 1, 0, 1])
 
 
             print("database was not found (Languages | 7/10), creating...")
