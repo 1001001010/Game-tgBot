@@ -1,8 +1,9 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
+from aiogram import types
 
 from bot.data.loader import dp, bot
-from bot.data.config import db
+from bot.data.config import db, img_welcome
 from bot.keyboards.reply import user_menu
 from bot.keyboards.inline import admin_menu, choose_languages_kb, sub, back_to_user_menu
 from bot.utils.utils_functions import get_language, convert_ref
@@ -56,7 +57,7 @@ async def sub_prov(call: CallbackQuery, state: FSMContext):
         user = await db.get_user(user_id=call.from_user.id)
         lang = await get_language(call.from_user.id)
         kb = await user_menu(texts=lang, user_id=call.from_user.id)
-        await call.message.answer(lang.welcome, reply_markup=kb)
+        await bot.send_photo(call.from_user.id, photo=img_welcome, caption=lang.welcome, reply_markup=kb)
     
 @dp.message_handler(commands=['start'], state="*")
 async def main_start(message: Message, state: FSMContext):
@@ -66,10 +67,10 @@ async def main_start(message: Message, state: FSMContext):
     kb = await user_menu(texts=lang, user_id=message.from_user.id)
     s = await db.get_only_settings()
     if message.get_args() == "":
-            await message.answer(lang.welcome, reply_markup=kb)
+            await bot.send_photo(message.from_user.id, photo=img_welcome, caption=lang.welcome, reply_markup=kb)
     else:
         if await db.get_user(user_id=int(message.get_args())) is None:
-                await message.answer(lang.welcome, reply_markup=kb)
+                await bot.send_photo(message.from_user.id, photo=img_welcome, caption=lang.welcome, reply_markup=kb)
         else:
             if user['ref_id'] is not None:
                 await message.answer(lang.yes_reffer)
@@ -111,7 +112,7 @@ async def main_start(message: Message, state: FSMContext):
                     if user['user_name'] == "":
                         us = await bot.get_chat(user['id'])
                         name = us.get_mention(as_html=True)
-                    await message.answer(lang.welcome, reply_markup=kb)
+                    await bot.send_photo(message.from_user.id, photo=img_welcome, caption=lang.welcome, reply_markup=kb)
 
 @dp.callback_query_handler(text_startswith="change_language:", state="*")
 async def change_language_(call: CallbackQuery, state: FSMContext):
@@ -125,7 +126,7 @@ async def back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
     lang = await get_language(call.from_user.id)
-    await bot.send_message(call.from_user.id, lang.welcome, reply_markup=await user_menu(texts=lang, 
+    await bot.send_photo(call.from_user.id, photo=img_welcome, caption=lang.welcome, reply_markup=await user_menu(texts=lang, 
                                                                                          user_id=call.from_user.id))
     
 @dp.callback_query_handler(IsAdmin(), text='back_to_adm_m', state="*")

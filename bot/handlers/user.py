@@ -5,7 +5,7 @@ from aiogram.types import InputFile
 from datetime import datetime
 
 from bot.data.loader import dp, bot
-from bot.data.config import lang_ru, lang_en, db, admin_chat, pay_chat
+from bot.data.config import lang_ru, lang_en, db, admin_chat, pay_chat, img_profile, img_support, img_games
 from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, \
                                 choose_languages_kb, game_menu, payment_method, kb_vivod_zayavka, kb_vivod_moneta, \
                                 kb_network, yes_or_no_vivod, kb_rework_network, yes_or_no_cheack
@@ -38,7 +38,7 @@ async def func__profile(message: Message, state: FSMContext):
     bott = await bot.get_me()
     bot_name = bott.username
     ref_link = f"<code>https://t.me/{bot_name}?start={user_info['user_id']}</code>"
-    photo_path = InputFile('./bot/data/photo/profile.png')
+    # photo_path = InputFile('./bot/data/photo/profile.png')
     ref_lvl = user_info['ref_lvl']
     #Получение имени реффера 
     reffer_name = user_info['ref_first_name']
@@ -46,10 +46,7 @@ async def func__profile(message: Message, state: FSMContext):
         reffer = lang.nobody
     else:
         reffer = f"<a href='tg://user?id={user_info['ref_id']}'>{reffer_name}</a>"
-        
-    # await bot.send_photo(user_info['user_id'], 
-    #                     photo=photo_path, 
-    await message.answer(ded(lang.open_profile(
+    await bot.send_photo(message.from_user.id, photo=img_profile, caption=ded(lang.open_profile(
                         user_id=user_info['user_id'], 
                         user_name=user_info['user_name'], 
                         balance=round(float(user_info['balance']), 2),
@@ -71,7 +68,6 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
     bott = await bot.get_me()
     bot_name = bott.username
     ref_link = f"<code>https://t.me/{bot_name}?start={user_info['user_id']}</code>"
-    photo_path = InputFile('./bot/data/photo/profile.png')
     ref_lvl = user_info['ref_lvl']
     #Получение имени реффера 
     reffer_name = user_info['ref_first_name']
@@ -80,7 +76,7 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
     else:
         reffer = f"<a href='tg://user?id={user_info['ref_id']}'>{reffer_name}</a>"
         
-    await call.message.answer(ded(lang.open_profile(
+    await bot.send_photo(call.from_user.id, photo=img_profile, caption=ded(lang.open_profile(
                                 user_id=user_info['user_id'], 
                                 user_name=user_info['user_name'], 
                                 balance=round(float(user_info['balance']), 2),
@@ -93,20 +89,6 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
                                 refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, 
                                                                                     user_id=call.from_user.id)
     )
-    # await bot.send_photo(user_info['user_id'], 
-    #                     photo=photo_path, 
-    #                     caption=ded(lang.open_profile(
-    #                     user_id=user_info['user_id'], 
-    #                     user_name=user_info['user_name'], 
-    #                     balance=round(float(user_info['balance']), 2),
-    #                     test_balance=round(float(user_info['test_balance']), 2), 
-    #                     referals=user_info['ref_count'], 
-    #                     referals_sum=user_info['total_refill'], 
-    #                     refer_lvl=ref_lvl, 
-    #                     balance_vivod=round(float(user_info['vivod']), 2), 
-    #                     reffer = reffer,
-    #                     refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, 
-    #                                                                          user_id=call.from_user.id))
 
 #Открытие FAQ
 @dp.message_handler(text=lang_ru.reply_kb3, state="*")
@@ -114,9 +96,6 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
 async def func__profile(message: Message, state: FSMContext):
     await state.finish()
     msg = await db.get_settings(id=1)
-    # await message.answer(msg['FAQ'], parse_mode='html')
-    photo_path = InputFile('./bot/data/photo/faq.png')
-    # await bot.send_photo(message.from_user.id, photo_path, msg['FAQ'], parse_mode='html')
     await message.answer(msg['FAQ'], parse_mode='html')
 
 #Запрос демо баланса
@@ -134,7 +113,6 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
         bott = await bot.get_me()
         bot_name = bott.username
         ref_link = f"<code>https://t.me/{bot_name}?start={user_info['user_id']}</code>"
-        photo_path = InputFile('./bot/data/photo/profile.png')
         user_info = await db.get_user(user_id = call.from_user.id)
         reffer_name = user_info['ref_first_name']
         ref_lvl = user_info['ref_lvl']
@@ -142,21 +120,7 @@ async def get_test_balance(call: CallbackQuery, state: FSMContext):
             reffer = lang.nobody
         else:
             reffer = f"<a href='tg://user?id={user_info['ref_id']}'>{reffer_name}</a>"
-        # await bot.send_photo(user_info['user_id'], 
-        #                 photo=photo_path, 
-        #                 caption=ded(lang.open_profile(
-        #                 user_id=user_info['user_id'], 
-        #                 user_name=user_info['user_name'], 
-        #                 balance=round(float(user_info['balance']), 2),
-        #                 test_balance=round(float(user_info['test_balance']), 2), 
-        #                 referals=user_info['ref_count'], 
-        #                 referals_sum=user_info['total_refill'], 
-        #                 refer_lvl=ref_lvl, 
-        #                 balance_vivod=round(float(user_info['vivod']), 2), 
-        #                 reffer = reffer,
-        #                 refer_link=ref_link)), reply_markup=await kb_profile(texts=lang, 
-        #                                                                      user_id=call.from_user.id))
-        await call.message.answer(ded(lang.open_profile(
+        await bot.send_photo(call.from_user.id, photo=img_profile, caption=ded(lang.open_profile(
                         user_id=user_info['user_id'], 
                         user_name=user_info['user_name'], 
                         balance=round(float(user_info['balance']), 2),
@@ -188,12 +152,7 @@ async def sup_open(message: Message, state: FSMContext):
         kb = back_to_profile(texts=lang)
     else:
         kb = await support_inll(texts=lang)
-    photo_path = InputFile('./bot/data/photo/helper.png')
-    # await bot.send_photo(message.from_user.id, 
-    #                      photo=photo_path, 
-    #                      caption=msg, 
-    #                      reply_markup=kb)
-    await message.answer(msg, reply_markup=kb)
+    await bot.send_photo(message.from_user.id, photo=img_support, caption=msg, reply_markup=kb)
 
 #Промокод 
 @dp.callback_query_handler(text="promo", state="*")
@@ -246,25 +205,14 @@ async def user_lang(call: CallbackQuery, state: FSMContext):
 async def func__game(message: Message, state: FSMContext):
     await state.finish()
     lang = await get_language(message.from_user.id)
-    photo_path = InputFile('./bot/data/photo/game.png')
-    # await bot.send_photo(message.from_user.id, 
-    #                      photo=photo_path, 
-    #                      caption=lang.game_menu, 
-    #                      reply_markup=game_menu(texts=lang))
-    await message.answer(lang.game_menu, reply_markup=game_menu(texts=lang))
+    await bot.send_photo(message.from_user.id, photo=img_games, caption=lang.game_menu, reply_markup=game_menu(texts=lang))
     
 @dp.callback_query_handler(text="back_to_game_menu", state="*")
 async def user_lang(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
     lang = await get_language(call.from_user.id)
-    photo_path = InputFile('./bot/data/photo/game.png')
-    # await bot.send_photo(call.from_user.id, 
-    #                      photo=photo_path, 
-    #                      caption=lang.game_menu, 
-    #                      reply_markup=game_menu(texts=lang))
-    await call.message.answer(lang.game_menu, 
-                         reply_markup=game_menu(texts=lang))
+    await bot.send_photo(call.from_user.id, photo=img_games, caption=lang.game_menu, reply_markup=game_menu(texts=lang))
     
 @dp.callback_query_handler(text="withdrawal", state="*")
 async def user_lang(call: CallbackQuery, state: FSMContext):

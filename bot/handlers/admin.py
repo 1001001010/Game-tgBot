@@ -86,10 +86,19 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
     coin_info = await db.get_game_settings(name='coin')
     basketball_info = await db.get_game_settings(name='basketball')
     football_info = await db.get_game_settings(name='football')
+    darts_info = await db.get_game_settings(name='darts')
     bowling_info = await db.get_game_settings(name='bowling')
     dice_info = await db.get_game_settings(name='dice')
     all_deposits = await db.all_deposit()
     summ_deposits = 0
+    summ_games = 0
+    summ_slots = 0
+    summ_basketball = 0
+    summ_darts = 0
+    summ_bowling = 0
+    summ_football = 0
+    summ_dice = 0
+    summ_coin = 0
     for row in all_deposits:
         summ_deposits += float(row['total_pay'])
         
@@ -100,6 +109,14 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
         if int(user['reg_date_unix']) - int(settings['profit_week']) >= 0:
             show_users_week += 1
         all_user += 1
+        summ_games += int(user['amount_all_games'])
+        summ_slots += int(user['amount_slots'])
+        summ_dice += int(user['amount_dice'])
+        summ_basketball += int(user['amount_basketball'])
+        summ_darts += int(user['amount_darts'])
+        summ_bowling += int(user['amount_bowling'])
+        summ_football += int(user['amount_football'])
+        summ_coin += int(user['amount_coin'])
 
     msg = f"""📊 Статистика
 
@@ -112,29 +129,42 @@ async def open_stats(call: CallbackQuery, state: FSMContext):
 
     <b>Игры:</b>
 
+    <b>Всего сыграно игр:</b> <code>{summ_games}</code>
+    
     <b>🎰 Слоты:</b>
     Коэффициент: <code>X{slots_info['factor']}</code>
     Мин. ставка: ₽ <code>{slots_info['min_bet']}</code>
-
+    Всего сыграно игр: <code>{summ_slots}</code>
+    
     <b>🎲 Кости:</b>
     Коэффициент: <code>X{dice_info['factor']}</code>
     Мин. ставка: ₽ <code>{dice_info['min_bet']}</code>
+    Всего сыграно игр: <code>{summ_dice}</code>
 
     <b>🏀 Баскетбол:</b>
     Коэффициент: <code>X{basketball_info['factor']}</code>
     Мин. ставка: ₽ <code>{basketball_info['min_bet']}</code>
+    Всего сыграно игр: <code>{summ_basketball}</code>
 
     <b>🎳 Боулинг:</b>
     Коэффициент: <code>X{bowling_info['factor']}</code>
     Мин. ставка: ₽ <code>{bowling_info['min_bet']}</code>
+    Всего сыграно игр: <code>{summ_bowling}</code>
 
     <b>⚽ Футбол:</b>
     Коэффициент: <code>X{football_info['factor']}</code>
     Мин. ставка: ₽ <code>{football_info['min_bet']}</code>
+    Всего сыграно игр: <code>{summ_football}</code>
+    
+    <b>🎯 Дартс:</b>
+    Коэффициент: <code>X{darts_info['factor']}</code>
+    Мин. ставка: ₽ <code>{darts_info['min_bet']}</code>
+    Всего сыграно игр: <code>{summ_darts}</code>
 
     <b>🪙 Монетка:</b>
     Коэффициент: <code>X{coin_info['factor']}</code>
     Мин. ставка: ₽ <code>{coin_info['min_bet']}</code>
+    Всего сыграно игр: <code>{summ_coin}</code>
     Шанс победы: <code>{float(coin_info['chance_real'])*100}</code>%
     Демо шанс: <code>{float(coin_info['chance_demo'])*100}</code>%
 

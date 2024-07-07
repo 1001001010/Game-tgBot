@@ -101,7 +101,7 @@ async def fun_get_game(message: Message, state: FSMContext):
                             balance = float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor'])
                             await message.answer(ded(lang.win_game(summ=round(float(data['bet'])*float(game_settings['factor']), 2), 
                                                                    kef=game_settings['factor'], 
-                                                                   balance=round(float(float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']), 2)))), reply_markup=game_next(lang=lang, 
+                                                                   balance=round(float(new_balance['test_balance'])+float(data['bet'])*float(game_settings['factor']), 2))), reply_markup=game_next(lang=lang, 
                                                                                                                                                                                                            bet=data['bet'], 
                                                                                                                                                                                                            type_balance=data['type_bet'], 
                                                                                                                                                                                                            game=data['game']))

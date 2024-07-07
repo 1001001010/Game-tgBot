@@ -49,3 +49,10 @@ game_slots = {
 #Не трогать, стикеры монетки
 win_coin_sticker_id = 'CAACAgIAAxkBAAEMJ5NmTAHfILlZIWv31_PP5SRf5sPtwgAClhcAAsiE0Ui67wnmqzpt6TUE'
 lose_coin_sticker_id = 'CAACAgIAAxkBAAEMJ5VmTAHkumw8jh7ZWMxTwxpiRCSVZAACpRcAAgaN0Egkmq4OpEO-oDUE'
+
+#Фото для сообщений 
+img_welcome = 'AgACAgIAAxkBAAIEd2aKgnQKJ8uHd8yauVXGgzD884HuAAIb5zEbvOVRSJK69zKnUkQHAQADAgADeQADNQQ'
+img_support = 'AgACAgIAAxkBAAIEeWaKgprp0PXP_J9GKM9I48FDQ81RAAId5zEbvOVRSEOvzIUdkqy1AQADAgADeQADNQQ'
+img_rules = 'AgACAgIAAxkBAAIEe2aKgrNBjFPLq2AbXWqLPGQXVuzHAAIf5zEbvOVRSLG1G99Hfj9uAQADAgADeQADNQQ'
+img_profile = 'AgACAgIAAxkBAAIEfWaKgsRo-8xrHis8F9CVicpx9GcbAAIi5zEbvOVRSHrUliLT1KL0AQADAgADeQADNQQ'
+img_games = 'AgACAgIAAxkBAAIEf2aKgtMdkNXgCddOqPziQ5x48qCCAAIj5zEbvOVRSLamqeabkhmZAQADAgADeQADNQQ'
