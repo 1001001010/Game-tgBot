@@ -37,6 +37,13 @@ def get_admins():
 
     return admins
 
+# Получение текущей даты (True - дата с временем, False - дата без времени)
+def get_date(full: bool = True) -> str:
+    if full:
+        return datetime.now(pytz.timezone(BOT_TIMEZONE)).strftime("%d.%m.%Y %H:%M:%S")
+    else:
+        return datetime.now(pytz.timezone(BOT_TIMEZONE)).strftime("%d.%m.%Y")
+
 def get_unix(full=False):
     """ Получение текущего unix времени
 

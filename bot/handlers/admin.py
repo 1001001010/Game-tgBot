@@ -446,12 +446,12 @@ async def find_profile_op(message: Message, state: FSMContext):
             check_type = 'Пополнение' if check_info['transaction_type'] == 'deposit' else 'Вывод'
             if check_info['transaction_type'] == 'deposit':
                 await message.answer(ded(f"""
-                                        Информаци о чеке: {check_info['unix']} 
+                                        🧾 Информаци о чеке: <code>{check_info['unix']}</code>
                                         
-                                        ID: {check_info['id']}
-                                        Пользователь: {check_info['user_id']}
-                                        Тип: {check_type}
-                                        Сумма: {check_info['summa']}
+                                        🆔 ID: <code>{check_info['id']}</code>
+                                        👑 Пользователь: <code>{check_info['user_id']}</code>
+                                        ⭐️ Тип: <code>{check_type}</code>
+                                        💰 Сумма: <code>{check_info['summa']}</code>
                                         """))
             else:
                 withdrawal_info = await db.get_vivod(id=check_info['conclusion_id'])
@@ -460,24 +460,27 @@ async def find_profile_op(message: Message, state: FSMContext):
                 network = withdrawal_info['network'] if withdrawal_info['network'] != 'NULL' else ''
                 
                 await message.answer(ded(f"""
-                                        Информаци о чеке: {check_info['unix']} 
+                                        🧾 Информаци о чеке: <code>{check_info['unix']} </code>
                                         
-                                        ID: {check_info['id']}
-                                        Пользователь: {withdrawal_info['user_id']}
-                                        Тип: {check_type}
-                                        Сумма: {check_info['summa']}
+                                        🆔 ID: <code>{check_info['id']}</code>
+                                        👑 Пользователь: <code>{withdrawal_info['user_id']}</code>
+                                        ⭐️ Тип: <code>{check_type}</code>
+                                        💰 Сумма: <code>{check_info['summa']}</code>
                                         
-                                        Информация о выводе: 
-                                        ID: {withdrawal_info['id']}
-                                        Дата: {withdrawal_info['data']}
-                                        Статус: {status_vivod}
-                                        Адресс: {adress}
-                                        {network}
+                                        💸 Информация о выводе: 
+                                        🆔 ID: <code>{withdrawal_info['id']}</code>
+                                        📅 Дата: <code>{withdrawal_info['data']}</code>
+                                        🌸 Статус: <code>{status_vivod}</code>
+                                        📬 Адресс: <code>{adress}</code>
+                                        <code>{network}</code>
                                         """))
+            await state.finish()
         else:
             await message.answer("Чек не найден")
+            await state.finish()
     else:
         await message.answer("Неверный формат чека")
+        await state.finish()
 
 @dp.callback_query_handler(IsAdmin(), text_startswith="block", state="*")
 async def find_profile_open(call: CallbackQuery, state: FSMContext):

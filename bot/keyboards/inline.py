@@ -175,7 +175,7 @@ def kb_vivod_zayavka(summa, vivod_id):
 def kb_vivod_moneta():
     keyboard = InlineKeyboardMarkup()
     kb = []
-    kb.append(InlineKeyboardButton("USDT", callback_data=f"moneta:USDT"))
+    kb.append(InlineKeyboardButton("💠 USDT", callback_data=f"moneta:USDT"))
     kb.append(InlineKeyboardButton("🧾 Чек/check", callback_data=f"check"))
     keyboard.add(kb[0])
     keyboard.add(kb[1])

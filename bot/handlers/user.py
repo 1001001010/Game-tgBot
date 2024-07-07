@@ -9,7 +9,7 @@ from bot.data.config import lang_ru, lang_en, db, admin_chat, pay_chat, img_prof
 from bot.keyboards.inline import back_to_user_menu, support_inll, kb_profile, back_to_profile, \
                                 choose_languages_kb, game_menu, payment_method, kb_vivod_zayavka, kb_vivod_moneta, \
                                 kb_network, yes_or_no_vivod, kb_rework_network, yes_or_no_cheack
-from bot.utils.utils_functions import get_language, ded, is_number, gen_id
+from bot.utils.utils_functions import get_language, ded, is_number, gen_id, get_date
 from bot.state.users import UsersCoupons, UserVivid
 from bot.utils.converter import convert_rub_to_usd
 
@@ -255,7 +255,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     settings_info = await db.get_settings(id=1)
     comma = settings_info['Commission_check']
     min_summa = settings_info['Minimum_check']
-    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    time = get_date()
     if float(data['amount']) <= float(min_summa):
         await call.message.answer(lang.need_balance)
     else:
@@ -296,7 +296,7 @@ async def func_value(call: CallbackQuery, state: FSMContext):
         msg = f"""
         Новая заявка от {name}
         ID: {call.from_user.id}
-        Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+        Дата и время: {get_date()}
         
         💰 Сумма: <code>${round(usdt_summa_vivod, 2)}</code> | <code>{float(vivod['summa'])}</code>
         💵 Сумма с учетом комиссии: <code>${round((float(usdt_summa_vivod) - ((float(usdt_summa_vivod) * float(settings_info['Commission_check']) / 100))), 2)}</code> | <code>{float(vivod['summa']) - (float(vivod['summa']) * float(settings_info['Commission_check']) / 100)}</code>
@@ -349,7 +349,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
             if float(comma) >= float(data['amount']):
                 await message.answer(lang.no_money)
             else:
-                time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                time = get_date()
                 await db.add_vivod(user_id=message.from_user.id, 
                                    summa=data['amount'], 
                                    network=data['network'], 
@@ -378,7 +378,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
                                    summa=data['amount'], 
                                    network=data['network'], 
                                    status='not confirmed',
-                                   data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                                   data=get_date(), 
                                    adress=data['adress'])
                 vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
                 await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
@@ -399,7 +399,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
                                    summa=data['amount'], 
                                    network=data['network'], 
                                    status='not confirmed', 
-                                   data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                                   data=get_date(), 
                                    adress=data['adress'])
                 vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
                 await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
@@ -421,7 +421,7 @@ async def functions_profile_get(message: Message, state: FSMContext):
                                    summa=data['amount'], 
                                    network=data['network'], 
                                    status='not confirmed', 
-                                   data=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                                   data=get_date(), 
                                    adress=data['adress'])
                 vivod_id = await db.get_vivod(user_id=message.from_user.id, status='not confirmed')
                 await message.answer(ded(lang.Confirmation_msg.format(network=data['network'],
@@ -462,9 +462,9 @@ async def func_value(call: CallbackQuery, state: FSMContext):
         usdt_summa_vivod = round(usdt_summa_vivod, 2)
         usdt_comma = round(usdt_comma, 2)
         msg = f"""
-        Новая заявка от {name}
-        ID: {call.from_user.id}
-        Дата и время: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+        💎 Новая заявка от {name}
+        🆔 ID: {call.from_user.id}
+        📅 Дата и время: {get_date()}
         
         💰 Сумма: <code>${usdt_summa_vivod}</code> | <code>{float(info_vivod['summa'])}</code>
         💵 Сумма с учетом комиссии: <code>${round((float(usdt_summa_vivod) - float(usdt_comma)), 2)}</code> | <code>{(float(info_vivod['summa']) - float(comma))}</code>
@@ -490,9 +490,10 @@ async def func_value(call: CallbackQuery, state: FSMContext):
     vivod_id = call.data.split(":")[3]
     vivod_info = await db.get_vivod(id=vivod_id)
     user = await db.get_user(user_id=vivod_info['user_id'])
+    gen=gen_id()
     if status == 'yes':
         await db.update_vivod(id=vivod_id, status='accepted')
-        await db.add_check(unix=gen_id(), 
+        await db.add_check(unix=gen, 
                            user_id=user['user_id'], 
                            transaction_type='withdrawal', 
                            conclusion_id=vivod_id, 
@@ -503,18 +504,20 @@ async def func_value(call: CallbackQuery, state: FSMContext):
             await bot.send_message(pay_chat, ded(f"""
                                                 ✅ Успешная выплата!
                                                 
+                                                🧾 Чек: <code>#{gen}</code>
                                                 📅 Дата: <code>{vivod_info['data']}</code>
-                                                💰 Сумма: <code>{vivod_info['summa']}</code>₽
-                                                📶 Сеть: <code>🧾 Чек</code>
+                                                💰 Сумма: ₽ <code>{vivod_info['summa']}</code>
+                                                📶 Способ: <code>🧾 Чек</code>
                                                 """))
             await bot.send_message(vivod_info['user_id'], lang.vivod_success_msg_check)
         else: 
             await bot.send_message(pay_chat, ded(f"""
                                     ✅ Успешная выплата!
                                     
+                                    🧾 Чек: <code>#{gen}</code>
                                     📅 Дата: <code>{vivod_info['data']}</code>
-                                    💰 Сумма: <code>{vivod_info['summa']}₽</code>
-                                    📶 Сеть: <code>{vivod_info['network']}</code>
+                                    💰 Сумма: ₽ <code>{vivod_info['summa']}</code>
+                                    📶 Способ: <code>{vivod_info['network']}</code>
                                         """))
             await bot.send_message(vivod_info['user_id'], lang.vivod_success_msg)
     elif status == 'no':
